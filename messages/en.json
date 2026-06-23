@@ -1,0 +1,92 @@
+{
+  "Brand": {
+    "name": "Elite Bloemen"
+  },
+  "Metadata": {
+    "brand": "Elite Bloemen",
+    "title": "Elite Bloemen — Fresh Flowers & Bouquets Delivery",
+    "description": "Elite Bloemen: fresh bouquets, floral arrangements, wedding and event flowers with fast delivery in the Netherlands. Order flowers online for any occasion.",
+    "keywords": "flowers, bouquets, flower delivery, florist, wedding flowers, Netherlands"
+  },
+  "Home": {
+    "title": "Elite Bloemen",
+    "subtitle": "Fresh flowers, bouquets and arrangements",
+    "tagline": "Atelier · Netherlands",
+    "shop_by_category": "Discover our collections",
+    "featured_title": "Featured bouquets",
+    "view_all": "View all",
+    "cta": "Browse the catalog"
+  },
+  "Catalog": {
+    "home": "Home",
+    "count": "{count, plural, =0 {No products} one {# product} other {# products}}",
+    "sort_label": "Sort",
+    "sort_newest": "Newest",
+    "sort_price_asc": "Price: low to high",
+    "sort_price_desc": "Price: high to low",
+    "empty": "There are no products in this collection yet.",
+    "in_stock": "In stock",
+    "out_of_stock": "Sold out",
+    "all_prices": "All prices",
+    "price_filter": "Price"
+  },
+  "Product": {
+    "composition": "Composition",
+    "kit_info": "Included",
+    "important_note": "Important",
+    "add_to_cart": "Add to cart",
+    "out_of_stock": "Sold out",
+    "from": "from",
+    "back": "Back to catalog",
+    "not_found": "Product not found"
+  },
+  "Footer": {
+    "tagline": "Decoration for weddings and parties · arches, bouquets, arrangements",
+    "collections": "Collections",
+    "contact": "Contact",
+    "follow": "Follow us",
+    "rights": "All rights reserved"
+  },
+  "Nav": {
+    "home": "Home",
+    "catalog": "Catalog",
+    "cart": "Cart",
+    "about": "About",
+    "contact": "Contact",
+    "menu": "Menu",
+    "close": "Close",
+    "language": "Language"
+  },
+  "Categories": {
+    "bouquets": "Bouquets",
+    "mono_bouquets": "Mono Bouquets",
+    "mixed_bouquets": "Mixed Bouquets",
+    "author_bouquets": "Author Bouquets",
+    "premium_bouquets": "Premium Bouquets",
+    "mini_bouquets": "Mini Bouquets",
+    "arrangements": "Arrangements",
+    "box_arrangements": "Box Arrangements",
+    "basket_arrangements": "Basket Arrangements",
+    "table_arrangements": "Table Arrangements",
+    "interior_arrangements": "Interior Arrangements",
+    "wedding_floristry": "Wedding Floristry",
+    "bridal_bouquet": "Bridal Bouquet",
+    "boutonnieres": "Boutonnières",
+    "hall_table_decor": "Hall & Table Decor",
+    "floral_arches": "Floral Arches",
+    "funeral": "Funeral Arrangements",
+    "funeral_arrangement": "Funeral Arrangement",
+    "funeral_bouquet": "Funeral Bouquet",
+    "funeral_ribbon": "Funeral Ribbon",
+    "funeral_decor": "Funeral Decor",
+    "events": "Weddings & Parties",
+    "weddings": "Weddings",
+    "wedding_portfolio": "Portfolio",
+    "wedding_packages": "Packages & Prices",
+    "wedding_decor": "Wedding Decor",
+    "parties": "Parties",
+    "party_portfolio": "Portfolio",
+    "party_packages": "Packages & Prices",
+    "party_decor": "Party Decor"
+  }
+}

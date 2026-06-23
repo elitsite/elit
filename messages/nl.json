@@ -1,0 +1,92 @@
+{
+  "Brand": {
+    "name": "Elite Bloemen"
+  },
+  "Metadata": {
+    "brand": "Elite Bloemen",
+    "title": "Elite Bloemen — Verse Bloemen & Boeketten Bezorgen",
+    "description": "Elite Bloemen: verse boeketten, bloemstukken, bruiloft- en evenementbloemen met snelle bezorging in Nederland. Bestel online bloemen voor elke gelegenheid.",
+    "keywords": "bloemen, boeketten, bloemen bezorgen, bloemist, bruidsbloemen, Nederland"
+  },
+  "Home": {
+    "title": "Elite Bloemen",
+    "subtitle": "Verse bloemen, boeketten en arrangementen",
+    "tagline": "Atelier · Nederland",
+    "shop_by_category": "Ontdek onze collecties",
+    "featured_title": "Aanbevolen boeketten",
+    "view_all": "Bekijk alles",
+    "cta": "Bekijk de catalogus"
+  },
+  "Catalog": {
+    "home": "Home",
+    "count": "{count, plural, =0 {Geen producten} one {# product} other {# producten}}",
+    "sort_label": "Sorteren",
+    "sort_newest": "Nieuwste",
+    "sort_price_asc": "Prijs oplopend",
+    "sort_price_desc": "Prijs aflopend",
+    "empty": "Er zijn nog geen producten in deze collectie.",
+    "in_stock": "Op voorraad",
+    "out_of_stock": "Uitverkocht",
+    "all_prices": "Alle prijzen",
+    "price_filter": "Prijs"
+  },
+  "Product": {
+    "composition": "Samenstelling",
+    "kit_info": "Inbegrepen",
+    "important_note": "Belangrijk",
+    "add_to_cart": "In winkelwagen",
+    "out_of_stock": "Uitverkocht",
+    "from": "vanaf",
+    "back": "Terug naar catalogus",
+    "not_found": "Product niet gevonden"
+  },
+  "Footer": {
+    "tagline": "Decoratie voor bruiloften en feesten · bogen, boeketten, composities",
+    "collections": "Collecties",
+    "contact": "Contact",
+    "follow": "Volg ons",
+    "rights": "Alle rechten voorbehouden"
+  },
+  "Nav": {
+    "home": "Home",
+    "catalog": "Catalogus",
+    "cart": "Winkelwagen",
+    "about": "Over ons",
+    "contact": "Contact",
+    "menu": "Menu",
+    "close": "Sluiten",
+    "language": "Taal"
+  },
+  "Categories": {
+    "bouquets": "Boeketten",
+    "mono_bouquets": "Monoboeketten",
+    "mixed_bouquets": "Gemengde boeketten",
+    "author_bouquets": "Signatuurboeketten",
+    "premium_bouquets": "Premiumboeketten",
+    "mini_bouquets": "Miniboeketten",
+    "arrangements": "Bloemstukken",
+    "box_arrangements": "In dozen",
+    "basket_arrangements": "In manden",
+    "table_arrangements": "Tafelstukken",
+    "interior_arrangements": "Interieurstukken",
+    "wedding_floristry": "Bruidsbloemen",
+    "bridal_bouquet": "Bruidsboeket",
+    "boutonnieres": "Corsages",
+    "hall_table_decor": "Zaal- & tafeldecoratie",
+    "floral_arches": "Bloemenbogen",
+    "funeral": "Rouwbloemen",
+    "funeral_arrangement": "Rouwstuk",
+    "funeral_bouquet": "Rouwboeket",
+    "funeral_ribbon": "Rouwlint",
+    "funeral_decor": "Decoratie",
+    "events": "Bruiloften & Feesten",
+    "weddings": "Bruiloften",
+    "wedding_portfolio": "Portfolio",
+    "wedding_packages": "Pakketten & prijzen",
+    "wedding_decor": "Bruiloftsdecoratie",
+    "parties": "Feesten",
+    "party_portfolio": "Portfolio",
+    "party_packages": "Pakketten & prijzen",
+    "party_decor": "Feestdecoratie"
+  }
+}

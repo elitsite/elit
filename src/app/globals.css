@@ -2,26 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Elite Bloemen — premium florist storefront theme.
+ * Cream + white canvas, warm taupe/greige accent, warm-charcoal ink text.
+ * Editorial wedding-florist aesthetic (ref: bloomwedding.nl).
+ * Fixed light theme for a consistent boutique feel (no OS dark flip).
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7f4ef;
+  --foreground: #262220;
+  --brand: #8c7e70;
+  --brand-light: #a89a8c;
+  --taupe: #a89a8c;
+  --blush: #e8d9d1;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), var(--font-geist-sans), system-ui,
+    -apple-system, "Segoe UI", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@layer base {
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display), Georgia, "Times New Roman", serif;
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* Refined scrollbar for the menu drawer */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

@@ -1,0 +1,128 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { routing, type Locale } from "@/i18n/routing";
+import {
+  CATEGORY_PATHS,
+  findCategoryByPath,
+  getLeafSlugsUnder,
+  type CategoryNode,
+} from "@/lib/categories";
+import { getProductsByCategorySlugs } from "@/lib/products";
+import type { Product } from "@/lib/supabase";
+import { BRAND_NAME, buildLanguageAlternates, canonicalUrl } from "@/lib/site";
+import ProductCard from "@/components/ProductCard";
+import Breadcrumbs, { type Crumb } from "@/components/Breadcrumbs";
+
+export const revalidate = 300;
+
+type Params = { locale: string; slug: string[] };
+
+export function generateStaticParams() {
+  const params: Params[] = [];
+  for (const locale of routing.locales) {
+    for (const path of CATEGORY_PATHS) {
+      params.push({ locale, slug: path.split("/") });
+    }
+  }
+  return params;
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<Params>;
+}): Promise<Metadata> {
+  const { locale, slug } = await params;
+  const match = findCategoryByPath(slug);
+  if (!match) return {};
+  const t = await getTranslations({ locale, namespace: "Categories" });
+  const label = t(match.node.labelKey);
+  const path = `/category/${slug.join("/")}`;
+  return {
+    title: label,
+    alternates: {
+      canonical: canonicalUrl(locale as Locale, path),
+      languages: buildLanguageAlternates(path),
+    },
+    openGraph: {
+      title: `${label} · ${BRAND_NAME}`,
+      url: canonicalUrl(locale as Locale, path),
+    },
+  };
+}
+
+export default async function CategoryPage({
+  params,
+}: {
+  params: Promise<Params>;
+}) {
+  const { locale, slug } = await params;
+  setRequestLocale(locale);
+
+  const match = findCategoryByPath(slug);
+  if (!match) notFound();
+
+  const leafSlugs = getLeafSlugsUnder(match.node);
+  const products = await getProductsByCategorySlugs(leafSlugs);
+
+  return (
+    <CategoryView
+      locale={locale as Locale}
+      trail={match.trail}
+      productNodes={products}
+    />
+  );
+}
+
+function CategoryView({
+  locale,
+  trail,
+  productNodes,
+}: {
+  locale: Locale;
+  trail: CategoryNode[];
+  productNodes: Product[];
+}) {
+  const tCat = useTranslations("Categories");
+  const t = useTranslations("Catalog");
+
+  // Build breadcrumbs: Home → ...ancestors → current.
+  const crumbs: Crumb[] = [{ label: t("home"), href: "/" }];
+  trail.forEach((node, i) => {
+    const href = `/category/${trail
+      .slice(0, i + 1)
+      .map((n) => n.slug)
+      .join("/")}`;
+    crumbs.push({ label: tCat(node.labelKey), href });
+  });
+
+  const current = trail[trail.length - 1];
+  const title = tCat(current.labelKey);
+
+  return (
+    <main className="mx-auto max-w-content px-4 pb-24 pt-8 sm:px-6 lg:px-8">
+      <Breadcrumbs items={crumbs} />
+
+      <header className="mt-6 border-b border-black/5 pb-8 text-center">
+        <h1 className="font-display text-4xl font-medium text-ink sm:text-5xl">
+          {title}
+        </h1>
+        <p className="mt-3 text-xs uppercase tracking-[0.2em] text-ink/50">
+          {t("count", { count: productNodes.length })}
+        </p>
+      </header>
+
+      {productNodes.length === 0 ? (
+        <p className="py-24 text-center text-ink/50">{t("empty")}</p>
+      ) : (
+        <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-3 xl:grid-cols-4">
+          {productNodes.map((product) => (
+            <ProductCard key={product.id} product={product} locale={locale} />
+          ))}
+        </div>
+      )}
+    </main>
+  );
+}

@@ -1,0 +1,92 @@
+{
+  "Brand": {
+    "name": "Elite Bloemen"
+  },
+  "Metadata": {
+    "brand": "Elite Bloemen",
+    "title": "Elite Bloemen — доставка свіжих квітів і букетів",
+    "description": "Elite Bloemen: свіжі букети, флористичні композиції, весільні та святкові квіти зі швидкою доставкою в Нідерландах. Замовляйте квіти онлайн на будь-яку нагоду.",
+    "keywords": "квіти, букети, доставка квітів, флорист, весільні квіти, Нідерланди"
+  },
+  "Home": {
+    "title": "Elite Bloemen",
+    "subtitle": "Свіжі квіти, букети та композиції",
+    "tagline": "Atelier · Нідерланди",
+    "shop_by_category": "Відкрийте наші колекції",
+    "featured_title": "Рекомендовані букети",
+    "view_all": "Дивитися все",
+    "cta": "Переглянути каталог"
+  },
+  "Catalog": {
+    "home": "Головна",
+    "count": "{count, plural, =0 {Немає товарів} one {# товар} few {# товари} many {# товарів} other {# товарів}}",
+    "sort_label": "Сортування",
+    "sort_newest": "Найновіші",
+    "sort_price_asc": "Ціна: за зростанням",
+    "sort_price_desc": "Ціна: за спаданням",
+    "empty": "У цій колекції поки немає товарів.",
+    "in_stock": "В наявності",
+    "out_of_stock": "Продано",
+    "all_prices": "Усі ціни",
+    "price_filter": "Ціна"
+  },
+  "Product": {
+    "composition": "Склад",
+    "kit_info": "Входить до складу",
+    "important_note": "Важливо",
+    "add_to_cart": "До кошика",
+    "out_of_stock": "Продано",
+    "from": "від",
+    "back": "Назад до каталогу",
+    "not_found": "Товар не знайдено"
+  },
+  "Footer": {
+    "tagline": "Декор для весіль та свят · арки, букети, композиції",
+    "collections": "Колекції",
+    "contact": "Контакти",
+    "follow": "Ми в соцмережах",
+    "rights": "Усі права захищено"
+  },
+  "Nav": {
+    "home": "Головна",
+    "catalog": "Каталог",
+    "cart": "Кошик",
+    "about": "Про нас",
+    "contact": "Контакти",
+    "menu": "Меню",
+    "close": "Закрити",
+    "language": "Мова"
+  },
+  "Categories": {
+    "bouquets": "Букети",
+    "mono_bouquets": "Монобукети",
+    "mixed_bouquets": "Збірні букети",
+    "author_bouquets": "Авторські букети",
+    "premium_bouquets": "Преміум-букети",
+    "mini_bouquets": "Міні-букети",
+    "arrangements": "Композиції",
+    "box_arrangements": "У коробках",
+    "basket_arrangements": "У кошиках",
+    "table_arrangements": "Настільні композиції",
+    "interior_arrangements": "Інтер'єрні композиції",
+    "wedding_floristry": "Весільна флористика",
+    "bridal_bouquet": "Букет нареченої",
+    "boutonnieres": "Бутоньєрки",
+    "hall_table_decor": "Оформлення залу та столів",
+    "floral_arches": "Квіткові арки",
+    "funeral": "Похоронні композиції",
+    "funeral_arrangement": "Траурна композиція",
+    "funeral_bouquet": "Траурний букет",
+    "funeral_ribbon": "Траурна стрічка",
+    "funeral_decor": "Декор",
+    "events": "Весілля та вечірки",
+    "weddings": "Весілля",
+    "wedding_portfolio": "Портфоліо",
+    "wedding_packages": "Пакети послуг і ціни",
+    "wedding_decor": "Весільний декор",
+    "parties": "Вечірки",
+    "party_portfolio": "Портфоліо",
+    "party_packages": "Пакети послуг і ціни",
+    "party_decor": "Декор для вечірки"
+  }
+}
