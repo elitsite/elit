@@ -24,8 +24,8 @@ export default function CategorySection({
   if (products.length === 0) return null;
 
   return (
-    <section className="mb-12 sm:mb-16">
-      <h2 className="mb-6 text-center font-display text-2xl font-medium text-ink sm:text-3xl">
+    <section className="mb-8 sm:mb-12">
+      <h2 className="mb-4 text-center font-display text-xl font-medium text-ink sm:mb-6 sm:text-2xl">
         {t(labelKey)}
       </h2>
 

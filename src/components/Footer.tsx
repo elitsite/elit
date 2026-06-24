@@ -7,11 +7,11 @@ export default function Footer() {
   const tNav = useTranslations("Nav");
 
   return (
-    <footer className="border-t border-black/5 bg-cream py-12 text-sm">
+    <footer className="border-t border-black/5 bg-cream py-10 text-sm sm:py-12">
       <div className="mx-auto max-w-content px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-8 text-center sm:grid-cols-2 sm:text-left lg:grid-cols-4">
           {/* Brand tagline */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             <h3 className="font-display text-xl font-medium text-ink">
               Elite Bloemen
             </h3>
@@ -20,7 +20,7 @@ export default function Footer() {
 
           {/* Collections */}
           <div>
-            <h4 className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-ink">
+            <h4 className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-ink sm:mb-4">
               {t("collections")}
             </h4>
             <ul className="space-y-2 text-ink/50">
@@ -45,7 +45,7 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-ink">
+            <h4 className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-ink sm:mb-4">
               {t("contact")}
             </h4>
             <ul className="space-y-2 text-ink/50">
@@ -70,10 +70,10 @@ export default function Footer() {
 
           {/* Social */}
           <div>
-            <h4 className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-ink">
+            <h4 className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-ink sm:mb-4">
               {t("follow")}
             </h4>
-            <div className="flex gap-4">
+            <div className="flex justify-center gap-4 sm:justify-start">
               <a
                 href="https://instagram.com"
                 target="_blank"
@@ -105,7 +105,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 border-t border-black/5 pt-8 text-center text-xs text-ink/40">
+        <div className="mt-10 border-t border-black/5 pt-6 text-center text-xs text-ink/40 sm:mt-12 sm:pt-8">
           <p>© {new Date().getFullYear()} Elite Bloemen. {t("rights")}.</p>
         </div>
       </div>

@@ -56,7 +56,7 @@ export default async function Home({
 
       {/* Category showcases */}
       <section className="mx-auto max-w-content px-4 pb-12 sm:px-6 sm:pb-24 lg:px-8">
-        <h2 className="mb-8 text-center font-display text-2xl font-medium text-ink sm:mb-12 sm:text-3xl lg:text-4xl">
+        <h2 className="mb-5 text-center font-display text-2xl font-medium text-ink sm:mb-8 sm:text-3xl lg:text-4xl">
           {t("shop_by_category")}
         </h2>
 

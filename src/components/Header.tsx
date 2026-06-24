@@ -110,7 +110,7 @@ export default function Header() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
               onClick={() => setMenuOpen(false)}
-              className="fixed inset-0 z-50 bg-ink/40 backdrop-blur-sm"
+              className="fixed inset-0 z-50 bg-ink/40"
             />
             <motion.aside
               initial={{ x: "-100%" }}
