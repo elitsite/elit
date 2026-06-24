@@ -38,7 +38,12 @@
     "out_of_stock": "Продано",
     "from": "від",
     "back": "Назад до каталогу",
-    "not_found": "Товар не знайдено"
+    "not_found": "Товар не знайдено",
+    "size": "Розмір",
+    "size_details": "Деталі розмірів",
+    "description_tab": "Опис",
+    "details_tab": "Деталі",
+    "similar": "Схожі букети"
   },
   "Cart": {
     "title": "Ваш кошик",

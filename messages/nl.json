@@ -38,7 +38,12 @@
     "out_of_stock": "Uitverkocht",
     "from": "vanaf",
     "back": "Terug naar catalogus",
-    "not_found": "Product niet gevonden"
+    "not_found": "Product niet gevonden",
+    "size": "Maat",
+    "size_details": "Maatdetails",
+    "description_tab": "Beschrijving",
+    "details_tab": "Details",
+    "similar": "Vergelijkbare boeketten"
   },
   "Cart": {
     "title": "Jouw winkelwagen",

@@ -80,7 +80,7 @@ export default function CartDrawer({ isOpen, onClose, onCheckout }: CartDrawerPr
                             const fp = finalPrice(item.price, item.discount);
                             return (
                                 <div
-                                    key={item.id}
+                                    key={`${item.id}-${item.selectedSize || 'default'}`}
                                     className="flex gap-3 bg-white rounded-2xl p-3 transition-all duration-200"
                                 >
                                     {/* Image */}
@@ -94,9 +94,15 @@ export default function CartDrawer({ isOpen, onClose, onCheckout }: CartDrawerPr
                                         />
                                     </div>
 
-                                    {/* Info */}
                                     <div className="flex-1 min-w-0">
-                                        <h4 className="font-display text-sm text-ink truncate">{item.name}</h4>
+                                        <h4 className="font-display text-sm text-ink truncate">
+                                            {item.name}
+                                            {item.selectedSize && (
+                                                <span className="ml-1.5 text-[10px] font-bold bg-ink/5 text-ink/60 px-1.5 py-0.5 rounded">
+                                                    {item.selectedSize}
+                                                </span>
+                                            )}
+                                        </h4>
                                         <div className="flex items-center gap-2 mt-1">
                                             <span className="text-sm font-semibold text-ink">
                                                 {formatEUR(fp)}
@@ -111,7 +117,7 @@ export default function CartDrawer({ isOpen, onClose, onCheckout }: CartDrawerPr
                                         {/* Quantity controls */}
                                         <div className="flex items-center gap-2 mt-2">
                                             <button
-                                                onClick={() => setQuantity(item.id, item.quantity - 1)}
+                                                onClick={() => setQuantity(item.id, item.quantity - 1, item.selectedSize)}
                                                 aria-label={t('decrease')}
                                                 className="w-7 h-7 flex items-center justify-center rounded-full bg-cream border border-black/10 hover:border-ink transition-colors"
                                             >
@@ -119,7 +125,7 @@ export default function CartDrawer({ isOpen, onClose, onCheckout }: CartDrawerPr
                                             </button>
                                             <span className="text-sm font-semibold w-6 text-center text-ink">{item.quantity}</span>
                                             <button
-                                                onClick={() => setQuantity(item.id, item.quantity + 1)}
+                                                onClick={() => setQuantity(item.id, item.quantity + 1, item.selectedSize)}
                                                 aria-label={t('increase')}
                                                 className="w-7 h-7 flex items-center justify-center rounded-full bg-cream border border-black/10 hover:border-ink transition-colors"
                                             >
@@ -131,7 +137,7 @@ export default function CartDrawer({ isOpen, onClose, onCheckout }: CartDrawerPr
                                     {/* Remove + Subtotal */}
                                     <div className="flex flex-col items-end justify-between">
                                         <button
-                                            onClick={() => removeItem(item.id)}
+                                            onClick={() => removeItem(item.id, item.selectedSize)}
                                             aria-label={t('remove')}
                                             className="p-1 hover:opacity-70 transition-opacity"
                                         >

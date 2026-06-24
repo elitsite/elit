@@ -13,6 +13,7 @@ type Props = {
   disabled?: boolean;
   label: string;
   soldOutLabel: string;
+  selectedSize?: string;
 };
 
 /** Add-to-cart action wired to the persistent cart store. */
@@ -25,6 +26,7 @@ export default function AddToCartButton({
   disabled = false,
   label,
   soldOutLabel,
+  selectedSize,
 }: Props) {
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
@@ -38,6 +40,7 @@ export default function AddToCartButton({
       price,
       discount,
       image_url: imageUrl,
+      selectedSize,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
@@ -48,7 +51,7 @@ export default function AddToCartButton({
       <button
         type="button"
         disabled
-        className="flex w-full cursor-not-allowed items-center justify-center gap-2 border border-ink/15 px-8 py-4 text-xs font-medium uppercase tracking-[0.2em] text-ink/40"
+        className="flex w-full cursor-not-allowed items-center justify-center gap-2 border border-ink/15 px-4 py-3 text-[11px] font-medium uppercase tracking-[0.15em] text-ink/40 sm:px-8 sm:py-4 sm:text-xs sm:tracking-[0.2em]"
       >
         {soldOutLabel}
       </button>
@@ -59,9 +62,9 @@ export default function AddToCartButton({
     <button
       type="button"
       onClick={handleClick}
-      className="flex w-full items-center justify-center gap-2 border border-ink bg-ink px-8 py-4 text-xs font-medium uppercase tracking-[0.2em] text-cream transition-colors hover:border-brand hover:bg-brand"
+      className="flex w-full items-center justify-center gap-2 border border-ink bg-ink px-4 py-3 text-[11px] font-medium uppercase tracking-[0.15em] text-cream transition-colors hover:border-brand hover:bg-brand sm:px-8 sm:py-4 sm:text-xs sm:tracking-[0.2em]"
     >
-      {added ? <Check size={16} /> : <ShoppingBag size={16} strokeWidth={1.5} />}
+      {added ? <Check size={14} /> : <ShoppingBag size={14} strokeWidth={1.5} />}
       {label}
     </button>
   );

@@ -6,6 +6,12 @@ const supabaseAnonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placehold
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Types
+export interface SizeVariant {
+    size: 'S' | 'M' | 'L';
+    price: number;
+    details: string; // e.g. "5 roses, eucalyptus"
+}
+
 export interface Product {
     id: string;
     name: string;
@@ -33,6 +39,10 @@ export interface Product {
     name_nl?: string;
     description_uk?: string;
     description_nl?: string;
+    // Size variants (optional, JSON arrays)
+    sizes?: SizeVariant[];       // EN details
+    sizes_uk?: SizeVariant[];    // UK details
+    sizes_nl?: SizeVariant[];    // NL details
 }
 
 export interface Settings {

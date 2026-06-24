@@ -97,3 +97,24 @@ export async function getEventPage(slug: string): Promise<EventPage | null> {
   }
   return (data as EventPage) ?? null;
 }
+
+/** Fetch similar products from the same category, excluding the given product. */
+export async function getSimilarProducts(
+  category: string,
+  excludeId: string,
+  limit = 8,
+): Promise<Product[]> {
+  const { data, error } = await supabase
+    .from(DB_TABLES.BOUQUETS_PUBLIC)
+    .select("*")
+    .eq("category", category)
+    .neq("id", excludeId)
+    .eq("in_stock", true)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) {
+    console.error("getSimilarProducts error:", error.message);
+    return [];
+  }
+  return (data ?? []) as Product[];
+}

@@ -82,6 +82,9 @@ export default function AdminPage() {
         important_note: '',
         important_note_uk: '',
         important_note_nl: '',
+        sizes: [] as Array<{size: string; price: string; details: string}>,
+        sizes_uk: [] as Array<{size: string; price: string; details: string}>,
+        sizes_nl: [] as Array<{size: string; price: string; details: string}>,
     });
     const [imagePreview, setImagePreview] = useState<string>('');
     const [imageFile, setImageFile] = useState<File | null>(null);
@@ -357,6 +360,10 @@ export default function AdminPage() {
                 // Important note translations
                 important_note_uk: productForm.important_note_uk || autoTrans.important_note?.uk || productForm.important_note || null,
                 important_note_nl: productForm.important_note_nl || autoTrans.important_note?.nl || null,
+                // Size variants
+                sizes: productForm.sizes.length > 0 ? productForm.sizes.map(s => ({ size: s.size, price: parseInt(s.price) || 0, details: s.details })) : null,
+                sizes_uk: productForm.sizes_uk.length > 0 ? productForm.sizes_uk.map(s => ({ size: s.size, price: parseInt(s.price) || 0, details: s.details })) : null,
+                sizes_nl: productForm.sizes_nl.length > 0 ? productForm.sizes_nl.map(s => ({ size: s.size, price: parseInt(s.price) || 0, details: s.details })) : null,
             };
             const method = editingProduct ? 'PUT' : 'POST';
             const body = editingProduct ? { id: editingProduct.id, ...productData } : productData;
@@ -402,6 +409,9 @@ export default function AdminPage() {
             important_note: product.important_note || '',
             important_note_uk: product.important_note_uk || '',
             important_note_nl: product.important_note_nl || '',
+            sizes: (product.sizes || []).map(s => ({ size: s.size, price: s.price.toString(), details: s.details || '' })),
+            sizes_uk: (product.sizes_uk || []).map(s => ({ size: s.size, price: s.price.toString(), details: s.details || '' })),
+            sizes_nl: (product.sizes_nl || []).map(s => ({ size: s.size, price: s.price.toString(), details: s.details || '' })),
         });
         setImagePreview(product.image_url);
         setShowProductForm(true);
@@ -431,6 +441,7 @@ export default function AdminPage() {
             composition: '', composition_uk: '', composition_nl: '',
             kit_info: '', kit_info_uk: '', kit_info_nl: '',
             important_note: '', important_note_uk: '', important_note_nl: '',
+            sizes: [], sizes_uk: [], sizes_nl: [],
         });
         setImagePreview('');
         setImageFile(null);
@@ -767,6 +778,63 @@ export default function AdminPage() {
                                                 </div>
                                             </div>
                                         </details>
+
+                                        {/* ── Size Variants (S / M / L) ── */}
+                                        <details className="border border-zinc-200 rounded-lg">
+                                            <summary className="px-4 py-3 cursor-pointer font-medium text-sm hover:bg-zinc-50 transition-colors">
+                                                📐 Sizes (S / M / L)
+                                            </summary>
+                                            <div className="px-4 pb-4 space-y-4">
+                                                {/* EN sizes */}
+                                                <div>
+                                                    <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">🇬🇧 EN — Sizes</h4>
+                                                    {productForm.sizes.map((s, i) => (
+                                                        <div key={`size-en-${i}`} className="flex gap-2 mb-2 items-center">
+                                                            <span className="text-sm font-bold w-8 text-center">{s.size}</span>
+                                                            <input type="number" value={s.price} onChange={e => { const arr = [...productForm.sizes]; arr[i] = {...arr[i], price: e.target.value}; setProductForm({...productForm, sizes: arr}); }} placeholder="Price €" className="w-24 px-2 py-1.5 border border-zinc-200 rounded text-sm" />
+                                                            <input type="text" value={s.details} onChange={e => { const arr = [...productForm.sizes]; arr[i] = {...arr[i], details: e.target.value}; setProductForm({...productForm, sizes: arr}); }} placeholder="Details (EN)" className="flex-1 px-2 py-1.5 border border-zinc-200 rounded text-sm" />
+                                                            <button type="button" onClick={() => { const arr = productForm.sizes.filter((_, j) => j !== i); setProductForm({...productForm, sizes: arr}); }} className="text-red-400 hover:text-red-600 text-lg">×</button>
+                                                        </div>
+                                                    ))}
+                                                    {productForm.sizes.length < 3 && (
+                                                        <button type="button" onClick={() => {
+                                                            const nextSize = (['S','M','L'] as const).find(s => !productForm.sizes.find(x => x.size === s)) || 'S';
+                                                            const add = (arr: typeof productForm.sizes) => [...arr, {size: nextSize, price: '', details: ''}];
+                                                            setProductForm({...productForm,
+                                                                sizes: add(productForm.sizes),
+                                                                sizes_uk: productForm.sizes_uk.length > 0 || productForm.sizes.length > 0 ? add(productForm.sizes_uk) : [],
+                                                                sizes_nl: productForm.sizes_nl.length > 0 || productForm.sizes.length > 0 ? add(productForm.sizes_nl) : [],
+                                                            });
+                                                        }} className="text-xs text-amber-600 hover:text-amber-700 font-medium">+ Add size</button>
+                                                    )}
+                                                </div>
+                                                {/* UK sizes */}
+                                                {productForm.sizes.length > 0 && (
+                                                    <div>
+                                                        <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">🇺🇦 UK — Size details</h4>
+                                                        {productForm.sizes_uk.map((s, i) => (
+                                                            <div key={`size-uk-${i}`} className="flex gap-2 mb-2 items-center">
+                                                                <span className="text-sm font-bold w-8 text-center">{s.size}</span>
+                                                                <input type="text" value={s.details} onChange={e => { const arr = [...productForm.sizes_uk]; arr[i] = {...arr[i], details: e.target.value}; setProductForm({...productForm, sizes_uk: arr}); }} placeholder="Деталі (UK)" className="flex-1 px-2 py-1.5 border border-zinc-200 rounded text-sm" />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                                {/* NL sizes */}
+                                                {productForm.sizes.length > 0 && (
+                                                    <div>
+                                                        <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">🇳🇱 NL — Size details</h4>
+                                                        {productForm.sizes_nl.map((s, i) => (
+                                                            <div key={`size-nl-${i}`} className="flex gap-2 mb-2 items-center">
+                                                                <span className="text-sm font-bold w-8 text-center">{s.size}</span>
+                                                                <input type="text" value={s.details} onChange={e => { const arr = [...productForm.sizes_nl]; arr[i] = {...arr[i], details: e.target.value}; setProductForm({...productForm, sizes_nl: arr}); }} placeholder="Details (NL)" className="flex-1 px-2 py-1.5 border border-zinc-200 rounded text-sm" />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </details>
+
                                         <label className="flex items-center gap-3 cursor-pointer">
                                             <input type="checkbox" checked={productForm.in_stock} onChange={(e) => setProductForm({ ...productForm, in_stock: e.target.checked })} className="w-5 h-5 accent-amber-500" />
                                             <span className="font-medium">{at.form_in_stock}</span>

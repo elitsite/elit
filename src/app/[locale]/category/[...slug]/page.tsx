@@ -140,7 +140,7 @@ function CategoryView({
       {productNodes.length === 0 ? (
         <p className="py-24 text-center text-ink/50">{t("empty")}</p>
       ) : (
-        <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-x-5 sm:gap-y-10 lg:grid-cols-3 xl:grid-cols-4">
           {productNodes.map((product) => (
             <ProductCard key={product.id} product={product} locale={locale} />
           ))}

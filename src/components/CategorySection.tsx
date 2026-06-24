@@ -42,14 +42,9 @@ export default function CategorySection({
         </Link>
       </div>
 
-      <div className="flex gap-5 overflow-x-auto pb-4 no-scrollbar sm:gap-6">
+      <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
         {products.map((product) => (
-          <div
-            key={product.id}
-            className="min-w-[calc(50%-10px)] flex-[0_0_auto] sm:min-w-[calc(33.333%-16px)] lg:min-w-[calc(25%-18px)]"
-          >
-            <ProductCard product={product} locale={locale} />
-          </div>
+          <ProductCard key={product.id} product={product} locale={locale} />
         ))}
       </div>
     </section>

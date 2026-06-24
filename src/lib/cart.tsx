@@ -24,15 +24,21 @@ export type CartItem = {
   discount: number;
   image_url: string;
   quantity: number;
+  selectedSize?: string; // 'S' | 'M' | 'L' or undefined
 };
+
+/** Unique cart key: product id + optional size */
+function cartKey(id: string, size?: string): string {
+  return size ? `${id}__${size}` : id;
+}
 
 type CartContextValue = {
   items: CartItem[];
   totalQuantity: number;
   subtotal: number;
   addItem: (item: Omit<CartItem, "quantity">, quantity?: number) => void;
-  removeItem: (id: string) => void;
-  setQuantity: (id: string, quantity: number) => void;
+  removeItem: (id: string, size?: string) => void;
+  setQuantity: (id: string, quantity: number, size?: string) => void;
   clear: () => void;
 };
 
@@ -93,24 +99,29 @@ export function CartProvider({ children }: { children: ReactNode }) {
       subtotal,
       addItem: (item, quantity = 1) =>
         setItems((prev) => {
-          const existing = prev.find((i) => i.id === item.id);
+          const key = cartKey(item.id, item.selectedSize);
+          const existing = prev.find((i) => cartKey(i.id, i.selectedSize) === key);
           if (existing) {
             return prev.map((i) =>
-              i.id === item.id
+              cartKey(i.id, i.selectedSize) === key
                 ? { ...i, quantity: clampQty(i.quantity + quantity) }
                 : i,
             );
           }
           return [...prev, { ...item, quantity: clampQty(quantity) }];
         }),
-      removeItem: (id) =>
-        setItems((prev) => prev.filter((i) => i.id !== id)),
-      setQuantity: (id, quantity) =>
-        setItems((prev) =>
-          prev.map((i) =>
-            i.id === id ? { ...i, quantity: clampQty(quantity) } : i,
-          ),
-        ),
+      removeItem: (id, size?: string) =>
+        setItems((prev) => {
+          const key = cartKey(id, size);
+          return prev.filter((i) => cartKey(i.id, i.selectedSize) !== key);
+        }),
+      setQuantity: (id, quantity, size?: string) =>
+        setItems((prev) => {
+          const key = cartKey(id, size);
+          return prev.map((i) =>
+            cartKey(i.id, i.selectedSize) === key ? { ...i, quantity: clampQty(quantity) } : i,
+          );
+        }),
       clear: () => setItems([]),
     };
   }, [items]);

@@ -6,7 +6,7 @@
  * active locale, falling back to the English base when a translation is empty.
  */
 import type { Locale } from "@/i18n/routing";
-import type { Product, Settings } from "@/lib/supabase";
+import type { Product, Settings, SizeVariant } from "@/lib/supabase";
 
 /** Pick a translated field with graceful fallback to the English base. */
 export function pickField(
@@ -29,6 +29,7 @@ export interface LocalizedProduct extends Product {
     composition: string;
     kit_info: string;
     important_note: string;
+    sizes: SizeVariant[];
   };
 }
 
@@ -38,6 +39,21 @@ export function localizeProduct(
   locale: Locale,
 ): LocalizedProduct {
   const row = product as unknown as Record<string, unknown>;
+
+  // Resolve sizes: pick locale-specific array, fallback to EN
+  let sizes: SizeVariant[] = [];
+  if (locale === "en") {
+    sizes = product.sizes || [];
+  } else {
+    const localized = locale === "uk" ? product.sizes_uk : product.sizes_nl;
+    // Use localized details but keep same size/price structure
+    if (localized && localized.length > 0) {
+      sizes = localized;
+    } else {
+      sizes = product.sizes || [];
+    }
+  }
+
   return {
     ...product,
     display: {
@@ -46,6 +62,7 @@ export function localizeProduct(
       composition: pickField(row, "composition", locale),
       kit_info: pickField(row, "kit_info", locale),
       important_note: pickField(row, "important_note", locale),
+      sizes,
     },
   };
 }

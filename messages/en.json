@@ -38,7 +38,12 @@
     "out_of_stock": "Sold out",
     "from": "from",
     "back": "Back to catalog",
-    "not_found": "Product not found"
+    "not_found": "Product not found",
+    "size": "Size",
+    "size_details": "Size details",
+    "description_tab": "Description",
+    "details_tab": "Details",
+    "similar": "Similar bouquets"
   },
   "Cart": {
     "title": "Your cart",

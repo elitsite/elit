@@ -1,17 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { useTranslations } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { type Locale } from "@/i18n/routing";
-import { getProductById } from "@/lib/products";
+import { getProductById, getSimilarProducts } from "@/lib/products";
 import {
   localizeProduct,
-  type LocalizedProduct,
 } from "@/lib/i18n-content";
 import { BRAND_NAME, buildLanguageAlternates, canonicalUrl } from "@/lib/site";
 import ProductGallery from "@/components/ProductGallery";
-import PriceTag from "@/components/PriceTag";
-import AddToCartButton from "@/components/AddToCartButton";
+import ProductDetails from "@/components/ProductDetails";
+import SimilarProducts from "@/components/SimilarProducts";
 
 export const revalidate = 300;
 
@@ -54,95 +52,24 @@ export default async function ProductPage({
   if (!product) notFound();
 
   const localized = localizeProduct(product, locale as Locale);
-  return <ProductView product={localized} />;
-}
 
-function ProductView({
-  product,
-}: {
-  product: LocalizedProduct;
-}) {
-  const t = useTranslations("Product");
+  // Fetch similar products from same category
+  const similar = await getSimilarProducts(product.category, product.id, 8);
+  const localizedSimilar = similar.map((p) => localizeProduct(p, locale as Locale));
 
   const gallery = [product.image_url, ...(product.extra_images ?? [])];
-  const soldOut = !product.in_stock;
-  const { composition, kit_info, important_note, description } = product.display;
 
   return (
-    <main className="mx-auto max-w-content px-4 pb-24 pt-8 sm:px-6 lg:px-8">
-      <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
-        <ProductGallery images={gallery} alt={product.display.name} />
-
-        <div className="lg:pt-4">
-          <h1 className="font-display text-3xl font-medium leading-tight text-ink sm:text-4xl">
-            {product.display.name}
-          </h1>
-
-          <div className="mt-5">
-            <PriceTag
-              price={product.price}
-              discount={product.discount}
-              className="text-2xl"
-            />
-          </div>
-
-          {description && (
-            <p className="mt-6 whitespace-pre-line leading-relaxed text-ink/70">
-              {description}
-            </p>
-          )}
-
-          <div className="mt-8 max-w-md">
-            <AddToCartButton
-              productId={product.id}
-              name={product.display.name}
-              price={product.price}
-              discount={product.discount}
-              imageUrl={product.image_url}
-              disabled={soldOut}
-              label={t("add_to_cart")}
-              soldOutLabel={t("out_of_stock")}
-            />
-          </div>
-
-          <div className="mt-10 space-y-6 border-t border-black/5 pt-8">
-            {composition && (
-              <Detail title={t("composition")}>{composition}</Detail>
-            )}
-            {kit_info && <Detail title={t("kit_info")}>{kit_info}</Detail>}
-            {important_note && (
-              <Detail title={t("important_note")} accent>
-                {important_note}
-              </Detail>
-            )}
-          </div>
-        </div>
+    <main className="mx-auto max-w-content px-4 pb-24 pt-4 sm:px-6 sm:pt-8 lg:px-8">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-16">
+        <ProductGallery images={gallery} alt={localized.display.name} />
+        <ProductDetails product={localized} />
       </div>
-    </main>
-  );
-}
 
-function Detail({
-  title,
-  children,
-  accent = false,
-}: {
-  title: string;
-  children: React.ReactNode;
-  accent?: boolean;
-}) {
-  return (
-    <section>
-      <h2 className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-brand-dark">
-        {title}
-      </h2>
-      <p
-        className={`whitespace-pre-line leading-relaxed ${
-          accent ? "text-ink" : "text-ink/70"
-        }`}
-      >
-        {children}
-      </p>
-    </section>
+      {/* Similar Products */}
+      {localizedSimilar.length > 0 && (
+        <SimilarProducts products={localizedSimilar} locale={locale as Locale} />
+      )}
+    </main>
   );
 }
