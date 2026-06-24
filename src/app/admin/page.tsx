@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { LogOut, Plus, Trash2, Edit, Package, Settings, Upload, X, Save, Store, Loader2, ClipboardList, Globe } from 'lucide-react';
-import { Product, Settings as SettingsType, Order, getScheduleOpen, getScheduleTime, setScheduleField, normalizePriceFilters, PriceFilter } from '@/lib/supabase';
+import { LogOut, Plus, Trash2, Edit, Package, Settings, Upload, X, Save, Store, Loader2, ClipboardList, Globe, Sparkles } from 'lucide-react';
+import { Product, Settings as SettingsType, Order, getScheduleOpen, getScheduleTime, setScheduleField, normalizePriceFilters, PriceFilter, EventContent } from '@/lib/supabase';
 import { AdminLang, adminTranslations, adminCategoryLabels } from '@/lib/adminTranslations';
 import { CATEGORY_TREE } from '@/lib/categories';
+import EventEditor from '@/components/EventEditor';
 
 // ── Category dropdown helpers (built from CATEGORY_TREE) ──
 type LeafOption = { slug: string; labelKey: string; prefixKey?: string };
@@ -36,7 +37,7 @@ export default function AdminPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [isTranslating, setIsTranslating] = useState(false);
-    const [activeTab, setActiveTab] = useState<'products' | 'settings' | 'orders'>('products');
+    const [activeTab, setActiveTab] = useState<'products' | 'settings' | 'orders' | 'events'>('products');
     const [orders, setOrders] = useState<Order[]>([]);
     const [ordersLoaded, setOrdersLoaded] = useState(false);
     const [notification, setNotification] = useState<{ message: string, type: string } | null>(null);
@@ -87,6 +88,11 @@ export default function AdminPage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [dbError, setDbError] = useState<string | null>(null);
 
+    // Event pages state
+    const [eventPages, setEventPages] = useState<Record<string, EventContent>>({});
+    const [eventsLoaded, setEventsLoaded] = useState(false);
+    const [activeEventSlug, setActiveEventSlug] = useState<'weddings' | 'parties'>('weddings');
+
     // Initial data load
     useEffect(() => {
         loadData();
@@ -105,8 +111,8 @@ export default function AdminPage() {
         }
 
         const savedTab = sessionStorage.getItem('admin-active-tab');
-        if (savedTab && (savedTab === 'products' || savedTab === 'settings' || savedTab === 'orders')) {
-            setActiveTab(savedTab as 'products' | 'settings' | 'orders');
+        if (savedTab && (savedTab === 'products' || savedTab === 'settings' || savedTab === 'orders' || savedTab === 'events')) {
+            setActiveTab(savedTab as 'products' | 'settings' | 'orders' | 'events');
         }
     }, []);
 
@@ -138,6 +144,23 @@ export default function AdminPage() {
                 .catch(() => showNotif(at.err_orders, 'error'));
         }
     }, [activeTab, ordersLoaded, router]);
+
+    useEffect(() => {
+        if (activeTab === 'events' && !eventsLoaded) {
+            setEventsLoaded(true);
+            fetch('/api/admin/event-pages')
+                .then(res => {
+                    if (res.status === 401) { router.push('/admin/login'); return []; }
+                    return res.ok ? res.json() : [];
+                })
+                .then((data: Array<{ slug: string; content: EventContent }>) => {
+                    const map: Record<string, EventContent> = {};
+                    for (const row of data) map[row.slug] = row.content;
+                    setEventPages(map);
+                })
+                .catch(() => showNotif(at.events_err_load, 'error'));
+        }
+    }, [activeTab, eventsLoaded, router]);
 
     const loadData = async () => {
         setIsLoading(true);
@@ -280,9 +303,6 @@ export default function AdminPage() {
         if (!editingProduct && !imageFile && !imagePreview) { showNotif(at.err_photo, 'error'); return; }
         setIsSaving(true);
         try {
-            let imageUrl = editingProduct?.image_url || '';
-            if (imageFile) imageUrl = await uploadImage(imageFile);
-
             // ── Auto-translate text fields (base = EN, plus uk/nl) ──
             const textsToTranslate: { key: string; value: string }[] = [];
             if (productForm.name) textsToTranslate.push({ key: 'name', value: productForm.name });
@@ -299,7 +319,15 @@ export default function AdminPage() {
                 }).then(r => r.ok ? r.json() : { translations: {} }).catch(() => ({ translations: {} }))
                 : Promise.resolve({ translations: {} });
 
-            const { translations: autoTrans } = await translatePromise;
+            // Run image upload and translation in parallel instead of sequentially.
+            const uploadPromise = imageFile
+                ? uploadImage(imageFile)
+                : Promise.resolve(editingProduct?.image_url || '');
+
+            const [imageUrl, { translations: autoTrans }] = await Promise.all([
+                uploadPromise,
+                translatePromise,
+            ]);
 
             const productData = {
                 // Base = English (fallback to original)
@@ -602,6 +630,13 @@ export default function AdminPage() {
                     >
                         <ClipboardList size={20} />
                         <span className="hidden sm:inline">{at.tab_orders}</span>
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('events')}
+                        className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-lg font-semibold transition-all ${activeTab === 'events' ? 'bg-amber-600 text-white' : 'bg-white text-zinc-700 hover:bg-amber-50'}`}
+                    >
+                        <Sparkles size={20} />
+                        <span className="hidden sm:inline">{at.tab_events}</span>
                     </button>
                 </div>
 
@@ -1105,6 +1140,53 @@ export default function AdminPage() {
                                 {at.btn_save_settings}
                             </button>
                         </div>
+                    </div>
+                )}
+
+                {/* Events Tab */}
+                {activeTab === 'events' && (
+                    <div className="space-y-6">
+                        {/* Sub-tabs: Weddings / Parties */}
+                        <div className="flex gap-2">
+                            {(['weddings', 'parties'] as const).map(es => (
+                                <button
+                                    key={es}
+                                    onClick={() => setActiveEventSlug(es)}
+                                    className={`px-4 sm:px-6 py-2.5 rounded-lg font-semibold transition-all ${activeEventSlug === es ? 'bg-amber-600 text-white' : 'bg-white text-zinc-700 hover:bg-amber-50'}`}
+                                >
+                                    {es === 'weddings' ? at.events_weddings : at.events_parties}
+                                </button>
+                            ))}
+                        </div>
+
+                        {eventPages[activeEventSlug] ? (
+                            <EventEditor
+                                key={activeEventSlug}
+                                slug={activeEventSlug}
+                                content={eventPages[activeEventSlug]}
+                                adminLang={adminLang}
+                                at={at}
+                                uploadImage={uploadImage}
+                                onSave={async (slug, content) => {
+                                    try {
+                                        const res = await fetch('/api/admin/event-pages', {
+                                            method: 'PUT',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ slug, content }),
+                                        });
+                                        if (!res.ok) throw new Error('Save failed');
+                                        setEventPages(prev => ({ ...prev, [slug]: content }));
+                                        showNotif(at.events_msg_saved, 'success');
+                                    } catch {
+                                        showNotif(at.events_err_save, 'error');
+                                    }
+                                }}
+                            />
+                        ) : (
+                            <div className="bg-white rounded-xl p-12 text-center text-zinc-400">
+                                <Loader2 className="animate-spin mx-auto" size={32} />
+                            </div>
+                        )}
                     </div>
                 )}
 

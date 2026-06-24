@@ -112,6 +112,10 @@ function ProductView({
           <div className="mt-8 max-w-md">
             <AddToCartButton
               productId={product.id}
+              name={product.display.name}
+              price={product.price}
+              discount={product.discount}
+              imageUrl={product.image_url}
               disabled={soldOut}
               label={t("add_to_cart")}
               soldOutLabel={t("out_of_stock")}

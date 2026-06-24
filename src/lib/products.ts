@@ -5,7 +5,7 @@
  * via the anon client. These functions are meant to be called from Server
  * Components / route handlers only.
  */
-import { supabase, type Product, type Settings } from "@/lib/supabase";
+import { supabase, type Product, type Settings, type EventPage } from "@/lib/supabase";
 import { DB_TABLES } from "@/lib/constants";
 
 const PRODUCT_LIMIT = 500;
@@ -82,4 +82,18 @@ export async function getAllProductIds(): Promise<string[]> {
     return [];
   }
   return (data ?? []).map((r) => (r as { id: string }).id);
+}
+
+/** Fetch a single event landing page by slug ('weddings' | 'parties'). */
+export async function getEventPage(slug: string): Promise<EventPage | null> {
+  const { data, error } = await supabase
+    .from(DB_TABLES.EVENT_PAGES_PUBLIC)
+    .select("*")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (error) {
+    console.error("getEventPage error:", error.message);
+    return null;
+  }
+  return (data as EventPage) ?? null;
 }

@@ -2,29 +2,41 @@
 
 import { useState } from "react";
 import { Check, ShoppingBag } from "lucide-react";
+import { useCart } from "@/lib/cart";
 
 type Props = {
   productId: string;
+  name: string;
+  price: number;
+  discount: number;
+  imageUrl: string;
   disabled?: boolean;
   label: string;
   soldOutLabel: string;
 };
 
-/**
- * Add-to-cart action. Cart persistence is wired in Step 6c; for now it gives
- * immediate visual feedback so the product page is fully interactive.
- */
+/** Add-to-cart action wired to the persistent cart store. */
 export default function AddToCartButton({
   productId,
+  name,
+  price,
+  discount,
+  imageUrl,
   disabled = false,
   label,
   soldOutLabel,
 }: Props) {
+  const { addItem } = useCart();
   const [added, setAdded] = useState(false);
 
   function handleClick() {
-    // TODO(6c): push to cart store / persistent storage.
-    void productId;
+    addItem({
+      id: productId,
+      name,
+      price,
+      discount,
+      image_url: imageUrl,
+    });
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
   }

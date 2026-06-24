@@ -15,6 +15,8 @@ import {
 } from "@/lib/site";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import { CartProvider } from "@/lib/cart";
 import "../globals.css";
 
 const geistSans = localFont({
@@ -137,9 +139,12 @@ export default async function LocaleLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <NextIntlClientProvider>
-          <Header />
-          {children}
-          <Footer />
+          <CartProvider>
+            <Header />
+            {children}
+            <Footer />
+            <WhatsAppButton />
+          </CartProvider>
         </NextIntlClientProvider>
       </body>
     </html>

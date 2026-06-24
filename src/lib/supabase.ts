@@ -187,3 +187,49 @@ export interface Order {
     payment_started_at?: string | null;
     payment_redirect_url?: string | null;
 }
+
+// ── Event Pages (weddings / parties landing) ──
+
+export interface LocalizedText {
+    en?: string;
+    uk?: string;
+    nl?: string;
+}
+
+export interface EventSection {
+    image: string;
+    title: LocalizedText;
+    text: LocalizedText;
+}
+
+export interface PortfolioItem {
+    image: string;
+    caption: LocalizedText;
+}
+
+export interface EventContent {
+    hero_image: string;
+    hero_title: LocalizedText;
+    hero_subtitle: LocalizedText;
+    intro_kicker: LocalizedText;
+    intro_title: LocalizedText;
+    intro_text: LocalizedText;
+    intro_button: LocalizedText;
+    media_image: string;
+    sections: EventSection[];
+    quote_image: string;
+    quote_kicker: LocalizedText;
+    quote_text: LocalizedText;
+    quote_author: LocalizedText;
+    portfolio_kicker: LocalizedText;
+    portfolio_title: LocalizedText;
+    portfolio: PortfolioItem[];
+    gallery: string[];
+    form_title: LocalizedText;
+}
+
+export interface EventPage {
+    slug: string;
+    content: EventContent;
+    updated_at: string;
+}

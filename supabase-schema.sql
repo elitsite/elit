@@ -358,6 +358,40 @@ FROM public.bouquets;
 GRANT SELECT ON public.bouquets_public TO anon, authenticated;
 
 
+-- ── event_pages (landing page content for weddings / parties) ──
+CREATE TABLE IF NOT EXISTS public.event_pages (
+    slug        TEXT        PRIMARY KEY,   -- 'weddings' | 'parties'
+    content     JSONB       NOT NULL DEFAULT '{}',
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+COMMENT ON TABLE  public.event_pages         IS 'CMS-driven landing pages for event categories (weddings, parties). Content is a structured JSONB blob with localized text fields.';
+COMMENT ON COLUMN public.event_pages.content IS 'Structured JSON: hero_image, hero_title{en,uk,nl}, intro, sections[], portfolio[], gallery[], quote, etc.';
+
+-- RLS
+ALTER TABLE public.event_pages ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public can read event_pages" ON public.event_pages;
+CREATE POLICY "Public can read event_pages"
+    ON public.event_pages FOR SELECT
+    TO anon, authenticated
+    USING (true);
+GRANT SELECT ON public.event_pages TO anon, authenticated;
+
+DROP POLICY IF EXISTS "Service role manages event_pages" ON public.event_pages;
+CREATE POLICY "Service role manages event_pages"
+    ON public.event_pages FOR ALL
+    USING (auth.role() = 'service_role');
+
+-- Public view
+CREATE OR REPLACE VIEW public.event_pages_public
+WITH (security_invoker = on) AS
+SELECT slug, content, updated_at
+FROM public.event_pages;
+
+GRANT SELECT ON public.event_pages_public TO anon, authenticated;
+
+
 -- ================================================================
 -- § 6  STORAGE BUCKET
 -- ================================================================
@@ -405,6 +439,11 @@ GRANT  EXECUTE ON FUNCTION public.run_elite_bloemen_migration() TO service_role;
 INSERT INTO public.settings (id, shop_name, hero_title, hero_subtitle)
 VALUES ('main', 'Elite Bloemen', 'Elite Bloemen', 'Fresh bouquets for special moments')
 ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.event_pages (slug, content) VALUES
+('weddings', '{"hero_image":"","hero_title":{"en":"","uk":"","nl":""},"hero_subtitle":{"en":"","uk":"","nl":""},"intro_kicker":{"en":"","uk":"","nl":""},"intro_title":{"en":"","uk":"","nl":""},"intro_text":{"en":"","uk":"","nl":""},"intro_button":{"en":"","uk":"","nl":""},"media_image":"","sections":[],"quote_image":"","quote_kicker":{"en":"","uk":"","nl":""},"quote_text":{"en":"","uk":"","nl":""},"quote_author":{"en":"","uk":"","nl":""},"portfolio_kicker":{"en":"","uk":"","nl":""},"portfolio_title":{"en":"","uk":"","nl":""},"portfolio":[],"gallery":[],"form_title":{"en":"","uk":"","nl":""}}'),
+('parties', '{"hero_image":"","hero_title":{"en":"","uk":"","nl":""},"hero_subtitle":{"en":"","uk":"","nl":""},"intro_kicker":{"en":"","uk":"","nl":""},"intro_title":{"en":"","uk":"","nl":""},"intro_text":{"en":"","uk":"","nl":""},"intro_button":{"en":"","uk":"","nl":""},"media_image":"","sections":[],"quote_image":"","quote_kicker":{"en":"","uk":"","nl":""},"quote_text":{"en":"","uk":"","nl":""},"quote_author":{"en":"","uk":"","nl":""},"portfolio_kicker":{"en":"","uk":"","nl":""},"portfolio_title":{"en":"","uk":"","nl":""},"portfolio":[],"gallery":[],"form_title":{"en":"","uk":"","nl":""}}')
+ON CONFLICT (slug) DO NOTHING;
 
 
 -- ================================================================

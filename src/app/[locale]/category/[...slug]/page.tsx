@@ -9,11 +9,12 @@ import {
   getLeafSlugsUnder,
   type CategoryNode,
 } from "@/lib/categories";
-import { getProductsByCategorySlugs } from "@/lib/products";
-import type { Product } from "@/lib/supabase";
+import { getProductsByCategorySlugs, getEventPage } from "@/lib/products";
+import type { Product, EventContent } from "@/lib/supabase";
 import { BRAND_NAME, buildLanguageAlternates, canonicalUrl } from "@/lib/site";
 import ProductCard from "@/components/ProductCard";
 import Breadcrumbs, { type Crumb } from "@/components/Breadcrumbs";
+import EventLanding from "@/components/EventLanding";
 
 export const revalidate = 300;
 
@@ -63,6 +64,23 @@ export default async function CategoryPage({
 
   const match = findCategoryByPath(slug);
   if (!match) notFound();
+
+  // Special-case: events/weddings and events/parties render a full landing page.
+  const slugPath = slug.join("/");
+  const isEventLanding = slugPath === "events/weddings" || slugPath === "events/parties";
+
+  if (isEventLanding) {
+    const eventSlug = slug[slug.length - 1]; // 'weddings' | 'parties'
+    const eventPage = await getEventPage(eventSlug);
+    const content = (eventPage?.content ?? {}) as EventContent;
+    return (
+      <EventLanding
+        content={content}
+        locale={locale as Locale}
+        slug={eventSlug}
+      />
+    );
+  }
 
   const leafSlugs = getLeafSlugsUnder(match.node);
   const products = await getProductsByCategorySlugs(leafSlugs);

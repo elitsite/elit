@@ -85,27 +85,30 @@ export async function POST(request: Request) {
 
         const results: Record<string, Record<string, string>> = {};
 
-        for (const { key, value } of texts) {
-            if (!value || !value.trim()) {
-                results[key] = { en: '', uk: '', nl: '' };
-                continue;
-            }
-
-            const sourceLang = detectSourceLang(value);
-            const translations: Record<string, string> = {};
-
-            // Translate to all target languages in parallel
-            const promises = TARGET_LANGS.map(async (lang) => {
-                if (lang === sourceLang) {
-                    translations[lang] = value;
-                } else {
-                    translations[lang] = await translateText(value, sourceLang, lang);
+        // Translate every field AND every target language fully in parallel.
+        // Previously fields ran sequentially (for...of), which serialized up to
+        // 5 external API round-trips and made saving slow.
+        await Promise.all(
+            texts.map(async ({ key, value }: { key: string; value: string }) => {
+                if (!value || !value.trim()) {
+                    results[key] = { en: '', uk: '', nl: '' };
+                    return;
                 }
-            });
 
-            await Promise.all(promises);
-            results[key] = translations;
-        }
+                const sourceLang = detectSourceLang(value);
+                const translations: Record<string, string> = {};
+
+                await Promise.all(
+                    TARGET_LANGS.map(async (lang) => {
+                        translations[lang] = lang === sourceLang
+                            ? value
+                            : await translateText(value, sourceLang, lang);
+                    }),
+                );
+
+                results[key] = translations;
+            }),
+        );
 
         return NextResponse.json({ translations: results }, { headers: NO_CACHE_HEADERS });
     } catch (err) {

@@ -42,6 +42,14 @@ body {
   }
 }
 
+@layer components {
+  /* Shared form input styling for the checkout/cart forms. */
+  .input {
+    @apply w-full border border-ink/15 bg-cream px-4 py-3 text-sm text-ink outline-none transition-colors;
+    @apply placeholder:text-ink/30 focus:border-brand;
+  }
+}
+
 /* Refined scrollbar for the menu drawer */
 .no-scrollbar::-webkit-scrollbar {
   display: none;

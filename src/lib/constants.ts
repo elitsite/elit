@@ -8,6 +8,8 @@ export const DB_TABLES = {
     SETTINGS: 'settings',
     SETTINGS_PUBLIC: 'settings_public',
     ORDERS: 'orders',
+    EVENT_PAGES: 'event_pages',
+    EVENT_PAGES_PUBLIC: 'event_pages_public',
 } as const;
 
 // Category hierarchy lives in `./categories` (single source of truth).

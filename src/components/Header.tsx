@@ -7,11 +7,13 @@ import { Menu, X, ShoppingBag } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "@/i18n/navigation";
 import { BRAND_NAME } from "@/lib/site";
+import { useCart } from "@/lib/cart";
 import LanguageSwitcher from "./LanguageSwitcher";
 import CategoryNav from "./CategoryNav";
 
 export default function Header() {
   const t = useTranslations("Nav");
+  const { totalQuantity } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -78,6 +80,11 @@ export default function Header() {
               className="relative rounded-full p-2 text-ink transition-colors hover:text-brand"
             >
               <ShoppingBag size={21} strokeWidth={1.5} />
+              {totalQuantity > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] font-semibold leading-none text-cream">
+                  {totalQuantity}
+                </span>
+              )}
             </Link>
           </div>
         </div>
