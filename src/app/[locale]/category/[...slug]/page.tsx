@@ -127,12 +127,12 @@ function CategoryView({
   const title = tCat(current.labelKey);
 
   return (
-    <main className="mx-auto max-w-content px-4 pb-24 pt-8 sm:px-6 lg:px-8">
-      <header className="mt-6 border-b border-black/5 pb-8 text-center">
-        <h1 className="font-display text-4xl font-medium text-ink sm:text-5xl">
+    <main className="mx-auto max-w-content px-4 pb-16 pt-4 sm:px-6 sm:pb-24 sm:pt-8 lg:px-8">
+      <header className="mt-4 border-b border-black/5 pb-6 text-center sm:mt-6 sm:pb-8">
+        <h1 className="font-display text-3xl font-medium text-ink sm:text-4xl lg:text-5xl">
           {title}
         </h1>
-        <p className="mt-3 text-xs uppercase tracking-[0.2em] text-ink/50">
+        <p className="mt-2 text-xs uppercase tracking-[0.2em] text-ink/50 sm:mt-3">
           {t("count", { count: productNodes.length })}
         </p>
       </header>

@@ -156,5 +156,13 @@
     "retry": "Opnieuw proberen",
     "go_home": "Terug naar home",
     "order_id": "Bestelling"
+  },
+  "Info": {
+    "delivery_title": "Bezorging",
+    "delivery_fee": "Bezorgkosten",
+    "pickup": "Afhalen",
+    "payment_title": "Betaling",
+    "schedule_title": "Openingstijden",
+    "contact_title": "Contact"
   }
 }

@@ -156,5 +156,13 @@
     "retry": "Try again",
     "go_home": "Back to home",
     "order_id": "Order"
+  },
+  "Info": {
+    "delivery_title": "Delivery",
+    "delivery_fee": "Delivery fee",
+    "pickup": "Pickup",
+    "payment_title": "Payment",
+    "schedule_title": "Working Hours",
+    "contact_title": "Contact Us"
   }
 }

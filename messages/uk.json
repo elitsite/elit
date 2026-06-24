@@ -156,5 +156,13 @@
     "retry": "Спробувати ще раз",
     "go_home": "На головну",
     "order_id": "Замовлення"
+  },
+  "Info": {
+    "delivery_title": "Доставка",
+    "delivery_fee": "Вартість доставки",
+    "pickup": "Самовивіз",
+    "payment_title": "Оплата",
+    "schedule_title": "Графік роботи",
+    "contact_title": "Контакти"
   }
 }

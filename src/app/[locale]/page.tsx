@@ -1,8 +1,10 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { type Locale } from "@/i18n/routing";
-import { getProductsByCategorySlugs } from "@/lib/products";
+import { getProductsByCategorySlugs, getSettings } from "@/lib/products";
+import { localizeSettings } from "@/lib/i18n-content";
 import CategorySection from "@/components/CategorySection";
+import HomeInfoSections from "@/components/HomeInfoSections";
 
 export default async function Home({
   params,
@@ -14,74 +16,77 @@ export default async function Home({
   const t = await getTranslations("Home");
   const nav = await getTranslations("Nav");
 
-  // Fetch featured products for a few key categories.
+  // Fetch data in parallel
   const [
     monoBouquets,
     mixedBouquets,
     boxArrangements,
     basketArrangements,
+    rawSettings,
   ] = await Promise.all([
     getProductsByCategorySlugs(["mono-bouquets"]),
     getProductsByCategorySlugs(["mixed-bouquets"]),
     getProductsByCategorySlugs(["box-arrangements"]),
     getProductsByCategorySlugs(["basket-arrangements"]),
+    getSettings(),
   ]);
+
+  const settings = rawSettings ? localizeSettings(rawSettings, locale) : null;
 
   return (
     <main>
-      {/* Hero */}
-      <section className="relative mx-auto flex min-h-[78vh] max-w-content flex-col items-center justify-center px-6 py-24 text-center">
-        <span className="mb-5 text-xs font-semibold uppercase tracking-[0.3em] text-brand">
+      {/* Hero — compact on mobile */}
+      <section className="relative mx-auto flex min-h-[55vh] max-w-content flex-col items-center justify-center px-6 py-16 text-center sm:min-h-[65vh] sm:py-24">
+        <span className="mb-4 text-[11px] font-semibold uppercase tracking-[0.3em] text-brand sm:mb-5 sm:text-xs">
           {t("tagline")}
         </span>
-        <h1 className="font-display text-5xl font-semibold leading-tight tracking-tight text-ink sm:text-6xl lg:text-7xl">
+        <h1 className="font-display text-4xl font-semibold leading-tight tracking-tight text-ink sm:text-5xl lg:text-7xl">
           {t("title")}
         </h1>
-        <p className="mt-6 max-w-xl text-balance text-lg text-ink/70">
+        <p className="mt-4 max-w-xl text-balance text-base text-ink/70 sm:mt-6 sm:text-lg">
           {t("subtitle")}
         </p>
         <Link
           href="/category/bouquets"
-          className="mt-10 inline-flex items-center border border-ink/30 px-9 py-4 text-xs font-medium uppercase tracking-[0.25em] text-ink transition-colors hover:border-brand hover:bg-brand hover:text-cream"
+          className="mt-8 inline-flex items-center border border-ink/30 px-7 py-3 text-[11px] font-medium uppercase tracking-[0.2em] text-ink transition-colors hover:border-brand hover:bg-brand hover:text-cream sm:mt-10 sm:px-9 sm:py-4 sm:text-xs sm:tracking-[0.25em]"
         >
           {nav("catalog")}
         </Link>
       </section>
 
       {/* Category showcases */}
-      <section className="mx-auto max-w-content px-4 pb-24 sm:px-6 lg:px-8">
-        <h2 className="mb-12 font-display text-3xl font-medium text-ink sm:text-4xl">
+      <section className="mx-auto max-w-content px-4 pb-12 sm:px-6 sm:pb-24 lg:px-8">
+        <h2 className="mb-8 text-center font-display text-2xl font-medium text-ink sm:mb-12 sm:text-3xl lg:text-4xl">
           {t("shop_by_category")}
         </h2>
 
         <CategorySection
           labelKey="mono_bouquets"
-          href="/category/bouquets/mono-bouquets"
           products={monoBouquets}
           locale={locale}
         />
 
         <CategorySection
           labelKey="mixed_bouquets"
-          href="/category/bouquets/mixed-bouquets"
           products={mixedBouquets}
           locale={locale}
         />
 
         <CategorySection
           labelKey="box_arrangements"
-          href="/category/arrangements/box-arrangements"
           products={boxArrangements}
           locale={locale}
         />
 
         <CategorySection
           labelKey="basket_arrangements"
-          href="/category/arrangements/basket-arrangements"
           products={basketArrangements}
           locale={locale}
         />
       </section>
+
+      {/* Delivery, Payment & Contact sections */}
+      {settings && <HomeInfoSections settings={settings} />}
     </main>
   );
 }
