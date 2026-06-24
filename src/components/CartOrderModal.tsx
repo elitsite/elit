@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Truck, Store, Clock, Loader2, AlertTriangle, Phone } from 'lucide-react';
+import { X, Truck, Store, Clock, Loader2, AlertTriangle } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useCart, finalPrice, type CartItem } from '@/lib/cart';
@@ -161,7 +161,7 @@ export default function CartOrderModal({ isOpen, onClose }: CartOrderModalProps)
                     <div>
                         <h2 className="text-lg font-bold text-ink">{t('checkout')}</h2>
                         <p className="text-xs text-ink/40">
-                            {fallbackState.show ? '' : `${t(('step' + step) as any) || `Step ${step}`} — ${step}/3`}
+                            {fallbackState.show ? '' : `${t(('step' + step) as 'step1' | 'step2' | 'step3') || `Step ${step}`} — ${step}/3`}
                         </p>
                     </div>
                     <button onClick={onClose} aria-label="Close" className="p-2 hover:bg-black/5 rounded-full transition-colors">

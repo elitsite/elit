@@ -336,7 +336,7 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                         const lt = { ...(next[key] as LocalizedText) };
                         if (!lt.uk?.trim() && translations[k].uk) lt.uk = translations[k].uk;
                         if (!lt.nl?.trim() && translations[k].nl) lt.nl = translations[k].nl;
-                        (next as any)[key] = lt;
+                        (next as Record<string, unknown>)[key] = lt;
                     }
                 }
 
@@ -372,7 +372,7 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                             items[i] = { ...items[i], caption: c };
                         }
                     });
-                    (next as any)[key] = items;
+                    (next as Record<string, unknown>)[key] = items;
                 });
 
                 return next;
