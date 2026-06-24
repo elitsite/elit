@@ -10,12 +10,16 @@ import { BRAND_NAME } from "@/lib/site";
 import { useCart } from "@/lib/cart";
 import LanguageSwitcher from "./LanguageSwitcher";
 import CategoryNav from "./CategoryNav";
+import CartDrawer from "./CartDrawer";
+import CartOrderModal from "./CartOrderModal";
 
 export default function Header() {
   const t = useTranslations("Nav");
   const { totalQuantity } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [orderOpen, setOrderOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -24,13 +28,18 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Lock body scroll while the drawer is open.
+  // Lock body scroll while the menu drawer is open.
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
   }, [menuOpen]);
+
+  const handleCheckout = () => {
+    setCartOpen(false);
+    setOrderOpen(true);
+  };
 
   return (
     <>
@@ -74,8 +83,9 @@ export default function Header() {
           {/* Right: language + cart */}
           <div className="flex items-center gap-2 sm:gap-3">
             <LanguageSwitcher />
-            <Link
-              href="/cart"
+            <button
+              type="button"
+              onClick={() => setCartOpen(true)}
               aria-label={t("cart")}
               className="relative rounded-full p-2 text-ink transition-colors hover:text-brand"
             >
@@ -85,12 +95,12 @@ export default function Header() {
                   {totalQuantity}
                 </span>
               )}
-            </Link>
+            </button>
           </div>
         </div>
       </header>
 
-      {/* Drawer menu */}
+      {/* Catalog menu drawer */}
       <AnimatePresence>
         {menuOpen && (
           <>
@@ -129,6 +139,19 @@ export default function Header() {
           </>
         )}
       </AnimatePresence>
+
+      {/* Cart drawer */}
+      <CartDrawer
+        isOpen={cartOpen}
+        onClose={() => setCartOpen(false)}
+        onCheckout={handleCheckout}
+      />
+
+      {/* Order modal */}
+      <CartOrderModal
+        isOpen={orderOpen}
+        onClose={() => setOrderOpen(false)}
+      />
     </>
   );
 }
