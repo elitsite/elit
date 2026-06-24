@@ -6,6 +6,7 @@ import { assertSameOrigin, checkLimitAsync, getClientIp, NO_CACHE_HEADERS, type 
 import { DB_TABLES } from '@/lib/constants';
 import { createHash } from 'crypto';
 import { sendOrderTelegram } from '@/lib/telegram';
+import { createPayment, getOrderStatus, mapGatewayStatus, sendPaymentTelegram } from '@/lib/paymentGateway';
 
 // Rate limiting: 5 new cart orders per IP per 10 minutes (applied AFTER dedup)
 const cartOrderAttempts = new Map<string, RateLimitRecord>();
@@ -29,9 +30,12 @@ function computeItemsFingerprint(items: { id: string; quantity: number }[]): str
 }
 
 /**
- * NOTE: Payment is intentionally DECOUPLED.
- * Orders are stored with status 'new' and the shop is notified via Telegram.
- * A payment provider (new bank) will be integrated later.
+ * Cart order + payment gateway integration.
+ * 1. Validate & verify items server-side
+ * 2. Dedup within 2-min window (check payment status on existing)
+ * 3. Insert order with payment_status='pending'
+ * 4. Create payment order via gateway → return redirectUrl
+ * 5. Fallback: if gateway unavailable, order still created (fallback:true)
  */
 export async function POST(request: Request) {
     try {
@@ -134,7 +138,7 @@ export async function POST(request: Request) {
 
         let dedupeQuery = supabaseAdmin
             .from(DB_TABLES.ORDERS)
-            .select('id, items, created_at')
+            .select('id, items, created_at, payment_id, payment_status, payment_redirect_url')
             .eq('customer_phone', order.phone)
             .eq('order_type', 'cart')
             .eq('delivery_type', order.deliveryType)
@@ -166,7 +170,9 @@ export async function POST(request: Request) {
             console.error('Cart dedup check failed:', dedupeError);
         }
 
-        // ── Return existing duplicate without creating a new order ──
+        // ── Check for existing duplicate ──
+        let existingOrder: { id: string; payment_id: string | null; payment_status: string | null; payment_redirect_url: string | null } | null = null;
+
         if (existingOrders && existingOrders.length > 0) {
             for (const existing of existingOrders) {
                 try {
@@ -175,16 +181,113 @@ export async function POST(request: Request) {
                             existing.items.map((i: { id: string; quantity: number }) => ({ id: i.id, quantity: i.quantity }))
                         );
                         if (existingFP === fingerprint) {
-                            return NextResponse.json(
-                                { orderId: existing.id, success: true, duplicate: true },
-                                { status: 200, headers: NO_CACHE_HEADERS }
-                            );
+                            existingOrder = {
+                                id: existing.id,
+                                payment_id: existing.payment_id,
+                                payment_status: existing.payment_status,
+                                payment_redirect_url: existing.payment_redirect_url ?? null,
+                            };
+                            break;
                         }
                     }
                 } catch {
                     // Corrupted items JSON — skip
                 }
             }
+        }
+
+        // ── Branch: existing order found ──
+        if (existingOrder) {
+            const { id: orderId, payment_id, payment_status } = existingOrder;
+
+            // Already paid
+            if (payment_status === 'paid') {
+                return NextResponse.json(
+                    { orderId, alreadyPaid: true },
+                    { status: 200, headers: NO_CACHE_HEADERS }
+                );
+            }
+
+            // Pending with payment_id → check gateway status
+            if (payment_status === 'pending' && payment_id) {
+                try {
+                    const receipt = await getOrderStatus(payment_id);
+                    const { status: mappedStatus, paymentMethodUsed } = mapGatewayStatus(receipt);
+
+                    if (mappedStatus === 'paid') {
+                        await supabaseAdmin
+                            .from(DB_TABLES.ORDERS)
+                            .update({
+                                payment_status: 'paid',
+                                paid_at: new Date().toISOString(),
+                                payment_method_used: paymentMethodUsed,
+                            })
+                            .eq('id', orderId);
+
+                        return NextResponse.json(
+                            { orderId, alreadyPaid: true },
+                            { status: 200, headers: NO_CACHE_HEADERS }
+                        );
+                    }
+
+                    if (mappedStatus === 'pending' && existingOrder.payment_redirect_url) {
+                        return NextResponse.json(
+                            { orderId, redirectUrl: existingOrder.payment_redirect_url },
+                            { status: 200, headers: NO_CACHE_HEADERS }
+                        );
+                    }
+
+                    // failed/expired → reset and create new payment
+                    await supabaseAdmin
+                        .from(DB_TABLES.ORDERS)
+                        .update({
+                            payment_status: 'pending',
+                            payment_id: null,
+                            payment_error: null,
+                            paid_at: null,
+                            payment_method_used: null,
+                            payment_started_at: null,
+                            payment_redirect_url: null,
+                        })
+                        .eq('id', orderId);
+
+                } catch (receiptErr) {
+                    console.error('Payment status check failed during dedup:', receiptErr instanceof Error ? receiptErr.message : receiptErr);
+                    if (existingOrder.payment_redirect_url) {
+                        return NextResponse.json(
+                            { orderId, redirectUrl: existingOrder.payment_redirect_url },
+                            { status: 200, headers: NO_CACHE_HEADERS }
+                        );
+                    }
+                }
+            }
+
+            // Failed/expired → reset payment fields, create new payment
+            if (['failed', 'expired', 'bank_unavailable'].includes(payment_status || '')) {
+                await supabaseAdmin
+                    .from(DB_TABLES.ORDERS)
+                    .update({
+                        payment_status: 'pending',
+                        payment_id: null,
+                        payment_error: null,
+                        paid_at: null,
+                        payment_method_used: null,
+                        payment_started_at: null,
+                        payment_redirect_url: null,
+                    })
+                    .eq('id', orderId);
+            }
+
+            // sync_error → do NOT auto-retry
+            if (payment_status === 'sync_error') {
+                return NextResponse.json(
+                    { orderId, fallback: true, errorType: 'sync_error' },
+                    { status: 200, headers: NO_CACHE_HEADERS }
+                );
+            }
+
+            // ── Create new payment for existing DB order ──
+            return await createPaymentAndRespond(orderId, serverTotal, verifiedItems, deliveryFee, itemsSubtotal, order, request);
         }
 
         // ── Rate limit AFTER dedup (only for genuinely new orders) ──
@@ -197,7 +300,7 @@ export async function POST(request: Request) {
             );
         }
 
-        // ── Insert new order (status defaults to 'new') ──
+        // ── Insert new order with payment_status='pending' ──
         const dbRecord = {
             customer_name: order.name,
             customer_phone: order.phone,
@@ -214,6 +317,8 @@ export async function POST(request: Request) {
             items_subtotal: itemsSubtotal,
             delivery_fee: deliveryFee,
             consent_at: consentAt,
+            payment_status: 'pending',
+            payment_id: null,
         };
 
         const { data: insertedOrder, error: insertError } = await supabaseAdmin
@@ -244,10 +349,8 @@ export async function POST(request: Request) {
             comment: order.comment,
         });
 
-        return NextResponse.json(
-            { orderId: insertedOrder.id, success: true },
-            { status: 200, headers: NO_CACHE_HEADERS }
-        );
+        // ── Create payment order via gateway ──
+        return await createPaymentAndRespond(insertedOrder.id, serverTotal, verifiedItems, deliveryFee, itemsSubtotal, order, request);
 
     } catch (error) {
         if (error instanceof z.ZodError) {
@@ -258,5 +361,128 @@ export async function POST(request: Request) {
         }
         console.error('Cart order error:', error instanceof Error ? error.message : error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500, headers: NO_CACHE_HEADERS });
+    }
+}
+
+// ── Helper: Create payment order and respond ───────────────────────────
+
+async function createPaymentAndRespond(
+    orderId: string,
+    serverTotal: number,
+    verifiedItems: { id: string; name: string; finalPrice: number; quantity: number }[],
+    deliveryFee: number,
+    itemsSubtotal: number,
+    order: { name: string; phone: string; deliveryType: string; address?: string | null; specificTime?: string | null; comment?: string | null },
+    request: Request,
+): Promise<NextResponse> {
+    const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
+
+    // Determine language from accept-language header
+    const acceptLang = request.headers.get('accept-language') || '';
+    const payLang: 'en' | 'uk' | 'nl' = acceptLang.startsWith('uk') ? 'uk' : acceptLang.startsWith('nl') ? 'nl' : 'en';
+
+    const orderDesc = `Elite Bloemen order ${orderId.slice(0, 8)}`;
+    const itemsSummary = verifiedItems.map(i => `${i.name} ×${i.quantity}`).join(', ');
+
+    // Check if payment gateway is configured
+    const merchantId = process.env.PAYMENT_MERCHANT_ID;
+    const secretKey = process.env.PAYMENT_SECRET_KEY;
+
+    if (!merchantId || !secretKey) {
+        // Payment gateway not configured — order saved, but no online payment
+        console.log('[cart-order] Payment gateway not configured — order saved without online payment');
+        return NextResponse.json(
+            { orderId, fallback: true, errorType: 'not_configured' },
+            { status: 200, headers: NO_CACHE_HEADERS }
+        );
+    }
+
+    try {
+        const { paymentId, redirectUrl } = await createPayment({
+            orderId,
+            totalAmount: serverTotal,
+            orderDesc,
+            callbackUrl: `${siteUrl}/api/payment/callback`,
+            returnUrl: `${siteUrl}/api/payment/return?orderId=${orderId}`,
+            lang: payLang,
+        });
+
+        // ── UPDATE payment_id (atomic step) ──
+        const { error: updateErr } = await supabaseAdmin
+            .from(DB_TABLES.ORDERS)
+            .update({
+                payment_id: paymentId,
+                payment_started_at: new Date().toISOString(),
+                payment_redirect_url: redirectUrl,
+            })
+            .eq('id', orderId);
+
+        if (updateErr) {
+            console.error('SYNC_ERROR: Payment created but DB update failed:', updateErr.message);
+
+            await supabaseAdmin
+                .from(DB_TABLES.ORDERS)
+                .update({
+                    payment_status: 'sync_error',
+                    payment_error: `sync_error: DB update failed, payment_id=${paymentId}`,
+                })
+                .eq('id', orderId);
+
+            await sendPaymentTelegram(orderId, 'sync_error', {
+                totalAmount: serverTotal,
+                customerName: order.name,
+                customerPhone: order.phone,
+                itemsSummary,
+                itemsSubtotal,
+                deliveryFee,
+                deliveryType: order.deliveryType,
+                address: order.address,
+                specificTime: order.specificTime,
+                comment: order.comment,
+                error: `DB update failed, payment_id=${paymentId}`,
+            }).catch((err) => console.error('Telegram fallback failed:', err));
+
+            return NextResponse.json(
+                { orderId, fallback: true, errorType: 'sync_error' },
+                { status: 200, headers: NO_CACHE_HEADERS }
+            );
+        }
+
+        return NextResponse.json(
+            { orderId, redirectUrl },
+            { status: 200, headers: NO_CACHE_HEADERS }
+        );
+
+    } catch (payErr) {
+        // bank_unavailable: payment creation failed
+        const errorMsg = payErr instanceof Error ? payErr.message : 'Unknown payment error';
+        console.error('Payment creation failed:', errorMsg);
+
+        await supabaseAdmin
+            .from(DB_TABLES.ORDERS)
+            .update({
+                payment_status: 'bank_unavailable',
+                payment_error: `bank_unavailable: ${errorMsg.slice(0, 500)}`,
+            })
+            .eq('id', orderId);
+
+        await sendPaymentTelegram(orderId, 'bank_unavailable', {
+            totalAmount: serverTotal,
+            customerName: order.name,
+            customerPhone: order.phone,
+            itemsSummary,
+            itemsSubtotal,
+            deliveryFee,
+            deliveryType: order.deliveryType,
+            address: order.address,
+            specificTime: order.specificTime,
+            comment: order.comment,
+            error: errorMsg.slice(0, 200),
+        }).catch((err) => console.error('Telegram fallback failed:', err));
+
+        return NextResponse.json(
+            { orderId, fallback: true },
+            { status: 200, headers: NO_CACHE_HEADERS }
+        );
     }
 }

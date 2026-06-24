@@ -29,7 +29,9 @@ export default function AddToCartButton({
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
 
-  function handleClick() {
+  function handleClick(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
     addItem({
       id: productId,
       name,

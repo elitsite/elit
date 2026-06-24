@@ -84,6 +84,23 @@ export default function CartPage() {
         return;
       }
 
+      // If payment gateway returned a redirect URL, redirect to checkout
+      if (data.redirectUrl) {
+        clear();
+        setForm(initialForm);
+        window.location.href = data.redirectUrl;
+        return;
+      }
+
+      // If already paid (dedup hit), show success
+      if (data.alreadyPaid) {
+        setOrderId(data.orderId || "");
+        clear();
+        setForm(initialForm);
+        return;
+      }
+
+      // Fallback (gateway not configured or unavailable) — order saved, show success
       setOrderId(data.orderId || "");
       clear();
       setForm(initialForm);

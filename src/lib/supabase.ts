@@ -224,6 +224,12 @@ export interface EventContent {
     portfolio_kicker: LocalizedText;
     portfolio_title: LocalizedText;
     portfolio: PortfolioItem[];
+    packages_kicker: LocalizedText;
+    packages_title: LocalizedText;
+    packages: PortfolioItem[];
+    decor_kicker: LocalizedText;
+    decor_title: LocalizedText;
+    decor: PortfolioItem[];
     gallery: string[];
     form_title: LocalizedText;
 }

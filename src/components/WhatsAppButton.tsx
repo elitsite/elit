@@ -2,17 +2,28 @@ import { getSettings } from "@/lib/products";
 
 /**
  * Floating WhatsApp contact button shown in the bottom-right corner across the
- * public storefront. The link is managed from the admin panel (settings.whatsapp_link).
- * Renders nothing when no link is configured.
+ * public storefront. Uses settings.whatsapp_link if configured, otherwise
+ * falls back to the phone number to build a wa.me link.
  */
 export default async function WhatsAppButton() {
   const settings = await getSettings();
   const link = settings?.whatsapp_link?.trim();
-  if (!link) return null;
+
+  // Fallback: build wa.me link from phone number if no direct link configured
+  let href = link;
+  if (!href) {
+    const phone = settings?.phone?.trim() || "";
+    if (phone) {
+      const digits = phone.replace(/[^\d]/g, "");
+      href = `https://wa.me/${digits}`;
+    }
+  }
+
+  if (!href) return null;
 
   return (
     <a
-      href={link}
+      href={href}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="WhatsApp"

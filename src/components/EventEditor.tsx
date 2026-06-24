@@ -21,6 +21,10 @@ const emptyContent: EventContent = {
     quote_image: '', quote_kicker: {}, quote_text: {}, quote_author: {},
     portfolio_kicker: {}, portfolio_title: {},
     portfolio: [],
+    packages_kicker: {}, packages_title: {},
+    packages: [],
+    decor_kicker: {}, decor_title: {},
+    decor: [],
     gallery: [],
     form_title: {},
 };
@@ -84,26 +88,26 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
         setField('sections', sections);
     };
 
-    // ── Portfolio array helpers ──
-    const addPortfolio = () => {
+    // ── Generic items array helpers (portfolio / packages / decor) ──
+    const addItem = (key: 'portfolio' | 'packages' | 'decor') => {
         const item: PortfolioItem = { image: '', caption: {} };
-        setField('portfolio', [...(content.portfolio || []), item]);
+        setField(key, [...(content[key] || []), item]);
     };
 
-    const updatePortfolio = (i: number, field: keyof PortfolioItem, value: string | LocalizedText) => {
-        const portfolio = [...(content.portfolio || [])];
-        portfolio[i] = { ...portfolio[i], [field]: value };
-        setField('portfolio', portfolio);
+    const updateItem = (key: 'portfolio' | 'packages' | 'decor', i: number, field: keyof PortfolioItem, value: string | LocalizedText) => {
+        const items = [...(content[key] || [])];
+        items[i] = { ...items[i], [field]: value };
+        setField(key, items);
     };
 
-    const removePortfolio = (i: number) => {
-        setField('portfolio', (content.portfolio || []).filter((_, idx) => idx !== i));
+    const removeItem = (key: 'portfolio' | 'packages' | 'decor', i: number) => {
+        setField(key, (content[key] || []).filter((_, idx) => idx !== i));
     };
 
-    const setPortfolioLocalized = (i: number, lang: 'en' | 'uk' | 'nl', value: string) => {
-        const portfolio = [...(content.portfolio || [])];
-        portfolio[i] = { ...portfolio[i], caption: { ...portfolio[i].caption, [lang]: value } };
-        setField('portfolio', portfolio);
+    const setItemLocalized = (key: 'portfolio' | 'packages' | 'decor', i: number, lang: 'en' | 'uk' | 'nl', value: string) => {
+        const items = [...(content[key] || [])];
+        items[i] = { ...items[i], caption: { ...items[i].caption, [lang]: value } };
+        setField(key, items);
     };
 
     // ── Gallery helpers ──
@@ -177,11 +181,85 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
         );
     };
 
+    // ── Section divider ──
+    const SectionHeader = ({ title }: { title: string }) => (
+        <div className="flex items-center gap-3 pt-2">
+            <div className="h-px flex-1 bg-zinc-300" />
+            <span className="text-xs font-bold uppercase tracking-widest text-zinc-400">{title}</span>
+            <div className="h-px flex-1 bg-zinc-300" />
+        </div>
+    );
+
+    // ── Items editor (portfolio / packages / decor) ──
+    const ItemsEditor = ({
+        itemKey,
+        titleLabel,
+        kickerKey,
+        titleKey,
+        kickerLabel,
+        titleFieldLabel,
+        addLabel,
+        imageLabel,
+        captionLabel,
+    }: {
+        itemKey: 'portfolio' | 'packages' | 'decor';
+        titleLabel: string;
+        kickerKey: keyof EventContent;
+        titleKey: keyof EventContent;
+        kickerLabel: string;
+        titleFieldLabel: string;
+        addLabel: string;
+        imageLabel: string;
+        captionLabel: string;
+    }) => (
+        <div className={cardClass}>
+            <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold">{titleLabel}</h3>
+                <button onClick={() => addItem(itemKey)} className="flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                    <Plus size={16} /> {addLabel}
+                </button>
+            </div>
+            <div className="space-y-3 mb-4">
+                <LangInputs label={kickerLabel} fieldKey={kickerKey} />
+                <LangInputs label={titleFieldLabel} fieldKey={titleKey} />
+            </div>
+            <div className="space-y-6">
+                {(content[itemKey] || []).map((item, i) => (
+                    <div key={i} className="border border-zinc-200 rounded-lg p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-zinc-500">#{i + 1}</span>
+                            <button onClick={() => removeItem(itemKey, i)} className="text-red-500 hover:text-red-600">
+                                <Trash2 size={16} />
+                            </button>
+                        </div>
+                        <ImageUpload url={item.image} onUpload={url => updateItem(itemKey, i, 'image', url)} label={imageLabel} />
+                        <div>
+                            <label className="block text-sm font-medium mb-1">{captionLabel}</label>
+                            <div className="space-y-2">
+                                {(['en', 'uk', 'nl'] as const).map(lang => (
+                                    <input
+                                        key={lang}
+                                        type="text"
+                                        value={item.caption?.[lang] || ''}
+                                        onChange={e => setItemLocalized(itemKey, i, lang, e.target.value)}
+                                        placeholder={at[`events_lang_${lang}`]}
+                                        className="w-full px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:border-amber-500 focus:outline-none"
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+
     const cardClass = "bg-white rounded-xl p-3 sm:p-6 shadow-lg";
 
     return (
         <div className="space-y-6">
-            {/* Hero */}
+            {/* ── Hero Section ── */}
+            <SectionHeader title="Hero Section" />
             <div className={cardClass}>
                 <h3 className="text-lg font-bold mb-4">{at.events_hero}</h3>
                 <div className="space-y-4">
@@ -191,7 +269,8 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                 </div>
             </div>
 
-            {/* Intro */}
+            {/* ── Intro Section ── */}
+            <SectionHeader title="Intro Section" />
             <div className={cardClass}>
                 <h3 className="text-lg font-bold mb-4">{at.events_intro}</h3>
                 <div className="space-y-4">
@@ -202,13 +281,15 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                 </div>
             </div>
 
-            {/* Media */}
+            {/* ── Media Section ── */}
+            <SectionHeader title="Media Section" />
             <div className={cardClass}>
                 <h3 className="text-lg font-bold mb-4">{at.events_media}</h3>
                 <ImageUpload url={content.media_image || ''} onUpload={url => setField('media_image', url)} label={at.events_media_image} />
             </div>
 
-            {/* Sections */}
+            {/* ── Framed Sections ── */}
+            <SectionHeader title="Framed Sections" />
             <div className={cardClass}>
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-bold">{at.events_sections}</h3>
@@ -261,7 +342,8 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                 </div>
             </div>
 
-            {/* Quote */}
+            {/* ── Quote Section ── */}
+            <SectionHeader title="Quote Section" />
             <div className={cardClass}>
                 <h3 className="text-lg font-bold mb-4">{at.events_quote}</h3>
                 <div className="space-y-4">
@@ -272,49 +354,50 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                 </div>
             </div>
 
-            {/* Portfolio */}
-            <div className={cardClass}>
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold">{at.events_portfolio}</h3>
-                    <button onClick={addPortfolio} className="flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
-                        <Plus size={16} /> {at.events_add_portfolio}
-                    </button>
-                </div>
-                <div className="space-y-3 mb-4">
-                    <LangInputs label={at.events_portfolio_kicker} fieldKey="portfolio_kicker" />
-                    <LangInputs label={at.events_portfolio_title} fieldKey="portfolio_title" />
-                </div>
-                <div className="space-y-6">
-                    {(content.portfolio || []).map((item, i) => (
-                        <div key={i} className="border border-zinc-200 rounded-lg p-4 space-y-3">
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium text-zinc-500">#{i + 1}</span>
-                                <button onClick={() => removePortfolio(i)} className="text-red-500 hover:text-red-600">
-                                    <Trash2 size={16} />
-                                </button>
-                            </div>
-                            <ImageUpload url={item.image} onUpload={url => updatePortfolio(i, 'image', url)} label={at.events_portfolio_image} />
-                            <div>
-                                <label className="block text-sm font-medium mb-1">{at.events_portfolio_caption}</label>
-                                <div className="space-y-2">
-                                    {(['en', 'uk', 'nl'] as const).map(lang => (
-                                        <input
-                                            key={lang}
-                                            type="text"
-                                            value={item.caption?.[lang] || ''}
-                                            onChange={e => setPortfolioLocalized(i, lang, e.target.value)}
-                                            placeholder={at[`events_lang_${lang}`]}
-                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:border-amber-500 focus:outline-none"
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            {/* ── Portfolio Section ── */}
+            <SectionHeader title="Portfolio Section" />
+            <ItemsEditor
+                itemKey="portfolio"
+                titleLabel={at.events_portfolio}
+                kickerKey="portfolio_kicker"
+                titleKey="portfolio_title"
+                kickerLabel={at.events_portfolio_kicker}
+                titleFieldLabel={at.events_portfolio_title}
+                addLabel={at.events_add_portfolio}
+                imageLabel={at.events_portfolio_image}
+                captionLabel={at.events_portfolio_caption}
+            />
 
-            {/* Gallery */}
+            {/* ── Packages Section ── */}
+            <SectionHeader title="Packages Section" />
+            <ItemsEditor
+                itemKey="packages"
+                titleLabel={at.events_packages}
+                kickerKey="packages_kicker"
+                titleKey="packages_title"
+                kickerLabel={at.events_packages_kicker}
+                titleFieldLabel={at.events_packages_title}
+                addLabel={at.events_add_package}
+                imageLabel={at.events_packages_image}
+                captionLabel={at.events_packages_caption}
+            />
+
+            {/* ── Decor Section ── */}
+            <SectionHeader title="Decor Section" />
+            <ItemsEditor
+                itemKey="decor"
+                titleLabel={at.events_decor}
+                kickerKey="decor_kicker"
+                titleKey="decor_title"
+                kickerLabel={at.events_decor_kicker}
+                titleFieldLabel={at.events_decor_title}
+                addLabel={at.events_add_decor}
+                imageLabel={at.events_decor_image}
+                captionLabel={at.events_decor_caption}
+            />
+
+            {/* ── Gallery Section ── */}
+            <SectionHeader title="Gallery Section" />
             <div className={cardClass}>
                 <h3 className="text-lg font-bold mb-4">{at.events_gallery}</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
@@ -333,7 +416,8 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                 </div>
             </div>
 
-            {/* Form */}
+            {/* ── Form Section ── */}
+            <SectionHeader title="Inquiry Form" />
             <div className={cardClass}>
                 <h3 className="text-lg font-bold mb-4">{at.events_form}</h3>
                 <LangInputs label={at.events_form_title} fieldKey="form_title" />

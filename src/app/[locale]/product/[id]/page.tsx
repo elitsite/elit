@@ -3,14 +3,12 @@ import { notFound } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { type Locale } from "@/i18n/routing";
-import { findTrailByLeafSlug } from "@/lib/categories";
 import { getProductById } from "@/lib/products";
 import {
   localizeProduct,
   type LocalizedProduct,
 } from "@/lib/i18n-content";
 import { BRAND_NAME, buildLanguageAlternates, canonicalUrl } from "@/lib/site";
-import Breadcrumbs, { type Crumb } from "@/components/Breadcrumbs";
 import ProductGallery from "@/components/ProductGallery";
 import PriceTag from "@/components/PriceTag";
 import AddToCartButton from "@/components/AddToCartButton";
@@ -65,19 +63,6 @@ function ProductView({
   product: LocalizedProduct;
 }) {
   const t = useTranslations("Product");
-  const tCat = useTranslations("Categories");
-  const tCatalog = useTranslations("Catalog");
-
-  const trail = findTrailByLeafSlug(product.category) ?? [];
-  const crumbs: Crumb[] = [{ label: tCatalog("home"), href: "/" }];
-  trail.forEach((node, i) => {
-    const href = `/category/${trail
-      .slice(0, i + 1)
-      .map((n) => n.slug)
-      .join("/")}`;
-    crumbs.push({ label: tCat(node.labelKey), href });
-  });
-  crumbs.push({ label: product.display.name });
 
   const gallery = [product.image_url, ...(product.extra_images ?? [])];
   const soldOut = !product.in_stock;
@@ -85,8 +70,6 @@ function ProductView({
 
   return (
     <main className="mx-auto max-w-content px-4 pb-24 pt-8 sm:px-6 lg:px-8">
-      <Breadcrumbs items={crumbs} />
-
       <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
         <ProductGallery images={gallery} alt={product.display.name} />
 

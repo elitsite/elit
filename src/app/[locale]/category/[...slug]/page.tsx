@@ -13,7 +13,6 @@ import { getProductsByCategorySlugs, getEventPage } from "@/lib/products";
 import type { Product, EventContent } from "@/lib/supabase";
 import { BRAND_NAME, buildLanguageAlternates, canonicalUrl } from "@/lib/site";
 import ProductCard from "@/components/ProductCard";
-import Breadcrumbs, { type Crumb } from "@/components/Breadcrumbs";
 import EventLanding from "@/components/EventLanding";
 
 export const revalidate = 300;
@@ -65,9 +64,9 @@ export default async function CategoryPage({
   const match = findCategoryByPath(slug);
   if (!match) notFound();
 
-  // Special-case: events/weddings and events/parties render a full landing page.
+  // Special-case: weddings and parties render a full landing page.
   const slugPath = slug.join("/");
-  const isEventLanding = slugPath === "events/weddings" || slugPath === "events/parties";
+  const isEventLanding = slugPath === "weddings" || slugPath === "parties";
 
   if (isEventLanding) {
     const eventSlug = slug[slug.length - 1]; // 'weddings' | 'parties'
@@ -78,6 +77,23 @@ export default async function CategoryPage({
         content={content}
         locale={locale as Locale}
         slug={eventSlug}
+      />
+    );
+  }
+
+  // Sub-categories of weddings/parties (e.g. weddings/wedding-portfolio)
+  // render the event landing page with anchor scroll to the relevant section.
+  if (slug.length === 2 && (slug[0] === "weddings" || slug[0] === "parties")) {
+    const eventSlug = slug[0]; // 'weddings' | 'parties'
+    const subSlug = slug[1]; // 'wedding-portfolio' etc.
+    const eventPage = await getEventPage(eventSlug);
+    const content = (eventPage?.content ?? {}) as EventContent;
+    return (
+      <EventLanding
+        content={content}
+        locale={locale as Locale}
+        slug={eventSlug}
+        anchor={subSlug}
       />
     );
   }
@@ -106,23 +122,12 @@ function CategoryView({
   const tCat = useTranslations("Categories");
   const t = useTranslations("Catalog");
 
-  // Build breadcrumbs: Home → ...ancestors → current.
-  const crumbs: Crumb[] = [{ label: t("home"), href: "/" }];
-  trail.forEach((node, i) => {
-    const href = `/category/${trail
-      .slice(0, i + 1)
-      .map((n) => n.slug)
-      .join("/")}`;
-    crumbs.push({ label: tCat(node.labelKey), href });
-  });
-
+  // Build breadcrumbs: removed — no longer displayed.
   const current = trail[trail.length - 1];
   const title = tCat(current.labelKey);
 
   return (
     <main className="mx-auto max-w-content px-4 pb-24 pt-8 sm:px-6 lg:px-8">
-      <Breadcrumbs items={crumbs} />
-
       <header className="mt-6 border-b border-black/5 pb-8 text-center">
         <h1 className="font-display text-4xl font-medium text-ink sm:text-5xl">
           {title}

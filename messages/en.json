@@ -120,5 +120,27 @@
     "party_portfolio": "Portfolio",
     "party_packages": "Packages & Prices",
     "party_decor": "Party Decor"
+  },
+  "Payment": {
+    "checking": "Checking payment…",
+    "checking_desc": "Please wait while we confirm your payment.",
+    "success_title": "Payment successful!",
+    "success_desc": "Your order has been paid. We will contact you shortly.",
+    "failed_title": "Payment failed",
+    "failed_desc": "Your payment was declined. Please try again.",
+    "expired_title": "Payment expired",
+    "expired_desc": "Your payment session has expired. Please try again.",
+    "bank_unavailable_title": "Payment unavailable",
+    "bank_unavailable_desc": "The payment service is temporarily unavailable. Please try again.",
+    "sync_error_title": "Payment processing issue",
+    "sync_error_desc": "Your payment is being processed. Please contact us if you don't receive confirmation.",
+    "timeout_title": "Payment confirmation pending",
+    "timeout_desc": "We're still confirming your payment. Please contact us if needed.",
+    "error_title": "Payment error",
+    "error_desc": "Something went wrong. Please contact us.",
+    "no_order": "No order reference found.",
+    "retry": "Try again",
+    "go_home": "Back to home",
+    "order_id": "Order"
   }
 }

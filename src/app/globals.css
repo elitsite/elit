@@ -43,11 +43,19 @@ body {
 }
 
 @layer components {
-  /* Shared form input styling for the checkout/cart forms. */
   .input {
-    @apply w-full border border-ink/15 bg-cream px-4 py-3 text-sm text-ink outline-none transition-colors;
-    @apply placeholder:text-ink/30 focus:border-brand;
+    @apply w-full border-b border-taupe/30 bg-transparent px-0 py-3 text-ink
+           placeholder:text-ink/40 focus:border-brand focus:outline-none transition-colors;
   }
+}
+
+/* Hero scroll indicator bounce */
+@keyframes gentle-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+.animate-gentle-bounce {
+  animation: gentle-bounce 2s ease-in-out infinite;
 }
 
 /* Refined scrollbar for the menu drawer */

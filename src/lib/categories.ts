@@ -60,27 +60,21 @@ export const CATEGORY_TREE: CategoryNode[] = [
         ],
     },
     {
-        slug: 'events',
-        labelKey: 'events',
+        slug: 'weddings',
+        labelKey: 'weddings',
         children: [
-            {
-                slug: 'weddings',
-                labelKey: 'weddings',
-                children: [
-                    { slug: 'wedding-portfolio', labelKey: 'wedding_portfolio', selectable: true },
-                    { slug: 'wedding-packages', labelKey: 'wedding_packages', selectable: true },
-                    { slug: 'wedding-decor', labelKey: 'wedding_decor', selectable: true },
-                ],
-            },
-            {
-                slug: 'parties',
-                labelKey: 'parties',
-                children: [
-                    { slug: 'party-portfolio', labelKey: 'party_portfolio', selectable: true },
-                    { slug: 'party-packages', labelKey: 'party_packages', selectable: true },
-                    { slug: 'party-decor', labelKey: 'party_decor', selectable: true },
-                ],
-            },
+            { slug: 'wedding-portfolio', labelKey: 'wedding_portfolio', selectable: true },
+            { slug: 'wedding-packages', labelKey: 'wedding_packages', selectable: true },
+            { slug: 'wedding-decor', labelKey: 'wedding_decor', selectable: true },
+        ],
+    },
+    {
+        slug: 'parties',
+        labelKey: 'parties',
+        children: [
+            { slug: 'party-portfolio', labelKey: 'party_portfolio', selectable: true },
+            { slug: 'party-packages', labelKey: 'party_packages', selectable: true },
+            { slug: 'party-decor', labelKey: 'party_decor', selectable: true },
         ],
     },
 ];

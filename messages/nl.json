@@ -120,5 +120,27 @@
     "party_portfolio": "Portfolio",
     "party_packages": "Pakketten & prijzen",
     "party_decor": "Feestdecoratie"
+  },
+  "Payment": {
+    "checking": "Betaling controleren…",
+    "checking_desc": "Een moment geduld, we bevestigen uw betaling.",
+    "success_title": "Betaling geslaagd!",
+    "success_desc": "Uw bestelling is betaald. We nemen spoedig contact met u op.",
+    "failed_title": "Betaling mislukt",
+    "failed_desc": "Uw betaling is geweigerd. Probeer het opnieuw.",
+    "expired_title": "Betaling verlopen",
+    "expired_desc": "Uw betalingssessie is verlopen. Probeer het opnieuw.",
+    "bank_unavailable_title": "Betaling niet beschikbaar",
+    "bank_unavailable_desc": "De betaalservice is tijdelijk niet beschikbaar. Probeer het opnieuw.",
+    "sync_error_title": "Probleem met betalingsverwerking",
+    "sync_error_desc": "Uw betaling wordt verwerkt. Neem contact met ons op als u geen bevestiging ontvangt.",
+    "timeout_title": "Betaling in behandeling",
+    "timeout_desc": "We zijn nog bezig met het bevestigen van uw betaling. Neem contact met ons op indien nodig.",
+    "error_title": "Betalingsfout",
+    "error_desc": "Er is iets misgegaan. Neem contact met ons op.",
+    "no_order": "Geen bestelreferentie gevonden.",
+    "retry": "Opnieuw proberen",
+    "go_home": "Terug naar home",
+    "order_id": "Bestelling"
   }
 }
