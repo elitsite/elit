@@ -21,6 +21,7 @@ const ALLOWED_SETTINGS_FIELDS = new Set([
     'about_enabled', 'about_text', 'schedule_enabled',
     'delivery_price_enabled', 'delivery_price',
     'delivery_info', 'pickup_info', 'payment_info',
+    'show_delivery', 'show_pickup', 'show_payment',
     // Translations
     'hero_title_uk', 'hero_title_nl',
     'hero_subtitle_uk', 'hero_subtitle_nl',

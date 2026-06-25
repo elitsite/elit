@@ -88,6 +88,10 @@ export interface Settings {
     delivery_info: string;
     pickup_info: string;
     payment_info: string;
+    // Visibility toggles for info sections
+    show_delivery: boolean;
+    show_pickup: boolean;
+    show_payment: boolean;
     // Translations (base = EN)
     hero_title_uk?: string; hero_title_nl?: string;
     hero_subtitle_uk?: string; hero_subtitle_nl?: string;

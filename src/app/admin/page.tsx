@@ -203,6 +203,7 @@ export default function AdminPage() {
                     schedule_enabled: false,
                     delivery_price_enabled: false, delivery_price: '',
                     delivery_info: '', pickup_info: '', payment_info: '',
+                    show_delivery: true, show_pickup: true, show_payment: true,
                     instagram_link: '', facebook_link: '', whatsapp_link: '', google_maps_embed: '',
                 });
             }
@@ -1001,7 +1002,12 @@ export default function AdminPage() {
                                     </p>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">🕐 {at.settings_schedule_title}</label>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <label className="text-sm font-medium">🕐 {at.settings_schedule_title}</label>
+                                        <button onClick={() => setSettings({ ...settings, schedule_enabled: !settings.schedule_enabled })} className={`relative w-12 h-6 rounded-full transition-colors ${settings.schedule_enabled ? 'bg-green-500' : 'bg-zinc-300'}`}>
+                                            <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${settings.schedule_enabled ? 'translate-x-6' : ''}`} />
+                                        </button>
+                                    </div>
                                     <div className="space-y-2">
                                         {(['mon','tue','wed','thu','fri','sat','sun'] as const).map(day => {
                                             const dayLabel = at[`day_${day}` as keyof typeof at];
@@ -1049,7 +1055,12 @@ export default function AdminPage() {
                                     {settings.delivery_price_enabled && <input type="text" value={settings.delivery_price || ''} onChange={(e) => setSettings({ ...settings, delivery_price: e.target.value })} placeholder="€5" className="w-full px-3 py-2 mt-2 border border-zinc-200 rounded-lg focus:border-amber-500 focus:outline-none text-sm" />}
                                 </div>
                                 <div className="border border-zinc-200 rounded-lg p-4">
-                                    <label className="text-sm font-medium block mb-2">🚚 {at.settings_delivery_info}</label>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <label className="text-sm font-medium">🚚 {at.settings_delivery_info}</label>
+                                        <button onClick={() => setSettings({ ...settings, show_delivery: !settings.show_delivery })} className={`relative w-12 h-6 rounded-full transition-colors ${settings.show_delivery ? 'bg-green-500' : 'bg-zinc-300'}`}>
+                                            <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${settings.show_delivery ? 'translate-x-6' : ''}`} />
+                                        </button>
+                                    </div>
                                     <input type="text" value={settings.delivery_info || ''} onChange={(e) => setSettings({ ...settings, delivery_info: e.target.value })} placeholder={at.settings_delivery_info_ph} className="w-full px-3 py-2 border border-zinc-200 rounded-lg focus:border-amber-500 focus:outline-none text-sm" />
                                     <details className="mt-3">
                                         <summary className="cursor-pointer text-xs text-zinc-500 hover:text-zinc-700">🌐 {at.settings_translations_title}</summary>
@@ -1066,7 +1077,12 @@ export default function AdminPage() {
                                     </details>
                                 </div>
                                 <div className="border border-zinc-200 rounded-lg p-4">
-                                    <label className="text-sm font-medium block mb-2">🏪 {at.settings_pickup}</label>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <label className="text-sm font-medium">🏪 {at.settings_pickup}</label>
+                                        <button onClick={() => setSettings({ ...settings, show_pickup: !settings.show_pickup })} className={`relative w-12 h-6 rounded-full transition-colors ${settings.show_pickup ? 'bg-green-500' : 'bg-zinc-300'}`}>
+                                            <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${settings.show_pickup ? 'translate-x-6' : ''}`} />
+                                        </button>
+                                    </div>
                                     <input type="text" value={settings.pickup_info || ''} onChange={(e) => setSettings({ ...settings, pickup_info: e.target.value })} placeholder={at.settings_pickup_ph} className="w-full px-3 py-2 border border-zinc-200 rounded-lg focus:border-amber-500 focus:outline-none text-sm" />
                                     <details className="mt-3">
                                         <summary className="cursor-pointer text-xs text-zinc-500 hover:text-zinc-700">🌐 {at.settings_translations_title}</summary>
@@ -1083,7 +1099,12 @@ export default function AdminPage() {
                                     </details>
                                 </div>
                                 <div className="border border-zinc-200 rounded-lg p-4">
-                                    <label className="text-sm font-medium block mb-2">💳 {at.settings_payment}</label>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <label className="text-sm font-medium">💳 {at.settings_payment}</label>
+                                        <button onClick={() => setSettings({ ...settings, show_payment: !settings.show_payment })} className={`relative w-12 h-6 rounded-full transition-colors ${settings.show_payment ? 'bg-green-500' : 'bg-zinc-300'}`}>
+                                            <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${settings.show_payment ? 'translate-x-6' : ''}`} />
+                                        </button>
+                                    </div>
                                     <input type="text" value={settings.payment_info || ''} onChange={(e) => setSettings({ ...settings, payment_info: e.target.value })} placeholder={at.settings_payment_ph} className="w-full px-3 py-2 border border-zinc-200 rounded-lg focus:border-amber-500 focus:outline-none text-sm" />
                                     <details className="mt-3">
                                         <summary className="cursor-pointer text-xs text-zinc-500 hover:text-zinc-700">🌐 {at.settings_translations_title}</summary>
