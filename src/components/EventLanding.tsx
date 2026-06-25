@@ -258,45 +258,68 @@ function GridBlock({
   kicker?: LocalizedText;
   title?: LocalizedText;
 }) {
-  if (!items || items.length === 0) return null;
+  const hasKicker = kicker && hasContent(kicker);
+  const hasTitle = title && hasContent(title);
+  const hasItems = items && items.length > 0;
+
+  // Don't render if no header AND no items
+  if (!hasKicker && !hasTitle && !hasItems) return null;
 
   return (
-    <section className="mx-auto max-w-content px-6 py-24 sm:px-8">
-      <div className="mb-14 text-center">
-        {kicker && hasContent(kicker) && (
-          <span className="mb-4 block text-xs font-semibold uppercase tracking-[0.3em] text-brand">
-            {t(kicker, locale)}
-          </span>
-        )}
-        {title && hasContent(title) && (
-          <h2 className="font-display text-4xl font-medium text-ink sm:text-5xl">
-            {t(title, locale)}
-          </h2>
-        )}
-      </div>
-      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((item: PortfolioItem, i: number) => (
-          <div key={i} className={`${i % 3 === 1 ? "lg:-mt-10" : ""}`}>
-            {item.image ? (
-              <div className="relative aspect-[3/4] overflow-hidden">
-                <Image
-                  src={item.image}
-                  alt={t(item.caption, locale)}
-                  fill
-                  className="object-cover transition-transform duration-500 hover:scale-105"
-                />
+    <section className="mx-auto max-w-content px-6 py-20 sm:px-8 sm:py-28">
+      {/* Header — always show if filled */}
+      {(hasKicker || hasTitle) && (
+        <div className="mb-14 text-center">
+          {hasKicker && (
+            <span className="mb-4 block text-[11px] font-semibold uppercase tracking-[0.3em] text-brand">
+              {t(kicker!, locale)}
+            </span>
+          )}
+          {hasTitle && (
+            <h2 className="font-display text-4xl font-medium text-ink sm:text-5xl">
+              {t(title!, locale)}
+            </h2>
+          )}
+        </div>
+      )}
+
+      {/* Items grid — staggered layout like bloomwedding.nl */}
+      {hasItems ? (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
+          {items.map((item: PortfolioItem, i: number) => {
+            // Center item is taller/shifted up for staggered effect
+            const isCenter = i % 3 === 1;
+            return (
+              <div
+                key={i}
+                className={`${isCenter ? "lg:-mt-8" : "lg:mt-8"}`}
+              >
+                {item.image ? (
+                  <div className={`relative overflow-hidden ${isCenter ? "aspect-[3/4]" : "aspect-[4/5]"}`}>
+                    <Image
+                      src={item.image}
+                      alt={t(item.caption, locale)}
+                      fill
+                      className="object-cover transition-transform duration-500 hover:scale-105"
+                    />
+                  </div>
+                ) : (
+                  <div className={`bg-taupe/10 ${isCenter ? "aspect-[3/4]" : "aspect-[4/5]"}`} />
+                )}
+                {hasContent(item.caption) && (
+                  <p className="mt-5 text-center font-display text-lg italic text-ink/80">
+                    {t(item.caption, locale)}
+                  </p>
+                )}
               </div>
-            ) : (
-              <div className="aspect-[3/4] bg-taupe/10" />
-            )}
-            {hasContent(item.caption) && (
-              <p className="mt-4 text-center font-display text-lg text-ink">
-                {t(item.caption, locale)}
-              </p>
-            )}
-          </div>
-        ))}
-      </div>
+            );
+          })}
+        </div>
+      ) : (
+        <p className="py-12 text-center text-sm text-ink/30">
+          — Portfolio items will appear here once added via admin panel —
+        </p>
+      )}
     </section>
   );
 }
