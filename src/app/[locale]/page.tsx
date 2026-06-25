@@ -3,8 +3,17 @@ import { Link } from "@/i18n/navigation";
 import { type Locale } from "@/i18n/routing";
 import { getProductsByCategorySlugs, getSettings } from "@/lib/products";
 import { localizeSettings } from "@/lib/i18n-content";
-import CategorySection from "@/components/CategorySection";
+import CollectionExplorer from "@/components/CollectionExplorer";
+import AboutSection from "@/components/AboutSection";
 import HomeInfoSections from "@/components/HomeInfoSections";
+
+/** Leaf category slugs surfaced under "Discover our collections". */
+const COLLECTION_SLUGS = [
+  "mono-bouquets",
+  "mixed-bouquets",
+  "box-arrangements",
+  "basket-arrangements",
+];
 
 export default async function Home({
   params,
@@ -17,17 +26,8 @@ export default async function Home({
   const nav = await getTranslations("Nav");
 
   // Fetch data in parallel
-  const [
-    monoBouquets,
-    mixedBouquets,
-    boxArrangements,
-    basketArrangements,
-    rawSettings,
-  ] = await Promise.all([
-    getProductsByCategorySlugs(["mono-bouquets"]),
-    getProductsByCategorySlugs(["mixed-bouquets"]),
-    getProductsByCategorySlugs(["box-arrangements"]),
-    getProductsByCategorySlugs(["basket-arrangements"]),
+  const [products, rawSettings] = await Promise.all([
+    getProductsByCategorySlugs(COLLECTION_SLUGS),
     getSettings(),
   ]);
 
@@ -54,34 +54,19 @@ export default async function Home({
         </Link>
       </section>
 
-      {/* Category showcases */}
-      <section className="mx-auto max-w-content px-4 pb-12 sm:px-6 sm:pb-24 lg:px-8">
+      {/* About us */}
+      {settings && <AboutSection settings={settings} />}
+
+      {/* Collections with filters */}
+      <section className="mx-auto max-w-content px-4 pb-12 pt-12 sm:px-6 sm:pb-24 sm:pt-16 lg:px-8">
         <h2 className="mb-5 text-center font-display text-2xl font-medium text-ink sm:mb-8 sm:text-3xl lg:text-4xl">
           {t("shop_by_category")}
         </h2>
 
-        <CategorySection
-          labelKey="mono_bouquets"
-          products={monoBouquets}
+        <CollectionExplorer
+          products={products}
           locale={locale}
-        />
-
-        <CategorySection
-          labelKey="mixed_bouquets"
-          products={mixedBouquets}
-          locale={locale}
-        />
-
-        <CategorySection
-          labelKey="box_arrangements"
-          products={boxArrangements}
-          locale={locale}
-        />
-
-        <CategorySection
-          labelKey="basket_arrangements"
-          products={basketArrangements}
-          locale={locale}
+          priceFilters={rawSettings?.price_filters}
         />
       </section>
 

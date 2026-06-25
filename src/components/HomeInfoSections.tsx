@@ -8,6 +8,13 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
     const hasDelivery = settings.delivery_price_enabled || settings.display.delivery_info;
     const hasContact = settings.phone || settings.telegram_link || settings.display.address;
 
+    // Extract the iframe src from the admin-provided Google Maps embed code.
+    const mapEmbed = settings.google_maps_embed?.trim();
+    const mapSrc = mapEmbed
+        ? (mapEmbed.match(/src=["']([^"']+)["']/)?.[1] ??
+           (mapEmbed.startsWith("http") ? mapEmbed : null))
+        : null;
+
     return (
         <section className="mx-auto max-w-content px-4 pb-16 sm:px-6 sm:pb-24 lg:px-8">
             <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -128,6 +135,21 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
                     </div>
                 )}
             </div>
+
+            {/* Map */}
+            {mapSrc && (
+                <div className="mt-4 overflow-hidden rounded-2xl border border-black/5 sm:mt-6">
+                    <iframe
+                        src={mapSrc}
+                        title={t('contact_title')}
+                        className="h-[300px] w-full sm:h-[380px]"
+                        style={{ border: 0 }}
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        allowFullScreen
+                    />
+                </div>
+            )}
         </section>
     );
 }

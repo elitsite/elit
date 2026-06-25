@@ -15,7 +15,9 @@
     "shop_by_category": "Discover our collections",
     "featured_title": "Featured bouquets",
     "view_all": "View all",
-    "cta": "Browse the catalog"
+    "cta": "Browse the catalog",
+    "about_eyebrow": "Our story",
+    "about_title": "About us"
   },
   "Catalog": {
     "home": "Home",
@@ -24,11 +26,21 @@
     "sort_newest": "Newest",
     "sort_price_asc": "Price: low to high",
     "sort_price_desc": "Price: high to low",
+    "sort_name": "Name: A–Z",
     "empty": "There are no products in this collection yet.",
     "in_stock": "In stock",
     "out_of_stock": "Sold out",
     "all_prices": "All prices",
-    "price_filter": "Price"
+    "price_filter": "Price",
+    "search_placeholder": "Search bouquets…",
+    "category_label": "Collection",
+    "all_categories": "All",
+    "reset": "Reset filters",
+    "load_more": "Load more",
+    "price_any": "All prices",
+    "price_up_to": "Up to €{value}",
+    "price_from": "From €{value}",
+    "price_range": "€{min} – €{max}"
   },
   "Product": {
     "composition": "Composition",
@@ -101,7 +113,8 @@
     "contact": "Contact",
     "menu": "Menu",
     "close": "Close",
-    "language": "Language"
+    "language": "Language",
+    "call": "Call us"
   },
   "Categories": {
     "bouquets": "Bouquets",

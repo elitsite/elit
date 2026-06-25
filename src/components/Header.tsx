@@ -3,7 +3,16 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Menu, X, ShoppingBag } from "lucide-react";
+import {
+  Menu,
+  X,
+  ShoppingBag,
+  Phone,
+  Instagram,
+  Facebook,
+  Send,
+  MessageCircle,
+} from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "@/i18n/navigation";
 import { BRAND_NAME } from "@/lib/site";
@@ -13,7 +22,15 @@ import CategoryNav from "./CategoryNav";
 import CartDrawer from "./CartDrawer";
 import CartOrderModal from "./CartOrderModal";
 
-export default function Header() {
+export type HeaderContact = {
+  phone?: string;
+  instagram_link?: string;
+  facebook_link?: string;
+  whatsapp_link?: string;
+  telegram_link?: string;
+};
+
+export default function Header({ contact }: { contact?: HeaderContact }) {
   const t = useTranslations("Nav");
   const { totalQuantity } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -135,6 +152,77 @@ export default function Header() {
               <div className="no-scrollbar flex-1 overflow-y-auto px-5 py-4">
                 <CategoryNav onNavigate={() => setMenuOpen(false)} />
               </div>
+
+              {/* Bottom: social links + call button */}
+              {(contact?.instagram_link ||
+                contact?.facebook_link ||
+                contact?.whatsapp_link ||
+                contact?.telegram_link ||
+                contact?.phone) && (
+                <div className="shrink-0 space-y-4 border-t border-black/5 px-5 py-5">
+                  {(contact?.instagram_link ||
+                    contact?.facebook_link ||
+                    contact?.whatsapp_link ||
+                    contact?.telegram_link) && (
+                    <div className="flex items-center gap-3">
+                      {contact?.instagram_link && (
+                        <a
+                          href={contact.instagram_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="Instagram"
+                          className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-ink/60 transition-colors hover:border-brand hover:text-brand"
+                        >
+                          <Instagram size={18} strokeWidth={1.5} />
+                        </a>
+                      )}
+                      {contact?.whatsapp_link && (
+                        <a
+                          href={contact.whatsapp_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="WhatsApp"
+                          className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-ink/60 transition-colors hover:border-brand hover:text-brand"
+                        >
+                          <MessageCircle size={18} strokeWidth={1.5} />
+                        </a>
+                      )}
+                      {contact?.telegram_link && (
+                        <a
+                          href={contact.telegram_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="Telegram"
+                          className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-ink/60 transition-colors hover:border-brand hover:text-brand"
+                        >
+                          <Send size={18} strokeWidth={1.5} />
+                        </a>
+                      )}
+                      {contact?.facebook_link && (
+                        <a
+                          href={contact.facebook_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="Facebook"
+                          className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-ink/60 transition-colors hover:border-brand hover:text-brand"
+                        >
+                          <Facebook size={18} strokeWidth={1.5} />
+                        </a>
+                      )}
+                    </div>
+                  )}
+
+                  {contact?.phone && (
+                    <a
+                      href={`tel:${contact.phone.replace(/[^+\d]/g, "")}`}
+                      className="flex w-full items-center justify-center gap-2 border border-ink/30 px-6 py-3.5 text-xs font-medium uppercase tracking-[0.2em] text-ink transition-colors hover:border-brand hover:bg-brand hover:text-cream"
+                    >
+                      <Phone size={16} strokeWidth={1.5} />
+                      {t("call")}
+                    </a>
+                  )}
+                </div>
+              )}
             </motion.aside>
           </>
         )}

@@ -15,7 +15,9 @@
     "shop_by_category": "Ontdek onze collecties",
     "featured_title": "Aanbevolen boeketten",
     "view_all": "Bekijk alles",
-    "cta": "Bekijk de catalogus"
+    "cta": "Bekijk de catalogus",
+    "about_eyebrow": "Ons verhaal",
+    "about_title": "Over ons"
   },
   "Catalog": {
     "home": "Home",
@@ -24,11 +26,21 @@
     "sort_newest": "Nieuwste",
     "sort_price_asc": "Prijs oplopend",
     "sort_price_desc": "Prijs aflopend",
+    "sort_name": "Naam: A–Z",
     "empty": "Er zijn nog geen producten in deze collectie.",
     "in_stock": "Op voorraad",
     "out_of_stock": "Uitverkocht",
     "all_prices": "Alle prijzen",
-    "price_filter": "Prijs"
+    "price_filter": "Prijs",
+    "search_placeholder": "Zoek boeketten…",
+    "category_label": "Collectie",
+    "all_categories": "Alles",
+    "reset": "Filters wissen",
+    "load_more": "Meer laden",
+    "price_any": "Alle prijzen",
+    "price_up_to": "Tot €{value}",
+    "price_from": "Vanaf €{value}",
+    "price_range": "€{min} – €{max}"
   },
   "Product": {
     "composition": "Samenstelling",
@@ -101,7 +113,8 @@
     "contact": "Contact",
     "menu": "Menu",
     "close": "Sluiten",
-    "language": "Taal"
+    "language": "Taal",
+    "call": "Bel ons"
   },
   "Categories": {
     "bouquets": "Boeketten",

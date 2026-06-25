@@ -17,6 +17,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { CartProvider } from "@/lib/cart";
+import { getSettings } from "@/lib/products";
 import "../globals.css";
 
 const geistSans = localFont({
@@ -109,6 +110,17 @@ export default async function LocaleLayout({
   }
   setRequestLocale(locale);
 
+  const settings = await getSettings();
+  const headerContact = settings
+    ? {
+        phone: settings.phone,
+        instagram_link: settings.instagram_link,
+        facebook_link: settings.facebook_link,
+        whatsapp_link: settings.whatsapp_link,
+        telegram_link: settings.telegram_link,
+      }
+    : undefined;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": ["Florist", "LocalBusiness"],
@@ -140,7 +152,7 @@ export default async function LocaleLayout({
         />
         <NextIntlClientProvider>
           <CartProvider>
-            <Header />
+            <Header contact={headerContact} />
             {children}
             <Footer />
             <WhatsAppButton />

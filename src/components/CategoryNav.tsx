@@ -64,7 +64,8 @@ function NavRow({
   onNavigate?: () => void;
 }) {
   const t = useTranslations("Categories");
-  const [open, setOpen] = useState(depth === 0);
+  // Collapsed by default — groups open only when the user taps them.
+  const [open, setOpen] = useState(false);
   const path = [...trail, node.slug];
   const hasChildren = !!node.children?.length;
   const label = t(node.labelKey);

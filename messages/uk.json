@@ -15,7 +15,9 @@
     "shop_by_category": "Відкрийте наші колекції",
     "featured_title": "Рекомендовані букети",
     "view_all": "Дивитися все",
-    "cta": "Переглянути каталог"
+    "cta": "Переглянути каталог",
+    "about_eyebrow": "Наша історія",
+    "about_title": "Про нас"
   },
   "Catalog": {
     "home": "Головна",
@@ -24,11 +26,21 @@
     "sort_newest": "Найновіші",
     "sort_price_asc": "Ціна: за зростанням",
     "sort_price_desc": "Ціна: за спаданням",
+    "sort_name": "Назва: А–Я",
     "empty": "У цій колекції поки немає товарів.",
     "in_stock": "В наявності",
     "out_of_stock": "Продано",
     "all_prices": "Усі ціни",
-    "price_filter": "Ціна"
+    "price_filter": "Ціна",
+    "search_placeholder": "Пошук букетів…",
+    "category_label": "Колекція",
+    "all_categories": "Усі",
+    "reset": "Скинути фільтри",
+    "load_more": "Показати ще",
+    "price_any": "Усі ціни",
+    "price_up_to": "До €{value}",
+    "price_from": "Від €{value}",
+    "price_range": "€{min} – €{max}"
   },
   "Product": {
     "composition": "Склад",
@@ -101,7 +113,8 @@
     "contact": "Контакти",
     "menu": "Меню",
     "close": "Закрити",
-    "language": "Мова"
+    "language": "Мова",
+    "call": "Зателефонувати"
   },
   "Categories": {
     "bouquets": "Букети",
