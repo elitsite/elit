@@ -100,17 +100,21 @@ function IntroBlock({ content, locale }: { content: EventContent; locale: Locale
 }
 
 function MediaBlock({ content, locale }: { content: EventContent; locale: Locale }) {
-  if (!content.media_image) return null;
-
   return (
-    <section className="mx-auto max-w-6xl px-6 pb-24">
+    <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 sm:pb-24">
       <div className="relative aspect-[16/9] overflow-hidden">
-        <Image
-          src={content.media_image}
-          alt={t(content.intro_title, locale) || ""}
-          fill
-          className="object-cover"
-        />
+        {content.media_image ? (
+          <Image
+            src={content.media_image}
+            alt={t(content.intro_title, locale) || ""}
+            fill
+            className="object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-taupe/10 flex items-center justify-center text-ink/15 text-xs">
+            1920 × 1080 px (16:9)
+          </div>
+        )}
       </div>
     </section>
   );
@@ -327,22 +331,37 @@ function GridBlock({
 }
 
 function GalleryStrip({ images }: { images: string[] }) {
-  if (!images || images.length === 0) return null;
+  const hasImages = images && images.length > 0;
 
   return (
-    <section className="overflow-hidden py-20">
-      <div className="flex gap-4 overflow-x-auto px-6 pb-4 no-scrollbar">
-        {images.map((src, i) => (
-          <div key={i} className="relative aspect-square w-72 flex-shrink-0 overflow-hidden sm:w-80">
-            <Image
-              src={src}
-              alt=""
-              fill
-              className="object-cover transition-transform duration-500 hover:scale-105"
-            />
-          </div>
-        ))}
+    <section className="py-16 sm:py-20">
+      <div className="mb-10 text-center">
+        <span className="mb-3 block text-[11px] font-semibold uppercase tracking-[0.3em] text-brand">
+          Gallery
+        </span>
       </div>
+      {hasImages ? (
+        <div className="flex gap-3 overflow-x-auto px-4 pb-4 no-scrollbar sm:gap-4 sm:px-6">
+          {images.map((src, i) => (
+            <div key={i} className="relative aspect-square w-56 flex-shrink-0 overflow-hidden sm:w-72 lg:w-80">
+              <Image
+                src={src}
+                alt=""
+                fill
+                className="object-cover transition-transform duration-500 hover:scale-105"
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex gap-3 overflow-x-auto px-4 pb-4 no-scrollbar sm:gap-4 sm:px-6">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="aspect-square w-56 flex-shrink-0 bg-taupe/10 flex items-center justify-center text-ink/15 text-xs sm:w-72 lg:w-80">
+              800 × 800 px
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
