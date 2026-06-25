@@ -22,11 +22,10 @@ function hasContent(field: LocalizedText | undefined): boolean {
 function HeroBlock({ content, locale }: { content: EventContent; locale: Locale }) {
   const title = t(content.hero_title, locale);
   const subtitle = t(content.hero_subtitle, locale);
-  if (!content.hero_image && !title) return null;
 
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
-      {content.hero_image && (
+      {content.hero_image ? (
         <Image
           src={content.hero_image}
           alt={title}
@@ -34,10 +33,10 @@ function HeroBlock({ content, locale }: { content: EventContent; locale: Locale 
           priority
           className="object-cover"
         />
+      ) : (
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/20 to-ink/40" />
       )}
-      {/* Dark overlay */}
       <div className="absolute inset-0 bg-black/45" />
-      {/* Content */}
       <div className="relative z-10 px-6 text-center text-white">
         {title && (
           <h1 className="font-display text-5xl font-medium leading-tight tracking-wide sm:text-6xl lg:text-7xl xl:text-8xl">
@@ -50,7 +49,6 @@ function HeroBlock({ content, locale }: { content: EventContent; locale: Locale 
           </p>
         )}
       </div>
-      {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2">
         <svg
           className="h-8 w-8 text-white/60 animate-gentle-bounce"
@@ -71,7 +69,6 @@ function IntroBlock({ content, locale }: { content: EventContent; locale: Locale
   const title = t(content.intro_title, locale);
   const text = t(content.intro_text, locale);
   const button = t(content.intro_button, locale);
-  if (!title && !text) return null;
 
   return (
     <section className="mx-auto max-w-3xl px-6 py-24 text-center sm:py-32">
@@ -134,7 +131,6 @@ function FramedSections({ sections, locale }: { sections: EventSection[]; locale
             key={i}
             className={`flex flex-col items-center gap-12 lg:flex-row lg:gap-20 ${reversed ? "lg:flex-row-reverse" : ""}`}
           >
-            {/* Framed image */}
             <div className="relative w-full max-w-md lg:w-1/2">
               <div className="relative border border-taupe/20 bg-white p-3 shadow-sm sm:p-4">
                 {section.image ? (
@@ -147,11 +143,12 @@ function FramedSections({ sections, locale }: { sections: EventSection[]; locale
                     />
                   </div>
                 ) : (
-                  <div className="aspect-[3/4] bg-taupe/10" />
+                  <div className="aspect-[3/4] bg-taupe/10 flex items-center justify-center text-ink/15 text-xs">
+                    800 × 1067 px
+                  </div>
                 )}
               </div>
             </div>
-            {/* Text */}
             <div className="w-full lg:w-1/2">
               {title && (
                 <h3 className="font-display text-3xl font-medium leading-snug text-ink sm:text-4xl">
@@ -173,17 +170,20 @@ function FramedSections({ sections, locale }: { sections: EventSection[]; locale
 
 function QuoteBlock({ content, locale }: { content: EventContent; locale: Locale }) {
   const quoteText = t(content.quote_text, locale);
-  if (!quoteText && !content.quote_image) return null;
+  const hasQuote = quoteText || content.quote_image || hasContent(content.quote_kicker);
+  if (!hasQuote) return null;
 
   return (
     <section className="relative flex min-h-[60vh] items-center justify-center overflow-hidden">
-      {content.quote_image && (
+      {content.quote_image ? (
         <Image
           src={content.quote_image}
           alt=""
           fill
           className="object-cover"
         />
+      ) : (
+        <div className="absolute inset-0 bg-gradient-to-r from-ink/30 to-ink/50" />
       )}
       <div className="absolute inset-0 bg-black/50" />
       <div className="relative z-10 mx-auto max-w-3xl px-6 py-24 text-center text-white">
@@ -262,32 +262,26 @@ function GridBlock({
   const hasTitle = title && hasContent(title);
   const hasItems = items && items.length > 0;
 
-  // Don't render if no header AND no items
-  if (!hasKicker && !hasTitle && !hasItems) return null;
-
   return (
     <section className="mx-auto max-w-content px-6 py-20 sm:px-8 sm:py-28">
-      {/* Header — always show if filled */}
-      {(hasKicker || hasTitle) && (
-        <div className="mb-14 text-center">
-          {hasKicker && (
-            <span className="mb-4 block text-[11px] font-semibold uppercase tracking-[0.3em] text-brand">
-              {t(kicker!, locale)}
-            </span>
-          )}
-          {hasTitle && (
-            <h2 className="font-display text-4xl font-medium text-ink sm:text-5xl">
-              {t(title!, locale)}
-            </h2>
-          )}
-        </div>
-      )}
+      {/* Header — always show */}
+      <div className="mb-14 text-center">
+        {hasKicker && (
+          <span className="mb-4 block text-[11px] font-semibold uppercase tracking-[0.3em] text-brand">
+            {t(kicker!, locale)}
+          </span>
+        )}
+        {hasTitle && (
+          <h2 className="font-display text-4xl font-medium text-ink sm:text-5xl">
+            {t(title!, locale)}
+          </h2>
+        )}
+      </div>
 
-      {/* Items grid — staggered layout like bloomwedding.nl */}
+      {/* Items grid — staggered layout */}
       {hasItems ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
           {items.map((item: PortfolioItem, i: number) => {
-            // Center item is taller/shifted up for staggered effect
             const isCenter = i % 3 === 1;
             return (
               <div
@@ -304,7 +298,9 @@ function GridBlock({
                     />
                   </div>
                 ) : (
-                  <div className={`bg-taupe/10 ${isCenter ? "aspect-[3/4]" : "aspect-[4/5]"}`} />
+                  <div className={`bg-taupe/10 flex items-center justify-center text-ink/15 text-xs ${isCenter ? "aspect-[3/4]" : "aspect-[4/5]"}`}>
+                    600 × 800 px
+                  </div>
                 )}
                 {hasContent(item.caption) && (
                   <p className="mt-5 text-center font-display text-lg italic text-ink/80">
@@ -316,9 +312,15 @@ function GridBlock({
           })}
         </div>
       ) : (
-        <p className="py-12 text-center text-sm text-ink/30">
-          — Portfolio items will appear here once added via admin panel —
-        </p>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className={`${i === 1 ? "lg:-mt-8" : "lg:mt-8"}`}>
+              <div className={`bg-taupe/10 flex items-center justify-center text-ink/15 text-xs ${i === 1 ? "aspect-[3/4]" : "aspect-[4/5]"}`}>
+                600 × 800 px
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </section>
   );
@@ -370,89 +372,88 @@ function InquiryForm({ content, locale, slug }: { content: EventContent; locale:
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.phone) return;
+    if (!form.name.trim() || !form.phone.trim()) return;
     setStatus("sending");
     try {
       const res = await fetch("/api/event-inquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, slug, locale }),
+        body: JSON.stringify({ ...form, event_type: slug }),
       });
-      if (res.ok) {
-        setStatus("sent");
-        setForm({ name: "", phone: "", email: "", date: "", message: "" });
-      } else {
-        setStatus("error");
-      }
+      setStatus(res.ok ? "sent" : "error");
     } catch {
       setStatus("error");
     }
   };
 
+  const inputClass =
+    "w-full border-b border-ink/15 bg-transparent py-3 text-sm text-ink placeholder:text-ink/30 focus:border-brand focus:outline-none transition-colors";
+
   return (
-    <section id="inquiry-form" className="mx-auto max-w-2xl px-6 py-24 sm:py-32">
-      <div className="bg-white p-8 shadow-sm sm:p-12">
-        {formTitle && (
-          <h2 className="mb-10 text-center font-display text-3xl font-medium text-ink sm:text-4xl">
-            {formTitle}
-          </h2>
-        )}
-        {status === "sent" ? (
-          <p className="py-12 text-center text-lg text-brand">{l("sent")}</p>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-1">
-            <input
-              type="text"
-              placeholder={l("name")}
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              required
-              className="input"
-            />
-            <input
-              type="tel"
-              placeholder={l("phone")}
-              value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              required
-              className="input"
-            />
-            <input
-              type="email"
-              placeholder={l("email")}
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="input"
-            />
-            <input
-              type="date"
-              placeholder={l("date")}
-              value={form.date}
-              onChange={(e) => setForm({ ...form, date: e.target.value })}
-              className="input"
-            />
-            <textarea
-              placeholder={l("message")}
-              value={form.message}
-              onChange={(e) => setForm({ ...form, message: e.target.value })}
-              rows={4}
-              className="input resize-none"
-            />
-            {status === "error" && (
-              <p className="text-sm text-red-500">{l("error")}</p>
-            )}
-            <div className="pt-6">
-              <button
-                type="submit"
-                disabled={status === "sending"}
-                className="w-full border border-ink/25 px-9 py-4 text-xs font-medium uppercase tracking-[0.25em] text-ink transition-all duration-300 hover:border-brand hover:bg-brand hover:text-cream disabled:opacity-50"
-              >
-                {status === "sending" ? "..." : l("submit")}
-              </button>
-            </div>
-          </form>
-        )}
+    <section id="inquiry-form" className="mx-auto max-w-xl px-6 py-24 sm:py-32">
+      <div className="text-center">
+        <h2 className="font-display text-3xl font-medium text-ink sm:text-4xl">
+          {formTitle || "Get in Touch"}
+        </h2>
+        <div className="mx-auto mt-4 mb-12 h-px w-12 bg-brand" />
       </div>
+      {status === "sent" ? (
+        <p className="py-12 text-center text-lg text-brand">{l("sent")}</p>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <input
+            type="text"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            placeholder={l("name")}
+            required
+            className={inputClass}
+          />
+          <input
+            type="tel"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            placeholder={l("phone")}
+            required
+            className={inputClass}
+          />
+          <input
+            type="email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            placeholder={l("email")}
+            className={inputClass}
+          />
+          <input
+            type="text"
+            value={form.date}
+            onChange={(e) => setForm({ ...form, date: e.target.value })}
+            placeholder={l("date")}
+            onFocus={(e) => (e.target.type = "date")}
+            onBlur={(e) => { if (!e.target.value) e.target.type = "text"; }}
+            className={inputClass}
+          />
+          <textarea
+            value={form.message}
+            onChange={(e) => setForm({ ...form, message: e.target.value })}
+            placeholder={l("message")}
+            rows={4}
+            className={`${inputClass} resize-none`}
+          />
+          {status === "error" && (
+            <p className="text-sm text-red-500">{l("error")}</p>
+          )}
+          <div className="pt-6">
+            <button
+              type="submit"
+              disabled={status === "sending"}
+              className="w-full border border-ink/25 px-9 py-4 text-xs font-medium uppercase tracking-[0.25em] text-ink transition-all duration-300 hover:border-brand hover:bg-brand hover:text-cream disabled:opacity-50"
+            >
+              {status === "sending" ? "..." : l("submit")}
+            </button>
+          </div>
+        </form>
+      )}
     </section>
   );
 }
