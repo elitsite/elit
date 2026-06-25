@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { Save, Loader2, Plus, Trash2, Upload, X, Languages } from 'lucide-react';
-import type { EventContent, LocalizedText, EventSection, PortfolioItem } from '@/lib/supabase';
+import type { EventContent, LocalizedText, EventSection, PortfolioItem, ProcessStep } from '@/lib/supabase';
 
 /* ================================================================
  *  Sub-components defined OUTSIDE of EventEditor to avoid
@@ -185,6 +185,7 @@ const emptyContent: EventContent = {
     media_image: '',
     sections: [],
     quote_image: '', quote_kicker: {}, quote_text: {}, quote_author: {},
+    process_kicker: {}, process_title: {}, process_steps: [], process_cta: {},
     portfolio_kicker: {}, portfolio_title: {},
     portfolio: [],
     packages_kicker: {}, packages_title: {},
@@ -278,6 +279,24 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
         setField('gallery', (content.gallery || []).filter((_, idx) => idx !== i));
     };
 
+    // ── Process step helpers ──
+    const addProcessStep = () => {
+        const step: ProcessStep = { title: {}, text: {} };
+        setField('process_steps', [...(content.process_steps || []), step]);
+    };
+
+    const removeProcessStep = (i: number) => {
+        setField('process_steps', (content.process_steps || []).filter((_, idx) => idx !== i));
+    };
+
+    const handleProcessStepChange = useCallback((i: number, field: 'title' | 'text', lang: 'en' | 'uk' | 'nl', value: string) => {
+        setContent(prev => {
+            const steps = [...(prev.process_steps || [])];
+            steps[i] = { ...steps[i], [field]: { ...steps[i][field], [lang]: value } };
+            return { ...prev, process_steps: steps };
+        });
+    }, []);
+
     // ── Auto-translate: collect all EN texts, send to API, fill empty UK/NL ──
     const handleAutoTranslate = async () => {
         // Collect all localized text fields with their EN values
@@ -288,6 +307,7 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
             'portfolio_kicker', 'portfolio_title',
             'packages_kicker', 'packages_title',
             'decor_kicker', 'decor_title',
+            'process_kicker', 'process_title', 'process_cta',
             'form_title',
         ];
 
@@ -312,6 +332,12 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
             (content[key] || []).forEach((item, i) => {
                 if (item.caption?.en?.trim()) texts.push({ key: `${key}_${i}_caption`, value: item.caption.en });
             });
+        });
+
+        // Process steps
+        (content.process_steps || []).forEach((step, i) => {
+            if (step.title?.en?.trim()) texts.push({ key: `process_step_${i}_title`, value: step.title.en });
+            if (step.text?.en?.trim()) texts.push({ key: `process_step_${i}_text`, value: step.text.en });
         });
 
         if (texts.length === 0) return;
@@ -374,6 +400,26 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                     });
                     (next as Record<string, unknown>)[key] = items;
                 });
+
+                // Fill process step translations
+                const steps = [...(next.process_steps || [])];
+                steps.forEach((step, i) => {
+                    const tKey = `process_step_${i}_title`;
+                    const txKey = `process_step_${i}_text`;
+                    if (translations[tKey]) {
+                        const t = { ...step.title };
+                        if (!t.uk?.trim() && translations[tKey].uk) t.uk = translations[tKey].uk;
+                        if (!t.nl?.trim() && translations[tKey].nl) t.nl = translations[tKey].nl;
+                        steps[i] = { ...steps[i], title: t };
+                    }
+                    if (translations[txKey]) {
+                        const t = { ...step.text };
+                        if (!t.uk?.trim() && translations[txKey].uk) t.uk = translations[txKey].uk;
+                        if (!t.nl?.trim() && translations[txKey].nl) t.nl = translations[txKey].nl;
+                        steps[i] = { ...steps[i], text: t };
+                    }
+                });
+                next.process_steps = steps;
 
                 return next;
             });
@@ -486,6 +532,49 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                     <LangInputs label={at.events_quote_kicker} value={getLocalized('quote_kicker')} onChange={(lang, val) => handleLocalizedChange('quote_kicker', lang, val)} at={at} />
                     <LangInputs label={at.events_quote_text} value={getLocalized('quote_text')} onChange={(lang, val) => handleLocalizedChange('quote_text', lang, val)} at={at} multiline />
                     <LangInputs label={at.events_quote_author} value={getLocalized('quote_author')} onChange={(lang, val) => handleLocalizedChange('quote_author', lang, val)} at={at} />
+                </div>
+            </div>
+
+            {/* ── Process Section ── */}
+            <SectionHeader title="Process / Workflow" />
+            <div className={cardClass}>
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-bold">{at.events_process || 'Process'}</h3>
+                    {(content.process_steps || []).length < 5 && (
+                        <button onClick={addProcessStep} className="flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                            <Plus size={16} /> {at.events_add_step || 'Add step'}
+                        </button>
+                    )}
+                </div>
+                <div className="space-y-4 mb-6">
+                    <LangInputs label={at.events_process_kicker || 'Section kicker'} value={getLocalized('process_kicker')} onChange={(lang, val) => handleLocalizedChange('process_kicker', lang, val)} at={at} />
+                    <LangInputs label={at.events_process_title || 'Section title'} value={getLocalized('process_title')} onChange={(lang, val) => handleLocalizedChange('process_title', lang, val)} at={at} />
+                    <LangInputs label={at.events_process_cta || 'CTA button text'} value={getLocalized('process_cta')} onChange={(lang, val) => handleLocalizedChange('process_cta', lang, val)} at={at} />
+                </div>
+                <div className="space-y-4">
+                    {(content.process_steps || []).map((step, i) => (
+                        <div key={`step-${i}`} className="border border-zinc-200 rounded-lg p-4 space-y-3">
+                            <div className="flex items-center justify-between">
+                                <span className="text-lg font-display font-medium text-zinc-400">{['I', 'II', 'III', 'IV', 'V'][i] || i + 1}</span>
+                                <button onClick={() => removeProcessStep(i)} className="text-red-500 hover:text-red-600">
+                                    <Trash2 size={16} />
+                                </button>
+                            </div>
+                            <LangInputs
+                                label={at.events_step_title || 'Step title'}
+                                value={step.title || {}}
+                                onChange={(lang, val) => handleProcessStepChange(i, 'title', lang, val)}
+                                at={at}
+                            />
+                            <LangInputs
+                                label={at.events_step_text || 'Step description'}
+                                value={step.text || {}}
+                                onChange={(lang, val) => handleProcessStepChange(i, 'text', lang, val)}
+                                at={at}
+                                multiline
+                            />
+                        </div>
+                    ))}
                 </div>
             </div>
 

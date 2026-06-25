@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import type { EventContent, LocalizedText, EventSection, PortfolioItem } from "@/lib/supabase";
+import type { EventContent, LocalizedText, EventSection, PortfolioItem, ProcessStep } from "@/lib/supabase";
 import type { Locale } from "@/i18n/routing";
 
 // ── Helpers ──
@@ -394,6 +394,76 @@ function InquiryForm({ content, locale, slug }: { content: EventContent; locale:
   );
 }
 
+const ROMAN = ['I', 'II', 'III', 'IV', 'V'];
+
+function ProcessBlock({ content, locale }: { content: EventContent; locale: Locale }) {
+  const steps = content.process_steps;
+  if (!steps || steps.length === 0) return null;
+
+  const kicker = t(content.process_kicker, locale);
+  const title = t(content.process_title, locale);
+  const cta = t(content.process_cta, locale);
+
+  return (
+    <section className="bg-cream py-24 sm:py-32">
+      <div className="mx-auto max-w-content px-6 sm:px-8">
+        {/* Header */}
+        <div className="mb-16 text-center sm:mb-20">
+          {kicker && (
+            <span className="mb-4 block text-xs font-semibold uppercase tracking-[0.3em] text-brand">
+              {kicker}
+            </span>
+          )}
+          {title && (
+            <h2 className="font-display text-4xl font-medium text-ink sm:text-5xl">
+              {title}
+            </h2>
+          )}
+          {/* Decorative line */}
+          <div className="mx-auto mt-6 h-px w-12 bg-brand/40" />
+        </div>
+
+        {/* Steps grid */}
+        <div className="grid grid-cols-1 gap-12 sm:gap-8 md:grid-cols-3">
+          {steps.slice(0, 3).map((step, i) => {
+            const stepTitle = t(step.title, locale);
+            const stepText = t(step.text, locale);
+            return (
+              <div key={i} className="text-center">
+                <span className="mb-5 block font-display text-3xl font-light text-ink/20 sm:text-4xl">
+                  {ROMAN[i] || (i + 1)}
+                </span>
+                {stepTitle && (
+                  <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-ink">
+                    {stepTitle}
+                  </h3>
+                )}
+                {stepText && (
+                  <p className="mx-auto max-w-xs text-sm leading-relaxed text-ink/55">
+                    {stepText}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* CTA button */}
+        {cta && (
+          <div className="mt-14 text-center sm:mt-16">
+            <a
+              href="#inquiry-form"
+              className="inline-flex items-center border border-ink/25 px-10 py-4 text-xs font-medium uppercase tracking-[0.25em] text-ink transition-all duration-300 hover:border-brand hover:bg-brand hover:text-cream"
+            >
+              {cta}
+            </a>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
 // ── Main Component ──
 
 interface EventLandingProps {
@@ -430,6 +500,7 @@ export default function EventLanding({ content, locale, slug, anchor }: EventLan
       <MediaBlock content={content} locale={locale} />
       <FramedSections sections={content.sections} locale={locale} />
       <QuoteBlock content={content} locale={locale} />
+      <ProcessBlock content={content} locale={locale} />
       <div id="portfolio">
         <GridBlock
           items={content.portfolio}
