@@ -342,7 +342,7 @@ function GalleryStrip({ images }: { images: string[] }) {
         <div className="mx-auto mt-4 h-px w-12 bg-brand" />
       </div>
       {hasImages ? (
-        <div className="flex gap-3 overflow-x-auto px-4 pb-4 no-scrollbar sm:gap-4 sm:px-6">
+        <div className="flex gap-3 justify-center overflow-x-auto px-4 pb-4 no-scrollbar sm:gap-4 sm:px-6">
           {images.map((src, i) => (
             <div key={i} className="relative w-56 h-56 flex-shrink-0 overflow-hidden sm:w-72 sm:h-72 lg:w-80 lg:h-80">
               <Image
@@ -355,7 +355,7 @@ function GalleryStrip({ images }: { images: string[] }) {
           ))}
         </div>
       ) : (
-        <div className="flex gap-3 overflow-x-auto px-4 pb-4 no-scrollbar sm:gap-4 sm:px-6">
+        <div className="flex gap-3 justify-center overflow-x-auto px-4 pb-4 no-scrollbar sm:gap-4 sm:px-6">
           {[0, 1, 2, 3].map((i) => (
             <div key={i} className="w-56 h-56 flex-shrink-0 bg-taupe/10 flex items-center justify-center text-ink/15 text-xs sm:w-72 sm:h-72 lg:w-80 lg:h-80">
               800 × 800 px
