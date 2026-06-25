@@ -11,8 +11,8 @@ import {
   Instagram,
   Facebook,
   Send,
-  MessageCircle,
 } from "lucide-react";
+import WhatsAppIcon from "./icons/WhatsAppIcon";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "@/i18n/navigation";
 import { BRAND_NAME } from "@/lib/site";
@@ -184,7 +184,7 @@ export default function Header({ contact }: { contact?: HeaderContact }) {
                           aria-label="WhatsApp"
                           className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-ink/60 transition-colors hover:border-brand hover:text-brand"
                         >
-                          <MessageCircle size={18} strokeWidth={1.5} />
+                          <WhatsAppIcon size={18} />
                         </a>
                       )}
                       {contact?.telegram_link && (

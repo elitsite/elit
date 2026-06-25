@@ -36,6 +36,7 @@
     "category_label": "Колекція",
     "all_categories": "Усі",
     "reset": "Скинути фільтри",
+    "filters": "Фільтри",
     "load_more": "Показати ще",
     "price_any": "Усі ціни",
     "price_up_to": "До €{value}",

@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
-import { Truck, CreditCard, MapPin, Clock, Phone, MessageCircle } from 'lucide-react';
+import { Truck, CreditCard, MapPin, Clock, Phone, Send } from 'lucide-react';
+import WhatsAppIcon from './icons/WhatsAppIcon';
 import type { LocalizedSettings } from '@/lib/i18n-content';
 
 export default function HomeInfoSections({ settings }: { settings: LocalizedSettings }) {
@@ -115,7 +116,7 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
                             )}
                             {settings.telegram_link && (
                                 <div className="flex items-center gap-3">
-                                    <MessageCircle size={16} className="text-ink/30 flex-shrink-0" />
+                                    <Send size={16} className="text-ink/30 flex-shrink-0" />
                                     <a href={settings.telegram_link} target="_blank" rel="noopener noreferrer"
                                        className="text-sm text-ink/60 hover:text-brand transition-colors">
                                         Telegram
@@ -124,7 +125,7 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
                             )}
                             {settings.whatsapp_link && (
                                 <div className="flex items-center gap-3">
-                                    <MessageCircle size={16} className="text-ink/30 flex-shrink-0" />
+                                    <WhatsAppIcon size={16} className="text-ink/30 flex-shrink-0" />
                                     <a href={settings.whatsapp_link} target="_blank" rel="noopener noreferrer"
                                        className="text-sm text-ink/60 hover:text-brand transition-colors">
                                         WhatsApp

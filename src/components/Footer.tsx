@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { Instagram, Facebook, MessageCircle } from "lucide-react";
+import { Instagram, Facebook } from "lucide-react";
+import WhatsAppIcon from "./icons/WhatsAppIcon";
 
 export default function Footer() {
   const t = useTranslations("Footer");
@@ -93,13 +94,13 @@ export default function Footer() {
                 <Facebook size={20} strokeWidth={1.5} />
               </a>
               <a
-                href="https://t.me"
+                href="https://wa.me"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Telegram"
+                aria-label="WhatsApp"
                 className="text-ink/50 transition-colors hover:text-brand"
               >
-                <MessageCircle size={20} strokeWidth={1.5} />
+                <WhatsAppIcon size={20} />
               </a>
             </div>
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { Search, SlidersHorizontal, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   normalizePriceFilters,
@@ -14,7 +14,6 @@ import ProductCard from "./ProductCard";
 
 type SortType = "newest" | "price_asc" | "price_desc" | "name_asc";
 
-/** Homepage collections shown as category chips (leaf slug → Categories label). */
 const COLLECTIONS = [
   { slug: "mono-bouquets", labelKey: "mono_bouquets" },
   { slug: "mixed-bouquets", labelKey: "mixed_bouquets" },
@@ -27,15 +26,9 @@ const PAGE_SIZE = 12;
 type Props = {
   products: Product[];
   locale: Locale;
-  /** Raw price filters from settings (falls back to defaults). */
   priceFilters?: PriceFilter[];
 };
 
-/**
- * Filterable catalog for the homepage "Discover our collections" section.
- * Ports the barvinok filter logic (search + price + sort + category) and
- * adapts it to the Elite Bloemen visual language.
- */
 export default function CollectionExplorer({
   products,
   locale,
@@ -49,8 +42,8 @@ export default function CollectionExplorer({
   const [sortType, setSortType] = useState<SortType>("newest");
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
-  // Localize once so search & sort operate on the active-locale text.
   const localized = useMemo(
     () =>
       products.map((product) => ({
@@ -60,7 +53,6 @@ export default function CollectionExplorer({
     [products, locale],
   );
 
-  // Dynamic price ranges from settings (with sensible defaults).
   const validFilters = useMemo(
     () => normalizePriceFilters(priceFilters),
     [priceFilters],
@@ -86,7 +78,6 @@ export default function CollectionExplorer({
     ];
   }, [validFilters, t]);
 
-  // Reset a dead price filter if settings changed underneath it.
   useEffect(() => {
     if (
       activePriceRange !== "all" &&
@@ -96,7 +87,6 @@ export default function CollectionExplorer({
     }
   }, [priceRanges, activePriceRange]);
 
-  // Only show category chips for collections that actually have products.
   const availableCategories = useMemo(() => {
     const present = new Set(products.map((p) => p.category));
     return COLLECTIONS.filter((c) => present.has(c.slug));
@@ -104,11 +94,9 @@ export default function CollectionExplorer({
 
   const filtered = useMemo(() => {
     let list = [...localized];
-
     if (activeCategory !== "all") {
       list = list.filter((x) => x.product.category === activeCategory);
     }
-
     const range = priceRanges.find((r) => r.id === activePriceRange);
     if (range && activePriceRange !== "all") {
       list = list.filter((x) => {
@@ -116,7 +104,6 @@ export default function CollectionExplorer({
         return fp >= range.min && fp <= range.max;
       });
     }
-
     const q = searchQuery.trim().toLowerCase();
     if (q) {
       list = list.filter(
@@ -125,7 +112,6 @@ export default function CollectionExplorer({
           x.view.display.description.toLowerCase().includes(q),
       );
     }
-
     if (sortType === "price_asc") {
       list.sort(
         (a, b) =>
@@ -141,16 +127,8 @@ export default function CollectionExplorer({
     } else if (sortType === "name_asc") {
       list.sort((a, b) => a.view.display.name.localeCompare(b.view.display.name));
     }
-
     return list;
-  }, [
-    localized,
-    activeCategory,
-    activePriceRange,
-    searchQuery,
-    sortType,
-    priceRanges,
-  ]);
+  }, [localized, activeCategory, activePriceRange, searchQuery, sortType, priceRanges]);
 
   const display = filtered.slice(0, visibleCount);
   const hasMore = display.length < filtered.length;
@@ -160,7 +138,6 @@ export default function CollectionExplorer({
     sortType !== "newest" ||
     !!searchQuery;
 
-  // Reset pagination whenever filters change.
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
   }, [activeCategory, activePriceRange, searchQuery, sortType]);
@@ -180,107 +157,141 @@ export default function CollectionExplorer({
   ];
 
   const chipClass = (active: boolean) =>
-    `px-4 py-1.5 text-[11px] font-medium uppercase tracking-[0.15em] border transition-colors ${
+    `px-3 py-1 text-[10px] font-medium uppercase tracking-[0.1em] border rounded-full transition-colors ${
       active
         ? "border-brand bg-brand text-cream"
-        : "border-ink/20 text-ink/60 hover:border-brand hover:text-brand"
+        : "border-ink/15 text-ink/50 hover:border-brand hover:text-brand"
     }`;
 
-  const labelClass =
-    "mb-2.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-ink/40";
+  const activeFilterCount = [
+    activeCategory !== "all",
+    activePriceRange !== "all",
+    sortType !== "newest",
+  ].filter(Boolean).length;
 
   return (
     <div>
-      {/* Filter panel */}
-      <div className="mb-8 space-y-5 border border-black/5 bg-white p-5 sm:p-6">
-        {/* Search */}
-        <div className="relative">
-          <Search
-            size={16}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/30"
-          />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={t("search_placeholder")}
-            className="w-full border border-ink/15 bg-cream/40 py-3 pl-11 pr-4 text-sm text-ink placeholder:text-ink/40 focus:border-brand focus:outline-none"
-          />
-        </div>
-
-        {/* Category */}
-        {availableCategories.length > 1 && (
-          <div>
-            <p className={labelClass}>{t("category_label")}</p>
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setActiveCategory("all")}
-                className={chipClass(activeCategory === "all")}
-              >
-                {t("all_categories")}
-              </button>
-              {availableCategories.map((c) => (
-                <button
-                  key={c.slug}
-                  onClick={() => setActiveCategory(c.slug)}
-                  className={chipClass(activeCategory === c.slug)}
-                >
-                  {tCat(c.labelKey)}
-                </button>
-              ))}
-            </div>
+      {/* Compact filter bar */}
+      <div className="mb-6 space-y-3">
+        {/* Top row: search + filter toggle */}
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search
+              size={14}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/30"
+            />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t("search_placeholder")}
+              className="w-full border border-ink/10 bg-white py-2 pl-9 pr-3 text-xs text-ink placeholder:text-ink/35 focus:border-brand focus:outline-none rounded-lg"
+            />
           </div>
-        )}
-
-        {/* Price */}
-        <div>
-          <p className={labelClass}>{t("price_filter")}</p>
-          <div className="flex flex-wrap gap-2">
-            {priceRanges.map((r) => (
-              <button
-                key={r.id}
-                onClick={() => setActivePriceRange(r.id)}
-                className={chipClass(activePriceRange === r.id)}
-              >
-                {r.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Sort */}
-        <div>
-          <p className={labelClass}>{t("sort_label")}</p>
-          <div className="flex flex-wrap gap-2">
-            {sortOptions.map((s) => (
-              <button
-                key={s.id}
-                onClick={() => setSortType(s.id)}
-                className={chipClass(sortType === s.id)}
-              >
-                {t(s.key)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {hasActiveFilters && (
           <button
-            onClick={resetFilters}
-            className="text-xs font-medium uppercase tracking-[0.15em] text-brand-dark transition-colors hover:text-brand"
+            onClick={() => setFiltersOpen((v) => !v)}
+            className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-[10px] font-medium uppercase tracking-[0.1em] transition-colors ${
+              filtersOpen || hasActiveFilters
+                ? "border-brand bg-brand/5 text-brand"
+                : "border-ink/10 text-ink/50 hover:border-brand"
+            }`}
           >
-            {t("reset")}
+            <SlidersHorizontal size={14} />
+            <span className="hidden sm:inline">{t("filters")}</span>
+            {activeFilterCount > 0 && (
+              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-brand text-[9px] font-bold text-cream">
+                {activeFilterCount}
+              </span>
+            )}
           </button>
+        </div>
+
+        {/* Expandable filters */}
+        {filtersOpen && (
+          <div className="rounded-lg border border-ink/5 bg-white p-3 sm:p-4 space-y-3 animate-fade-in">
+            {/* Price row */}
+            <div>
+              <p className="mb-1.5 text-[9px] font-semibold uppercase tracking-[0.15em] text-ink/35">
+                {t("price_filter")}
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {priceRanges.map((r) => (
+                  <button
+                    key={r.id}
+                    onClick={() => setActivePriceRange(r.id)}
+                    className={chipClass(activePriceRange === r.id)}
+                  >
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Sort row */}
+            <div>
+              <p className="mb-1.5 text-[9px] font-semibold uppercase tracking-[0.15em] text-ink/35">
+                {t("sort_label")}
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {sortOptions.map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => setSortType(s.id)}
+                    className={chipClass(sortType === s.id)}
+                  >
+                    {t(s.key)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Category row */}
+            {availableCategories.length > 1 && (
+              <div>
+                <p className="mb-1.5 text-[9px] font-semibold uppercase tracking-[0.15em] text-ink/35">
+                  {t("category_label")}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  <button
+                    onClick={() => setActiveCategory("all")}
+                    className={chipClass(activeCategory === "all")}
+                  >
+                    {t("all_categories")}
+                  </button>
+                  {availableCategories.map((c) => (
+                    <button
+                      key={c.slug}
+                      onClick={() => setActiveCategory(c.slug)}
+                      className={chipClass(activeCategory === c.slug)}
+                    >
+                      {tCat(c.labelKey)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Reset */}
+            {hasActiveFilters && (
+              <button
+                onClick={resetFilters}
+                className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-[0.1em] text-brand transition-colors hover:text-brand-dark"
+              >
+                <X size={12} />
+                {t("reset")}
+              </button>
+            )}
+          </div>
         )}
       </div>
 
       {/* Result count */}
-      <p className="mb-6 text-xs uppercase tracking-[0.2em] text-ink/50">
+      <p className="mb-4 text-[10px] uppercase tracking-[0.15em] text-ink/40">
         {t("count", { count: filtered.length })}
       </p>
 
       {display.length === 0 ? (
-        <p className="py-20 text-center text-ink/50">{t("empty")}</p>
+        <p className="py-16 text-center text-sm text-ink/50">{t("empty")}</p>
       ) : (
         <>
           <div className="grid grid-cols-2 gap-3 sm:gap-x-5 sm:gap-y-10 lg:grid-cols-4">
@@ -290,10 +301,10 @@ export default function CollectionExplorer({
           </div>
 
           {hasMore && (
-            <div className="mt-10 flex justify-center">
+            <div className="mt-8 flex justify-center sm:mt-10">
               <button
                 onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-                className="border border-ink/30 px-9 py-3.5 text-xs font-medium uppercase tracking-[0.2em] text-ink transition-colors hover:border-brand hover:bg-brand hover:text-cream"
+                className="border border-ink/25 px-7 py-3 text-[10px] font-medium uppercase tracking-[0.15em] text-ink transition-colors hover:border-brand hover:bg-brand hover:text-cream rounded-lg"
               >
                 {t("load_more")}
               </button>

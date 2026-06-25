@@ -36,6 +36,7 @@
     "category_label": "Collection",
     "all_categories": "All",
     "reset": "Reset filters",
+    "filters": "Filters",
     "load_more": "Load more",
     "price_any": "All prices",
     "price_up_to": "Up to €{value}",

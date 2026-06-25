@@ -36,6 +36,7 @@
     "category_label": "Collectie",
     "all_categories": "Alles",
     "reset": "Filters wissen",
+    "filters": "Filters",
     "load_more": "Meer laden",
     "price_any": "Alle prijzen",
     "price_up_to": "Tot €{value}",
