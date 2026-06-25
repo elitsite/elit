@@ -185,7 +185,6 @@ const emptyContent: EventContent = {
     media_image: '',
     sections: [],
     quote_image: '', quote_kicker: {}, quote_text: {}, quote_author: {},
-    process_kicker: {}, process_title: {}, process_steps: [], process_cta: {},
     portfolio_kicker: {}, portfolio_title: {},
     portfolio: [],
     packages_kicker: {}, packages_title: {},
@@ -194,6 +193,7 @@ const emptyContent: EventContent = {
     decor: [],
     gallery: [],
     form_title: {},
+    process_steps: [],
 };
 
 export default function EventEditor({ slug, content: initialContent, at, uploadImage, onSave }: EventEditorProps) {
@@ -279,7 +279,7 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
         setField('gallery', (content.gallery || []).filter((_, idx) => idx !== i));
     };
 
-    // ── Process step helpers ──
+    // ── Process steps helpers ──
     const addProcessStep = () => {
         const step: ProcessStep = { title: {}, text: {} };
         setField('process_steps', [...(content.process_steps || []), step]);
@@ -307,7 +307,6 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
             'portfolio_kicker', 'portfolio_title',
             'packages_kicker', 'packages_title',
             'decor_kicker', 'decor_title',
-            'process_kicker', 'process_title', 'process_cta',
             'form_title',
         ];
 
@@ -327,17 +326,17 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
             if (s.text?.en?.trim()) texts.push({ key: `section_${i}_text`, value: s.text.en });
         });
 
+        // Process steps
+        (content.process_steps || []).forEach((s, i) => {
+            if (s.title?.en?.trim()) texts.push({ key: `process_${i}_title`, value: s.title.en });
+            if (s.text?.en?.trim()) texts.push({ key: `process_${i}_text`, value: s.text.en });
+        });
+
         // Portfolio / packages / decor captions
         (['portfolio', 'packages', 'decor'] as const).forEach(key => {
             (content[key] || []).forEach((item, i) => {
                 if (item.caption?.en?.trim()) texts.push({ key: `${key}_${i}_caption`, value: item.caption.en });
             });
-        });
-
-        // Process steps
-        (content.process_steps || []).forEach((step, i) => {
-            if (step.title?.en?.trim()) texts.push({ key: `process_step_${i}_title`, value: step.title.en });
-            if (step.text?.en?.trim()) texts.push({ key: `process_step_${i}_text`, value: step.text.en });
         });
 
         if (texts.length === 0) return;
@@ -386,6 +385,26 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                 });
                 next.sections = sections;
 
+                // Fill process steps translations
+                const processSteps = [...(next.process_steps || [])];
+                processSteps.forEach((s, i) => {
+                    const tKey = `process_${i}_title`;
+                    const txKey = `process_${i}_text`;
+                    if (translations[tKey]) {
+                        const t = { ...s.title };
+                        if (!t.uk?.trim() && translations[tKey].uk) t.uk = translations[tKey].uk;
+                        if (!t.nl?.trim() && translations[tKey].nl) t.nl = translations[tKey].nl;
+                        processSteps[i] = { ...processSteps[i], title: t };
+                    }
+                    if (translations[txKey]) {
+                        const t = { ...s.text };
+                        if (!t.uk?.trim() && translations[txKey].uk) t.uk = translations[txKey].uk;
+                        if (!t.nl?.trim() && translations[txKey].nl) t.nl = translations[txKey].nl;
+                        processSteps[i] = { ...processSteps[i], text: t };
+                    }
+                });
+                next.process_steps = processSteps;
+
                 // Fill portfolio / packages / decor captions
                 (['portfolio', 'packages', 'decor'] as const).forEach(key => {
                     const items = [...(next[key] || [])];
@@ -400,26 +419,6 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                     });
                     (next as Record<string, unknown>)[key] = items;
                 });
-
-                // Fill process step translations
-                const steps = [...(next.process_steps || [])];
-                steps.forEach((step, i) => {
-                    const tKey = `process_step_${i}_title`;
-                    const txKey = `process_step_${i}_text`;
-                    if (translations[tKey]) {
-                        const t = { ...step.title };
-                        if (!t.uk?.trim() && translations[tKey].uk) t.uk = translations[tKey].uk;
-                        if (!t.nl?.trim() && translations[tKey].nl) t.nl = translations[tKey].nl;
-                        steps[i] = { ...steps[i], title: t };
-                    }
-                    if (translations[txKey]) {
-                        const t = { ...step.text };
-                        if (!t.uk?.trim() && translations[txKey].uk) t.uk = translations[txKey].uk;
-                        if (!t.nl?.trim() && translations[txKey].nl) t.nl = translations[txKey].nl;
-                        steps[i] = { ...steps[i], text: t };
-                    }
-                });
-                next.process_steps = steps;
 
                 return next;
             });
@@ -535,27 +534,20 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                 </div>
             </div>
 
-            {/* ── Process Section ── */}
-            <SectionHeader title="Process / Workflow" />
+            {/* ── Process Steps Section ── */}
+            <SectionHeader title="Process Steps" />
             <div className={cardClass}>
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold">{at.events_process || 'Process'}</h3>
-                    {(content.process_steps || []).length < 5 && (
-                        <button onClick={addProcessStep} className="flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
-                            <Plus size={16} /> {at.events_add_step || 'Add step'}
-                        </button>
-                    )}
-                </div>
-                <div className="space-y-4 mb-6">
-                    <LangInputs label={at.events_process_kicker || 'Section kicker'} value={getLocalized('process_kicker')} onChange={(lang, val) => handleLocalizedChange('process_kicker', lang, val)} at={at} />
-                    <LangInputs label={at.events_process_title || 'Section title'} value={getLocalized('process_title')} onChange={(lang, val) => handleLocalizedChange('process_title', lang, val)} at={at} />
-                    <LangInputs label={at.events_process_cta || 'CTA button text'} value={getLocalized('process_cta')} onChange={(lang, val) => handleLocalizedChange('process_cta', lang, val)} at={at} />
+                    <h3 className="text-lg font-bold">🔢 {at.events_process || 'Process Steps (I / II / III)'}</h3>
+                    <button onClick={addProcessStep} className="flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                        <Plus size={16} /> {at.events_add_step || 'Add step'}
+                    </button>
                 </div>
                 <div className="space-y-4">
                     {(content.process_steps || []).map((step, i) => (
-                        <div key={`step-${i}`} className="border border-zinc-200 rounded-lg p-4 space-y-3">
+                        <div key={`process-${i}`} className="border border-zinc-200 rounded-lg p-4 space-y-3">
                             <div className="flex items-center justify-between">
-                                <span className="text-lg font-display font-medium text-zinc-400">{['I', 'II', 'III', 'IV', 'V'][i] || i + 1}</span>
+                                <span className="text-lg font-display font-light text-zinc-400">{['I', 'II', 'III', 'IV', 'V', 'VI'][i] || `#${i+1}`}</span>
                                 <button onClick={() => removeProcessStep(i)} className="text-red-500 hover:text-red-600">
                                     <Trash2 size={16} />
                                 </button>
@@ -575,6 +567,9 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                             />
                         </div>
                     ))}
+                    {(content.process_steps || []).length === 0 && (
+                        <p className="text-sm text-zinc-400 text-center py-4">No process steps yet. Add 3 steps for the best layout.</p>
+                    )}
                 </div>
             </div>
 

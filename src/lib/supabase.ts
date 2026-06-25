@@ -236,11 +236,6 @@ export interface EventContent {
     quote_kicker: LocalizedText;
     quote_text: LocalizedText;
     quote_author: LocalizedText;
-    /** Process / workflow section (3 steps) */
-    process_kicker: LocalizedText;
-    process_title: LocalizedText;
-    process_steps: ProcessStep[];
-    process_cta: LocalizedText;
     portfolio_kicker: LocalizedText;
     portfolio_title: LocalizedText;
     portfolio: PortfolioItem[];
@@ -252,6 +247,7 @@ export interface EventContent {
     decor: PortfolioItem[];
     gallery: string[];
     form_title: LocalizedText;
+    process_steps: ProcessStep[];
 }
 
 export interface EventPage {
