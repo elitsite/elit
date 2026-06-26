@@ -465,7 +465,6 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
     };
 
     const cardClass = "bg-white rounded-xl p-3 sm:p-6 shadow-lg";
-    const isWedding = slug === 'weddings';
 
     return (
         <div className="space-y-6">

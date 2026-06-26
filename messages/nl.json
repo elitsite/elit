@@ -114,7 +114,11 @@
     "collections": "Collecties",
     "contact": "Contact",
     "follow": "Volg ons",
-    "rights": "Alle rechten voorbehouden"
+    "rights": "Alle rechten voorbehouden",
+    "faq": "FAQ",
+    "delivery": "Bezorging",
+    "payment": "Betaling",
+    "returns": "Retourneren"
   },
   "Nav": {
     "home": "Home",

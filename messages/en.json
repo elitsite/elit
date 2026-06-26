@@ -114,7 +114,11 @@
     "collections": "Collections",
     "contact": "Contact",
     "follow": "Follow us",
-    "rights": "All rights reserved"
+    "rights": "All rights reserved",
+    "faq": "FAQ",
+    "delivery": "Delivery",
+    "payment": "Payment",
+    "returns": "Returns"
   },
   "Nav": {
     "home": "Home",
