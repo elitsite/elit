@@ -62,7 +62,7 @@ export default function AddToCartButton({
     <button
       type="button"
       onClick={handleClick}
-      className="flex w-full items-center justify-center gap-2 border border-ink bg-ink px-4 py-3 text-[11px] font-medium uppercase tracking-[0.15em] text-cream transition-colors hover:border-brand hover:bg-brand sm:px-8 sm:py-4 sm:text-xs sm:tracking-[0.2em]"
+      className="flex w-full items-center justify-center gap-2 bg-ink px-4 py-3 text-[9px] font-bold uppercase tracking-[0.2em] text-cream transition-all hover:bg-black sm:gap-3 sm:px-8 sm:py-4 sm:text-[11px] sm:tracking-[0.25em]"
     >
       {added ? <Check size={14} /> : <ShoppingBag size={14} strokeWidth={1.5} />}
       {label}

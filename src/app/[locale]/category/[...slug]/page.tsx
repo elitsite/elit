@@ -12,8 +12,9 @@ import {
 import { getProductsByCategorySlugs, getEventPage } from "@/lib/products";
 import type { Product, EventContent } from "@/lib/supabase";
 import { BRAND_NAME, buildLanguageAlternates, canonicalUrl } from "@/lib/site";
-import ProductCard from "@/components/ProductCard";
+import PaginatedProductGrid from "@/components/PaginatedProductGrid";
 import EventLanding from "@/components/EventLanding";
+import WeddingLanding from "@/components/WeddingLanding";
 
 export const revalidate = 300;
 
@@ -72,6 +73,9 @@ export default async function CategoryPage({
     const eventSlug = slug[slug.length - 1]; // 'weddings' | 'parties'
     const eventPage = await getEventPage(eventSlug);
     const content = (eventPage?.content ?? {}) as EventContent;
+    if (eventSlug === "weddings") {
+      return <WeddingLanding content={content} locale={locale as Locale} slug={eventSlug} />;
+    }
     return (
       <EventLanding
         content={content}
@@ -140,11 +144,7 @@ function CategoryView({
       {productNodes.length === 0 ? (
         <p className="py-24 text-center text-ink/50">{t("empty")}</p>
       ) : (
-        <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-x-5 sm:gap-y-10 lg:grid-cols-3 xl:grid-cols-4">
-          {productNodes.map((product) => (
-            <ProductCard key={product.id} product={product} locale={locale} />
-          ))}
-        </div>
+        <PaginatedProductGrid products={productNodes} locale={locale} />
       )}
     </main>
   );

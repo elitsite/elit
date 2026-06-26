@@ -23,7 +23,7 @@ export default function ProductCard({ product, locale }: Props) {
   return (
     <div className="group flex flex-col">
       <Link href={`/product/${product.id}`} className="block">
-        <div className="relative aspect-[3/4] overflow-hidden bg-white rounded-lg">
+        <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-white shadow-sm transition-shadow hover:shadow-xl sm:rounded-[2.5rem]">
           {product.image_url ? (
             <Image
               src={product.image_url}
@@ -53,18 +53,18 @@ export default function ProductCard({ product, locale }: Props) {
         </div>
       </Link>
 
-      <div className="mt-2.5 flex flex-1 flex-col items-center sm:mt-4">
+      <div className="mt-3 flex flex-1 flex-col items-center text-center w-full sm:mt-6">
         <Link href={`/product/${product.id}`} className="text-center">
-          <h3 className="text-[13px] leading-snug text-ink transition-colors group-hover:text-brand-dark sm:text-[15px]">
+          <h3 className="font-display text-sm font-medium text-ink transition-colors group-hover:text-brand-dark sm:text-lg lg:text-xl">
             {p.display.name}
           </h3>
         </Link>
         <PriceTag
           price={product.price}
           discount={product.discount}
-          className="mt-1 justify-center text-[13px] sm:mt-1.5 sm:text-[15px]"
+          className="mt-1 justify-center text-sm font-semibold sm:mt-2 sm:text-base lg:text-lg"
         />
-        <div className="mt-2.5 w-full sm:mt-4">
+        <div className="mt-2 w-full sm:mt-4">
           <AddToCartButton
             productId={product.id}
             name={p.display.name}

@@ -227,30 +227,92 @@ export interface ProcessStep {
 }
 
 export interface EventContent {
+    // ── Core hero ──
     hero_image: string;
     hero_title: LocalizedText;
     hero_subtitle: LocalizedText;
+    /** Wedding: small kicker above title ("A touch of magic") */
+    hero_kicker?: LocalizedText;
+    /** Wedding: hero CTA button text */
+    hero_button?: LocalizedText;
+
+    // ── Intro / What to expect ──
     intro_kicker: LocalizedText;
     intro_title: LocalizedText;
     intro_text: LocalizedText;
     intro_button: LocalizedText;
+    /** Wedding: second column text in the intro section */
+    intro_text_col2?: LocalizedText;
+
+    // ── Media & framed sections (used by Parties) ──
     media_image: string;
     sections: EventSection[];
+
+    // ── Full service (Wedding only) ──
+    full_service_image?: string;
+    full_service_title?: LocalizedText;
+    full_service_text?: LocalizedText;
+    /** Newline-separated list of included items (e.g. "+ Locatiemanagement\n+ Catering") */
+    full_service_included?: LocalizedText;
+    full_service_included_label?: LocalizedText;
+
+    // ── Other services (Wedding only) ──
+    other_services_kicker?: LocalizedText;
+    other_services_image?: string;
+    service1_title?: LocalizedText;
+    service1_text?: LocalizedText;
+    service1_italic?: LocalizedText;
+    service1_cta?: LocalizedText;
+    service2_title?: LocalizedText;
+    service2_text?: LocalizedText;
+    service2_italic?: LocalizedText;
+    service2_cta?: LocalizedText;
+
+    // ── Final choices (Wedding only) ──
+    final_choices_title?: LocalizedText;
+    final_choices_text?: LocalizedText;
+    final_choices_link?: LocalizedText;
+
+    // ── Quote / Love letters ──
     quote_image: string;
     quote_kicker: LocalizedText;
     quote_text: LocalizedText;
     quote_author: LocalizedText;
+
+    // ── Portfolio ──
     portfolio_kicker: LocalizedText;
     portfolio_title: LocalizedText;
     portfolio: PortfolioItem[];
+    /** Wedding: sidebar text next to portfolio grid */
+    portfolio_sidebar_text?: LocalizedText;
+
+    // ── Packages & Decor (used by Parties) ──
     packages_kicker: LocalizedText;
     packages_title: LocalizedText;
     packages: PortfolioItem[];
     decor_kicker: LocalizedText;
     decor_title: LocalizedText;
     decor: PortfolioItem[];
+
+    // ── Gallery (Instagram strip) ──
     gallery: string[];
+
+    // ── Bloom with us (Wedding only) ──
+    bloom_image?: string;
+    bloom_kicker?: LocalizedText;
+    bloom_title?: LocalizedText;
+    bloom_text?: LocalizedText;
+    bloom_button?: LocalizedText;
+
+    // ── CTA banner (Wedding only) ──
+    cta_title?: LocalizedText;
+    cta_text?: LocalizedText;
+    cta_button?: LocalizedText;
+
+    // ── Form ──
     form_title: LocalizedText;
+
+    // ── Process steps ──
     process_steps: ProcessStep[];
 }
 

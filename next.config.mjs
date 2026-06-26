@@ -8,6 +8,8 @@ const nextConfig = {
     remotePatterns: [
       // Supabase Storage public bucket (product images).
       { protocol: 'https', hostname: '**.supabase.co' },
+      // Pexels (event showcase images).
+      { protocol: 'https', hostname: 'images.pexels.com' },
     ],
   },
 };
