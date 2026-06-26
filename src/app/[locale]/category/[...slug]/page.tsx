@@ -132,6 +132,7 @@ function CategoryView({
   locale: Locale;
   trail: CategoryNode[];
   productNodes: Product[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   settings: any;
   node: CategoryNode;
 }) {
