@@ -130,7 +130,7 @@ export default function CategorySection({
   return (
     <section
       ref={sectionRef}
-      className="mx-auto mb-10 max-w-6xl px-4 sm:mb-20 sm:px-6 lg:px-8"
+      className="mx-auto my-12 max-w-6xl px-4 sm:my-20 sm:px-6 lg:px-8"
     >
       {/* Section Header */}
       <div className="relative mb-5 flex items-center sm:mb-8">

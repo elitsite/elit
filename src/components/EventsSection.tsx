@@ -30,7 +30,7 @@ export default function EventsSection() {
   ];
 
   return (
-    <section className="mx-auto mb-10 max-w-6xl px-4 sm:mb-20 sm:px-6 lg:px-8">
+    <section className="mx-auto my-12 max-w-6xl px-4 sm:my-20 sm:px-6 lg:px-8">
       <div className="relative mb-6 flex items-center sm:mb-10">
         <h2 className="flex-1 text-center font-display text-xl font-medium text-ink sm:text-3xl">
           {t("events")}

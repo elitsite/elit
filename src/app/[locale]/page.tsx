@@ -110,8 +110,7 @@ export default async function Home({
       </section>
 
 
-      {/* Discover our collections — search & filter */}
-      <section className="mx-auto max-w-6xl px-4 pt-10 sm:px-6 sm:pt-14 lg:px-8">
+      <section className="mx-auto max-w-6xl px-4 my-12 sm:px-6 sm:my-20 lg:px-8">
         <div className="text-center">
           <h2 className="font-display text-2xl font-medium text-ink sm:text-4xl lg:text-5xl">
             {t("shop_by_category")}
