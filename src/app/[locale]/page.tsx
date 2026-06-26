@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { type Locale } from "@/i18n/routing";
+import Image from "next/image";
 import { getProductsByCategorySlugs, getSettings } from "@/lib/products";
 import { localizeSettings } from "@/lib/i18n-content";
 import CollectionExplorer from "@/components/CollectionExplorer";
@@ -52,6 +53,28 @@ export default async function Home({
         >
           {nav("catalog")}
         </Link>
+
+        {/* Hero image — logo3 on mobile, logo2 on desktop */}
+        <div className="mt-10 w-full flex justify-center sm:mt-14">
+          {/* Mobile image: logo3 */}
+          <Image
+            src="/logo3.png"
+            alt="Alya Bloemen"
+            width={420}
+            height={420}
+            className="block sm:hidden w-[85vw] max-w-[380px] h-auto object-contain"
+            priority
+          />
+          {/* Desktop image: logo2 */}
+          <Image
+            src="/logo2.png"
+            alt="Alya Bloemen"
+            width={820}
+            height={500}
+            className="hidden sm:block w-full max-w-[760px] h-auto object-contain"
+            priority
+          />
+        </div>
       </section>
 
       {/* About us */}

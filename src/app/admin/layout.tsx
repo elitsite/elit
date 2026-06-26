@@ -1,8 +1,8 @@
 import '../globals.css';
 
 export const metadata = {
-  title: 'Admin — Elite Bloemen',
-  description: 'Elite Bloemen admin panel',
+  title: 'Admin — Alya Bloemen',
+  description: 'Alya Bloemen admin panel',
 }
 
 export default function AdminLayout({

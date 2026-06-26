@@ -14,7 +14,7 @@ export default function Footer() {
           {/* Brand tagline */}
           <div className="space-y-3">
             <h3 className="font-display text-xl font-medium text-ink">
-              Elite Bloemen
+              Alya Bloemen
             </h3>
             <p className="text-ink/50">{t("tagline")}</p>
           </div>
@@ -107,7 +107,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 border-t border-black/5 pt-6 text-center text-xs text-ink/40 sm:mt-12 sm:pt-8">
-          <p>© {new Date().getFullYear()} Elite Bloemen. {t("rights")}.</p>
+          <p>© {new Date().getFullYear()} Alya Bloemen. {t("rights")}.</p>
         </div>
       </div>
     </footer>

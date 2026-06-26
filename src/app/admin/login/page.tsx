@@ -44,7 +44,7 @@ export default function AdminLoginPage() {
                         <Lock className="text-[#D4AF37]" size={32} />
                     </div>
                     <h1 className="font-serif text-2xl font-bold text-zinc-900">Админ-панель</h1>
-                    <p className="text-zinc-500 mt-2 text-sm">Elite Bloemen</p>
+                    <p className="text-zinc-500 mt-2 text-sm">Alya Bloemen</p>
                 </div>
 
                 <form onSubmit={handleLogin} className="space-y-4">

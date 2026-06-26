@@ -4,7 +4,7 @@ export type AdminLang = 'ru' | 'en';
 
 const en = {
     // Header
-    header_title: 'Elite Bloemen — Control Panel',
+    header_title: 'Alya Bloemen — Control Panel',
     btn_open: 'Open',
     btn_closed: 'Closed',
     btn_delivery_on: 'Delivery ✓',
@@ -202,7 +202,7 @@ const en = {
 };
 
 const ru: typeof en = {
-    header_title: 'Elite Bloemen — Панель управления',
+    header_title: 'Alya Bloemen — Панель управления',
     btn_open: 'Открыто',
     btn_closed: 'Закрыто',
     btn_delivery_on: 'Доставка ✓',

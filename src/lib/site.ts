@@ -1,5 +1,5 @@
 /**
- * Central SEO / site configuration for Elite Bloemen.
+ * Central SEO / site configuration for Alya Bloemen.
  *
  * Single source of truth for the canonical site URL, locale → hreflang and
  * locale → Open Graph locale mappings, and business contact data used for
@@ -9,10 +9,10 @@ import { routing, type Locale } from '@/i18n/routing';
 
 /** Absolute, canonical site origin (no trailing slash). Override per env. */
 export const SITE_URL = (
-    process.env.NEXT_PUBLIC_SITE_URL || 'https://elite-bloemen.com'
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://alya-bloemen.com'
 ).replace(/\/$/, '');
 
-export const BRAND_NAME = 'Elite Bloemen';
+export const BRAND_NAME = 'Alya Bloemen';
 
 /** Locales re-exported from routing so SEO code has one import surface. */
 export const locales = routing.locales;
