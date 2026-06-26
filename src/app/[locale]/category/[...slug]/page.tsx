@@ -9,10 +9,11 @@ import {
   getLeafSlugsUnder,
   type CategoryNode,
 } from "@/lib/categories";
-import { getProductsByCategorySlugs, getEventPage } from "@/lib/products";
+import { getProductsByCategorySlugs, getEventPage, getSettings } from "@/lib/products";
 import type { Product, EventContent } from "@/lib/supabase";
 import { BRAND_NAME, buildLanguageAlternates, canonicalUrl } from "@/lib/site";
-import PaginatedProductGrid from "@/components/PaginatedProductGrid";
+import { localizeSettings } from "@/lib/i18n-content";
+import CollectionExplorer from "@/components/CollectionExplorer";
 import EventLanding from "@/components/EventLanding";
 import WeddingLanding from "@/components/WeddingLanding";
 
@@ -103,13 +104,20 @@ export default async function CategoryPage({
   }
 
   const leafSlugs = getLeafSlugsUnder(match.node);
-  const products = await getProductsByCategorySlugs(leafSlugs);
+  const [products, rawSettings] = await Promise.all([
+    getProductsByCategorySlugs(leafSlugs),
+    getSettings(),
+  ]);
+
+  const settings = rawSettings ? localizeSettings(rawSettings, locale as Locale) : null;
 
   return (
     <CategoryView
       locale={locale as Locale}
       trail={match.trail}
       productNodes={products}
+      settings={settings}
+      node={match.node}
     />
   );
 }
@@ -118,10 +126,14 @@ function CategoryView({
   locale,
   trail,
   productNodes,
+  settings,
+  node,
 }: {
   locale: Locale;
   trail: CategoryNode[];
   productNodes: Product[];
+  settings: any;
+  node: CategoryNode;
 }) {
   const tCat = useTranslations("Categories");
   const t = useTranslations("Catalog");
@@ -144,7 +156,14 @@ function CategoryView({
       {productNodes.length === 0 ? (
         <p className="py-24 text-center text-ink/50">{t("empty")}</p>
       ) : (
-        <PaginatedProductGrid products={productNodes} locale={locale} />
+        <div className="mt-6 sm:mt-10">
+          <CollectionExplorer 
+            products={productNodes} 
+            locale={locale} 
+            priceFilters={settings?.price_filters} 
+            categories={node.children}
+          />
+        </div>
       )}
     </main>
   );

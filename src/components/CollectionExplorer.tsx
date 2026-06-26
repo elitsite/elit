@@ -10,16 +10,10 @@ import {
 } from "@/lib/supabase";
 import { finalPrice, localizeProduct } from "@/lib/i18n-content";
 import type { Locale } from "@/i18n/routing";
+import { getLeafCategories } from "@/lib/categories";
 import ProductCard from "./ProductCard";
 
 type SortType = "newest" | "price_asc" | "price_desc" | "name_asc";
-
-const COLLECTIONS = [
-  { slug: "mono-bouquets", labelKey: "mono_bouquets" },
-  { slug: "mixed-bouquets", labelKey: "mixed_bouquets" },
-  { slug: "box-arrangements", labelKey: "box_arrangements" },
-  { slug: "basket-arrangements", labelKey: "basket_arrangements" },
-] as const;
 
 const PAGE_SIZE = 12;
 
@@ -27,12 +21,14 @@ type Props = {
   products: Product[];
   locale: Locale;
   priceFilters?: PriceFilter[];
+  categories?: { slug: string; labelKey: string }[];
 };
 
 export default function CollectionExplorer({
   products,
   locale,
   priceFilters,
+  categories,
 }: Props) {
   const t = useTranslations("Catalog");
   const tCat = useTranslations("Categories");
@@ -89,8 +85,9 @@ export default function CollectionExplorer({
 
   const availableCategories = useMemo(() => {
     const present = new Set(products.map((p) => p.category));
-    return COLLECTIONS.filter((c) => present.has(c.slug));
-  }, [products]);
+    const all = categories || getLeafCategories();
+    return all.filter((c) => present.has(c.slug));
+  }, [products, categories]);
 
   const filtered = useMemo(() => {
     let list = [...localized];
