@@ -4,12 +4,10 @@ import { type Locale } from "@/i18n/routing";
 import Image from "next/image";
 import { getProductsByCategorySlugs, getSettings } from "@/lib/products";
 import { localizeSettings } from "@/lib/i18n-content";
-import CollectionExplorer from "@/components/CollectionExplorer";
 import AboutSection from "@/components/AboutSection";
 import HomeInfoSections from "@/components/HomeInfoSections";
 import CategorySection from "@/components/CategorySection";
 import EventsSection from "@/components/EventsSection";
-import BenefitsSection from "@/components/BenefitsSection";
 import {
   MOCK_BOUQUETS,
   MOCK_BASKETS,
@@ -17,13 +15,7 @@ import {
   MOCK_FUNERAL,
 } from "@/lib/mock-products";
 
-/** Leaf category slugs for the main explorer. */
-const EXPLORER_SLUGS = [
-  "mono-bouquets",
-  "mixed-bouquets",
-  "box-arrangements",
-  "basket-arrangements",
-];
+
 
 // Slugs for the new showcased categories
 const BOUQUET_SLUGS = ["mono-bouquets", "mixed-bouquets", "author-bouquets", "premium-bouquets", "mini-bouquets"];
@@ -43,14 +35,12 @@ export default async function Home({
 
   // Fetch all showcased products in parallel for performance
   const [
-    explorerProducts,
     rawSettings,
     bouquetProducts,
     basketProducts,
     decorProducts,
     funeralProducts
   ] = await Promise.all([
-    getProductsByCategorySlugs(EXPLORER_SLUGS),
     getSettings(),
     getProductsByCategorySlugs(BOUQUET_SLUGS),
     getProductsByCategorySlugs(BASKET_SLUGS),
@@ -108,22 +98,7 @@ export default async function Home({
         </div>
       </section>
 
-      {/* Discover our collections — search & filter */}
-      <section className="mx-auto max-w-6xl px-4 pt-10 sm:px-6 sm:pt-14 lg:px-8">
-        <div className="text-center">
-          <h2 className="font-display text-2xl font-medium text-ink sm:text-4xl lg:text-5xl">
-            {t("shop_by_category")}
-          </h2>
-        </div>
 
-        <div className="mt-6 sm:mt-10">
-          <CollectionExplorer
-            products={explorerProducts}
-            locale={locale}
-            priceFilters={rawSettings?.price_filters}
-          />
-        </div>
-      </section>
 
       {/* Bouquets Showcase — 4 cols × 2 rows = 8 items on desktop */}
       <CategorySection
@@ -176,8 +151,7 @@ export default async function Home({
       {/* About Section */}
       {settings && <AboutSection settings={settings} />}
 
-      {/* Service Benefits Row */}
-      <BenefitsSection />
+
 
       {/* Detailed Info Sections (Delivery, Payment, Map) */}
       {settings && <HomeInfoSections settings={settings} />}

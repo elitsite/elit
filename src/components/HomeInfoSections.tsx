@@ -28,11 +28,11 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
 
     return (
         <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 sm:pb-24 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
                 
                 {/* Delivery */}
                 {hasDeliveryContent && (
-                    <div className="group bg-white rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-all duration-400 relative overflow-hidden border border-black/5 text-center flex flex-col h-full">
+                    <div className="group bg-white rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-all duration-400 relative overflow-hidden border border-black/5 text-center flex flex-col h-full flex-1 basis-[280px] max-w-sm">
                         <div className="flex items-center justify-center w-14 h-14 bg-brand/10 rounded-2xl mb-5 text-brand group-hover:bg-brand group-hover:text-white transition-all duration-400 mx-auto flex-shrink-0">
                             <Truck size={28} strokeWidth={1.5} />
                         </div>
@@ -55,7 +55,7 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
 
                 {/* Pickup */}
                 {hasPickupContent && (
-                    <div className="group bg-white rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-all duration-400 relative overflow-hidden border border-black/5 text-center flex flex-col h-full">
+                    <div className="group bg-white rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-all duration-400 relative overflow-hidden border border-black/5 text-center flex flex-col h-full flex-1 basis-[280px] max-w-sm">
                         <div className="flex items-center justify-center w-14 h-14 bg-brand/10 rounded-2xl mb-5 text-brand group-hover:bg-brand group-hover:text-white transition-all duration-400 mx-auto flex-shrink-0">
                             <Store size={28} strokeWidth={1.5} />
                         </div>
@@ -71,7 +71,7 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
 
                 {/* Payment */}
                 {hasPaymentContent && (
-                    <div className="group bg-white rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-all duration-400 relative overflow-hidden border border-black/5 text-center flex flex-col h-full">
+                    <div className="group bg-white rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-all duration-400 relative overflow-hidden border border-black/5 text-center flex flex-col h-full flex-1 basis-[280px] max-w-sm">
                         <div className="flex items-center justify-center w-14 h-14 bg-brand/10 rounded-2xl mb-5 text-brand group-hover:bg-brand group-hover:text-white transition-all duration-400 mx-auto flex-shrink-0">
                             <CreditCard size={28} strokeWidth={1.5} />
                         </div>
@@ -87,7 +87,7 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
 
                 {/* Schedule */}
                 {hasScheduleContent && (
-                    <div className="group bg-white rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-all duration-400 relative overflow-hidden border border-black/5 text-center flex flex-col h-full">
+                    <div className="group bg-white rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-all duration-400 relative overflow-hidden border border-black/5 text-center flex flex-col h-full flex-1 basis-[280px] max-w-sm">
                         <div className="flex items-center justify-center w-14 h-14 bg-brand/10 rounded-2xl mb-5 text-brand group-hover:bg-brand group-hover:text-white transition-all duration-400 mx-auto flex-shrink-0">
                             <Clock size={28} strokeWidth={1.5} />
                         </div>
@@ -103,7 +103,7 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
 
                 {/* Contact */}
                 {hasContactContent && (
-                    <div className="group bg-white rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-all duration-400 relative overflow-hidden border border-black/5 md:col-span-2 lg:col-span-3 xl:col-span-4 mt-2 sm:mt-4">
+                    <div className="group bg-white rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-all duration-400 relative overflow-hidden border border-black/5 w-full mt-2 sm:mt-4">
                         <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-12 w-full">
                             <div className="flex flex-col items-center md:items-start text-center md:text-left flex-shrink-0">
                                 <div className="flex items-center justify-center w-14 h-14 bg-brand/10 rounded-2xl mb-4 text-brand group-hover:bg-brand group-hover:text-white transition-all duration-400">
