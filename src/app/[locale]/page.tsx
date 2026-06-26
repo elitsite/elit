@@ -4,6 +4,7 @@ import { type Locale } from "@/i18n/routing";
 import Image from "next/image";
 import { getProductsByCategorySlugs, getSettings } from "@/lib/products";
 import { localizeSettings } from "@/lib/i18n-content";
+import CollectionExplorer from "@/components/CollectionExplorer";
 import AboutSection from "@/components/AboutSection";
 import HomeInfoSections from "@/components/HomeInfoSections";
 import CategorySection from "@/components/CategorySection";
@@ -16,6 +17,14 @@ import {
 } from "@/lib/mock-products";
 
 
+
+/** Leaf category slugs for the main explorer. */
+const EXPLORER_SLUGS = [
+  "mono-bouquets",
+  "mixed-bouquets",
+  "box-arrangements",
+  "basket-arrangements",
+];
 
 // Slugs for the new showcased categories
 const BOUQUET_SLUGS = ["mono-bouquets", "mixed-bouquets", "author-bouquets", "premium-bouquets", "mini-bouquets"];
@@ -35,12 +44,14 @@ export default async function Home({
 
   // Fetch all showcased products in parallel for performance
   const [
+    explorerProducts,
     rawSettings,
     bouquetProducts,
     basketProducts,
     decorProducts,
     funeralProducts
   ] = await Promise.all([
+    getProductsByCategorySlugs(EXPLORER_SLUGS),
     getSettings(),
     getProductsByCategorySlugs(BOUQUET_SLUGS),
     getProductsByCategorySlugs(BASKET_SLUGS),
@@ -78,7 +89,7 @@ export default async function Home({
 
         {/* Content Overlay — frosted glass card */}
         <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl items-center justify-center px-4 sm:px-6 lg:px-8">
-          <div className="flex w-full flex-col items-center border border-white/60 bg-white/20 p-8 text-center backdrop-blur-md sm:max-w-3xl sm:rounded-[4rem] sm:p-16 lg:max-w-4xl lg:p-24">
+          <div className="flex w-full flex-col items-center p-8 text-center sm:max-w-3xl sm:p-16 lg:max-w-4xl lg:p-24">
             <span className="text-[10px] font-medium uppercase tracking-[0.4em] text-brand sm:text-xs">
               {t("tagline")}
             </span>
@@ -99,6 +110,22 @@ export default async function Home({
       </section>
 
 
+      {/* Discover our collections — search & filter */}
+      <section className="mx-auto max-w-6xl px-4 pt-10 sm:px-6 sm:pt-14 lg:px-8">
+        <div className="text-center">
+          <h2 className="font-display text-2xl font-medium text-ink sm:text-4xl lg:text-5xl">
+            {t("shop_by_category")}
+          </h2>
+        </div>
+
+        <div className="mt-6 sm:mt-10">
+          <CollectionExplorer
+            products={explorerProducts}
+            locale={locale}
+            priceFilters={rawSettings?.price_filters}
+          />
+        </div>
+      </section>
 
       {/* Bouquets Showcase — 4 cols × 2 rows = 8 items on desktop */}
       <CategorySection
