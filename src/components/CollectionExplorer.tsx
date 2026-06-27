@@ -12,10 +12,7 @@ import { finalPrice, localizeProduct } from "@/lib/i18n-content";
 import type { Locale } from "@/i18n/routing";
 import { getLeafCategories } from "@/lib/categories";
 import ProductCard from "./ProductCard";
-
 type SortType = "newest" | "price_asc" | "price_desc" | "name_asc";
-
-const PAGE_SIZE = 12;
 
 type Props = {
   products: Product[];
