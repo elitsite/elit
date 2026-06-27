@@ -8,6 +8,12 @@ import { DB_TABLES } from '@/lib/constants';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+const sizeSchema = z.array(z.object({
+    size: z.string(),
+    price: z.number(),
+    details: z.string().optional().nullable()
+})).optional().nullable();
+
 const productSchema = z.object({
     name: z.string().min(1).max(200),
     description: z.string().max(1000).optional().default(''),
@@ -20,6 +26,9 @@ const productSchema = z.object({
     kit_info: z.string().max(2000).optional().nullable(),
     important_note: z.string().max(2000).optional().nullable(),
     extra_images: z.array(z.string()).optional().nullable(),
+    sizes: sizeSchema,
+    sizes_uk: sizeSchema,
+    sizes_nl: sizeSchema,
     name_uk: z.string().max(200).optional().nullable(),
     name_nl: z.string().max(200).optional().nullable(),
     description_uk: z.string().max(1000).optional().nullable(),

@@ -190,6 +190,9 @@ ALTER TABLE public.bouquets ADD COLUMN IF NOT EXISTS kit_info_uk     TEXT;
 ALTER TABLE public.bouquets ADD COLUMN IF NOT EXISTS kit_info_nl     TEXT;
 ALTER TABLE public.bouquets ADD COLUMN IF NOT EXISTS important_note_uk TEXT;
 ALTER TABLE public.bouquets ADD COLUMN IF NOT EXISTS important_note_nl TEXT;
+ALTER TABLE public.bouquets ADD COLUMN IF NOT EXISTS sizes           JSONB   DEFAULT '[]';
+ALTER TABLE public.bouquets ADD COLUMN IF NOT EXISTS sizes_uk        JSONB   DEFAULT '[]';
+ALTER TABLE public.bouquets ADD COLUMN IF NOT EXISTS sizes_nl        JSONB   DEFAULT '[]';
 
 -- settings additive columns
 ALTER TABLE public.settings ADD COLUMN IF NOT EXISTS instagram_link         TEXT DEFAULT '';
@@ -341,12 +344,14 @@ FROM public.settings;
 GRANT SELECT ON public.settings_public TO anon, authenticated;
 
 
+DROP VIEW IF EXISTS public.bouquets_public;
 CREATE OR REPLACE VIEW public.bouquets_public
 WITH (security_invoker = on) AS
 SELECT
     id, name, description, price, discount, image_url,
     in_stock, category, created_at,
     composition, kit_info, important_note, extra_images,
+    sizes, sizes_uk, sizes_nl,
     -- Translations
     name_uk, name_nl,
     description_uk, description_nl,

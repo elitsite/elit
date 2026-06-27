@@ -10,7 +10,7 @@ const MAX_UPLOADS = 20;
 const UPLOAD_WINDOW_MS = 5 * 60 * 1000;
 const MAX_TRACKED_IPS = 5000;
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 4.5 * 1024 * 1024; // 4.5MB
 
 export async function POST(request: Request) {
     const csrfBlock = assertSameOrigin(request);

@@ -38,7 +38,7 @@ const en = {
     // Validation
     err_name_price: 'Fill in name and price',
     err_photo: 'Add product photo',
-    err_file_size: 'File too large! Max 5MB',
+    err_file_size: 'File too large! Max 4.5MB',
     msg_updated: 'Product updated!',
     msg_added: 'Product added!',
     msg_deleted: 'Product deleted',
@@ -233,7 +233,7 @@ const ru: typeof en = {
 
     err_name_price: 'Заполните название и цену',
     err_photo: 'Добавьте фото товара',
-    err_file_size: 'Файл слишком большой! Максимум 5MB',
+    err_file_size: 'Файл слишком большой! Максимум 4.5MB',
     msg_updated: 'Товар обновлён!',
     msg_added: 'Товар добавлен!',
     msg_deleted: 'Товар удалён',

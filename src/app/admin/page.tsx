@@ -244,7 +244,7 @@ export default function AdminPage() {
     const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        if (file.size > 5 * 1024 * 1024) { showNotif(at.err_file_size, 'error'); return; }
+        if (file.size > 4.5 * 1024 * 1024) { showNotif(at.err_file_size, 'error'); return; }
         setImageFile(file);
         const reader = new FileReader();
         reader.onload = (ev) => setImagePreview(ev.target?.result as string);
