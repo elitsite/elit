@@ -1,5 +1,5 @@
 /**
- * Category tree (single source of truth) for Elite Bloemen.
+ * Category tree (single source of truth) for Alya Bloemen.
  *
  * Model: products store a flat LEAF slug in `products.category`.
  * The hierarchy below only drives the navigation ("butterbrod") menu,

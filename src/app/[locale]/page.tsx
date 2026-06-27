@@ -61,16 +61,17 @@ export default async function Home({
 
   const settings = rawSettings ? localizeSettings(rawSettings, locale) : null;
 
-  // Fallback to placeholder data when DB has no products yet
-  const resolvedBouquets = bouquetProducts.length > 0 ? bouquetProducts : MOCK_BOUQUETS;
-  const resolvedBaskets = basketProducts.length > 0 ? basketProducts : MOCK_BASKETS;
-  const resolvedDecor = decorProducts.length > 0 ? decorProducts : MOCK_DECOR;
-  const resolvedFuneral = funeralProducts.length > 0 ? funeralProducts : MOCK_FUNERAL;
+  // Fallback to placeholder data ONLY in development when DB has no products yet
+  const isProd = process.env.NODE_ENV === 'production';
+  const resolvedBouquets = bouquetProducts.length > 0 ? bouquetProducts : (isProd ? [] : MOCK_BOUQUETS);
+  const resolvedBaskets = basketProducts.length > 0 ? basketProducts : (isProd ? [] : MOCK_BASKETS);
+  const resolvedDecor = decorProducts.length > 0 ? decorProducts : (isProd ? [] : MOCK_DECOR);
+  const resolvedFuneral = funeralProducts.length > 0 ? funeralProducts : (isProd ? [] : MOCK_FUNERAL);
 
   return (
     <main>
       {/* Hero — full-width background image */}
-      <section className="relative flex h-[75vh] w-full flex-col overflow-hidden sm:h-[85vh]">
+      <section className="relative flex h-[45vh] min-h-[300px] w-full flex-col overflow-hidden sm:h-[60vh] sm:min-h-[420px]">
         <Image
           src="/logo31.png"
           alt="Alya Bloemen"
@@ -85,26 +86,38 @@ export default async function Home({
           className="hidden object-cover object-center sm:block"
           priority
         />
-        <div className="absolute inset-0 bg-black/5" />
+        <div className="absolute inset-0 bg-black/10" />
 
-        {/* Content Overlay — frosted glass card */}
-        <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl items-center justify-center px-4 sm:px-6 lg:px-8">
-          <div className="flex w-full flex-col items-center p-8 text-center sm:max-w-3xl sm:p-16 lg:max-w-4xl lg:p-24">
-            <span className="text-[10px] font-medium uppercase tracking-[0.4em] text-brand sm:text-xs">
+        {/* Content Overlay */}
+        <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
+          <div className="flex w-full flex-col items-center text-center sm:max-w-3xl lg:max-w-4xl">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-brand sm:text-xs">
               {t("tagline")}
             </span>
-            <h1 className="mt-4 font-display text-4xl font-medium leading-[1.05] text-ink sm:mt-8 sm:text-6xl lg:text-8xl">
+            <h1 className="mt-2 font-display text-3xl font-medium leading-[1.1] text-ink sm:mt-4 sm:text-5xl lg:text-7xl">
               {t("title")}
             </h1>
-            <p className="mt-4 max-w-lg text-sm text-ink/80 sm:mt-8 sm:text-lg lg:text-2xl">
+            <p className="mt-2 max-w-lg text-xs text-ink/80 sm:mt-4 sm:text-base lg:text-xl">
               {t("subtitle")}
             </p>
             <Link
               href="/category/bouquets"
-              className="mt-8 inline-flex border border-ink/30 bg-transparent px-10 py-4 text-[11px] font-semibold uppercase tracking-[0.3em] text-ink transition-all hover:bg-ink hover:text-white sm:mt-12 sm:px-16 sm:py-5 sm:text-xs"
+              className="btn-primary mt-4 sm:mt-6"
             >
               {nav("catalog")}
             </Link>
+          </div>
+
+          {/* Animated Scroll Indicator */}
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center text-ink/60 animate-gentle-bounce sm:bottom-5">
+            <svg
+              className="h-5 w-5 sm:h-6 sm:w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 9l-7 7-7-7" />
+            </svg>
           </div>
         </div>
       </section>

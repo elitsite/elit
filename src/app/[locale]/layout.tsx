@@ -154,7 +154,7 @@ export default async function LocaleLayout({
           <CartProvider>
             <Header contact={headerContact} />
             {children}
-            <Footer />
+            <Footer contact={headerContact} />
             <WhatsAppButton />
           </CartProvider>
         </NextIntlClientProvider>

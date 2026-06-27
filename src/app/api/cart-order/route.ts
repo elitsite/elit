@@ -381,7 +381,7 @@ async function createPaymentAndRespond(
     const acceptLang = request.headers.get('accept-language') || '';
     const payLang: 'en' | 'uk' | 'nl' = acceptLang.startsWith('uk') ? 'uk' : acceptLang.startsWith('nl') ? 'nl' : 'en';
 
-    const orderDesc = `Elite Bloemen order ${orderId.slice(0, 8)}`;
+    const orderDesc = `Alya Bloemen order ${orderId.slice(0, 8)}`;
     const itemsSummary = verifiedItems.map(i => `${i.name} ×${i.quantity}`).join(', ');
 
     // Check if payment gateway is configured

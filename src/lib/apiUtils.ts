@@ -66,7 +66,7 @@ function getUpstashLimiter(prefix: string, maxAttempts: number, windowSec: numbe
         rateLimiters.set(key, new Ratelimit({
             redis: redis!,
             limiter: Ratelimit.slidingWindow(maxAttempts, `${windowSec} s`),
-            prefix: `elite-bloemen:${prefix}`,
+            prefix: `alya-bloemen:${prefix}`,
             analytics: false,
         }));
     }

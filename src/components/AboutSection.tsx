@@ -3,7 +3,7 @@ import type { LocalizedSettings } from "@/lib/i18n-content";
 
 /**
  * "About us" section for the homepage. Renders the admin-managed about text
- * (locale-aware) in the Elite Bloemen visual style. Hidden when disabled or empty.
+ * (locale-aware) in the Alya Bloemen visual style. Hidden when disabled or empty.
  */
 export default function AboutSection({
   settings,

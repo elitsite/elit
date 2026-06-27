@@ -113,11 +113,16 @@ export default function CategorySection({
     el.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
   }, []);
 
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   // ── Early return after all hooks ───────────────────────────────────────────
   if (products.length === 0) return null;
 
-  // For infinite scroll, render items three times
-  const displayItems = isScrollable
+  // For infinite scroll, render items three times ONLY on the client after mount (to prevent SSR duplicate content issues for SEO)
+  const displayItems = (isScrollable && isMounted)
     ? [...products, ...products, ...products]
     : products;
 
@@ -133,17 +138,17 @@ export default function CategorySection({
       className="mx-auto my-12 max-w-6xl px-4 sm:my-20 sm:px-6 lg:px-8"
     >
       {/* Section Header */}
-      <div className="relative mb-5 flex items-center sm:mb-8">
-        <h2 className="flex-1 text-center font-display text-xl font-medium text-ink sm:text-2xl lg:text-3xl">
+      <div className="relative mb-6 flex items-center justify-between sm:mb-10">
+        <h2 className="flex-1 text-center font-display text-2xl font-medium tracking-tight text-ink sm:text-3xl lg:text-4xl">
           {t(labelKey)}
         </h2>
         {viewAllHref && (
           <Link
             href={viewAllHref}
-            className="absolute right-0 group flex items-center gap-1 text-[9px] font-semibold uppercase tracking-[0.15em] text-ink/60 transition-colors hover:text-brand sm:gap-1.5 sm:text-[10px] lg:text-[11px]"
+            className="absolute right-0 group flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-ink/60 transition-colors hover:text-brand sm:gap-1.5 sm:text-xs"
           >
             {tHome("view_all")}
-            <ChevronRight size={13} className="transition-transform group-hover:translate-x-0.5" />
+            <ChevronRight size={14} className="transition-transform group-hover:translate-x-0.5" />
           </Link>
         )}
       </div>

@@ -9,7 +9,7 @@ import { routing, type Locale } from '@/i18n/routing';
 
 /** Absolute, canonical site origin (no trailing slash). Override per env. */
 export const SITE_URL = (
-    process.env.NEXT_PUBLIC_SITE_URL || 'https://alya-bloemen.com'
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://alyabloemen.com'
 ).replace(/\/$/, '');
 
 export const BRAND_NAME = 'Alya Bloemen';
@@ -63,7 +63,7 @@ export const BUSINESS = {
     legalType: 'Florist',
     // TODO: replace placeholders with real shop data before launch.
     telephone: '',
-    email: '',
+    email: 'info@alyabloemen.com',
     streetAddress: '',
     addressLocality: '',
     postalCode: '',

@@ -4,6 +4,7 @@ const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  productionBrowserSourceMaps: false,
   images: {
     remotePatterns: [
       // Supabase Storage public bucket (product images).

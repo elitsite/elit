@@ -42,7 +42,7 @@ type CartContextValue = {
   clear: () => void;
 };
 
-const STORAGE_KEY = "elite-bloemen-cart";
+const STORAGE_KEY = "alya-bloemen-cart";
 const MAX_QTY = 10;
 
 const CartContext = createContext<CartContextValue | null>(null);
