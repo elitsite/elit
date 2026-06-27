@@ -15,22 +15,18 @@ import {
   MOCK_DECOR,
   MOCK_FUNERAL,
 } from "@/lib/mock-products";
+import { CATEGORY_LEAF_SLUGS } from "@/lib/categories";
 
 
-
-/** Leaf category slugs for the main explorer. */
-const EXPLORER_SLUGS = [
-  "mono-bouquets",
-  "mixed-bouquets",
-  "box-arrangements",
-  "basket-arrangements",
-];
 
 // Slugs for the new showcased categories
 const BOUQUET_SLUGS = ["mono-bouquets", "mixed-bouquets", "author-bouquets", "premium-bouquets", "mini-bouquets"];
 const BASKET_SLUGS = ["basket-arrangements"];
 const DECOR_SLUGS = ["hall-table-decor", "interior-arrangements", "table-arrangements"];
-const FUNERAL_SLUGS = ["funeral-arrangement", "funeral-bouquet"];
+const FUNERAL_SLUGS = ["funeral-arrangement", "funeral-bouquet", "funeral-ribbon", "funeral-decor"];
+
+/** Leaf category slugs for the main explorer. */
+const EXPLORER_SLUGS = CATEGORY_LEAF_SLUGS.filter(slug => !FUNERAL_SLUGS.includes(slug));
 
 export default async function Home({
   params,
@@ -90,7 +86,7 @@ export default async function Home({
 
         {/* Content Overlay */}
         <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col items-center justify-center px-4 sm:px-6 lg:px-8 sm:items-start">
-          <div className="flex w-full flex-col items-center text-center sm:max-w-lg lg:max-w-[40%]">
+          <div className="flex w-full flex-col items-center text-center sm:max-w-lg lg:max-w-[32%] lg:ml-[8%]">
             <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-brand sm:text-xs sm:tracking-[0.35em]">
               {t("tagline")}
             </span>
@@ -135,6 +131,7 @@ export default async function Home({
             products={explorerProducts}
             locale={locale}
             priceFilters={rawSettings?.price_filters}
+            pageSize={8}
           />
         </div>
       </section>

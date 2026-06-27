@@ -22,6 +22,7 @@ type Props = {
   locale: Locale;
   priceFilters?: PriceFilter[];
   categories?: { slug: string; labelKey: string }[];
+  pageSize?: number;
 };
 
 export default function CollectionExplorer({
@@ -29,6 +30,7 @@ export default function CollectionExplorer({
   locale,
   priceFilters,
   categories,
+  pageSize,
 }: Props) {
   const t = useTranslations("Catalog");
   const tCat = useTranslations("Categories");
@@ -37,8 +39,18 @@ export default function CollectionExplorer({
   const [activePriceRange, setActivePriceRange] = useState("all");
   const [sortType, setSortType] = useState<SortType>("newest");
   const [searchQuery, setSearchQuery] = useState("");
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [currentPage, setCurrentPage] = useState(1);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  const activePageSize = pageSize || (isMobile ? 16 : 24);
 
   const localized = useMemo(
     () =>
@@ -127,8 +139,9 @@ export default function CollectionExplorer({
     return list;
   }, [localized, activeCategory, activePriceRange, searchQuery, sortType, priceRanges]);
 
-  const display = filtered.slice(0, visibleCount);
-  const hasMore = display.length < filtered.length;
+  const totalPages = Math.ceil(filtered.length / activePageSize);
+  const display = filtered.slice((currentPage - 1) * activePageSize, currentPage * activePageSize);
+
   const hasActiveFilters =
     activeCategory !== "all" ||
     activePriceRange !== "all" ||
@@ -136,7 +149,7 @@ export default function CollectionExplorer({
     !!searchQuery;
 
   useEffect(() => {
-    setVisibleCount(PAGE_SIZE);
+    setCurrentPage(1);
   }, [activeCategory, activePriceRange, searchQuery, sortType]);
 
   const resetFilters = () => {
@@ -166,8 +179,19 @@ export default function CollectionExplorer({
     sortType !== "newest",
   ].filter(Boolean).length;
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    const el = document.getElementById("collection-explorer");
+    if (el) {
+      const y = el.getBoundingClientRect().top + window.scrollY - 100;
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }
+  };
+
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+
   return (
-    <div>
+    <div id="collection-explorer">
       {/* Compact filter bar */}
       <div className="mb-6 space-y-3">
         {/* Top row: search + filter toggle */}
@@ -297,13 +321,34 @@ export default function CollectionExplorer({
             ))}
           </div>
 
-          {hasMore && (
-            <div className="mt-8 flex justify-center sm:mt-10">
+          {totalPages > 1 && (
+            <div className="mt-8 flex flex-wrap justify-center items-center gap-1.5 sm:gap-2 sm:mt-10">
               <button
-                onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-                className="border border-ink/25 px-7 py-3 text-[10px] font-medium uppercase tracking-[0.15em] text-ink transition-colors hover:border-brand hover:bg-brand hover:text-cream rounded-lg"
+                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-ink/20 text-ink/50 transition-colors hover:border-brand hover:text-brand disabled:opacity-30 disabled:hover:border-ink/20 disabled:hover:text-ink/50"
               >
-                {t("load_more")}
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 19l-7-7 7-7" /></svg>
+              </button>
+              {pages.map((p) => (
+                <button
+                  key={p}
+                  onClick={() => handlePageChange(p)}
+                  className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium transition-colors ${
+                    currentPage === p
+                      ? "bg-brand text-cream"
+                      : "border border-transparent text-ink/60 hover:border-ink/20 hover:text-ink"
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+              <button
+                onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-ink/20 text-ink/50 transition-colors hover:border-brand hover:text-brand disabled:opacity-30 disabled:hover:border-ink/20 disabled:hover:text-ink/50"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7" /></svg>
               </button>
             </div>
           )}
