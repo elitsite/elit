@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS public.bouquets (
 );
 
 COMMENT ON TABLE  public.bouquets          IS 'Flower shop products';
-COMMENT ON COLUMN public.bouquets.category IS 'Leaf category slug (hierarchy defined in code: src/lib/categories.ts). E.g. mono-bouquets, mixed-bouquets, author-bouquets, premium-bouquets, mini-bouquets, box-arrangements, basket-arrangements, table-arrangements, interior-arrangements, bridal-bouquet, boutonnieres, hall-table-decor, floral-arches, funeral-arrangement, funeral-bouquet, funeral-ribbon, funeral-decor, wedding-portfolio, wedding-packages, wedding-decor, party-portfolio, party-packages, party-decor';
+COMMENT ON COLUMN public.bouquets.category IS 'Leaf category slug (hierarchy defined in code: src/lib/categories.ts). E.g. mono-bouquets, mixed-bouquets, author-bouquets, premium-bouquets, mini-bouquets, bouquets-decor, box-arrangements, basket-arrangements, table-arrangements, interior-arrangements, arrangements-decor, bridal-bouquet, boutonnieres, hall-table-decor, floral-arches, funeral-arrangement, funeral-bouquet, funeral-ribbon, funeral-decor, wedding-portfolio, wedding-packages, wedding-decor, party-portfolio, party-packages, party-decor';
 COMMENT ON COLUMN public.bouquets.discount IS 'Discount percent 0-100. Effective price = price * (1 - discount/100)';
 
 

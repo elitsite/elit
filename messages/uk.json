@@ -162,7 +162,9 @@
     "parties": "Вечірки",
     "party_portfolio": "Портфоліо",
     "party_packages": "Пакети послуг і ціни",
-    "party_decor": "Декор для вечірки"
+    "party_decor": "Декор для вечірки",
+    "bouquets_decor": "Декор для букетів",
+    "arrangements_decor": "Декор для композицій"
   },
   "Payment": {
     "checking": "Перевірка оплати…",

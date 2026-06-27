@@ -22,7 +22,7 @@ import { CATEGORY_LEAF_SLUGS } from "@/lib/categories";
 // Slugs for the showcased categories
 const BOUQUET_SLUGS = getLeafSlugsUnder(CATEGORY_TREE.find((n) => n.slug === "bouquets")!);
 const ARRANGEMENT_SLUGS = getLeafSlugsUnder(CATEGORY_TREE.find((n) => n.slug === "arrangements")!);
-const WEDDING_SLUGS = getLeafSlugsUnder(CATEGORY_TREE.find((n) => n.slug === "wedding-floristry")!);
+const DECOR_SLUGS = CATEGORY_LEAF_SLUGS.filter(s => s.endsWith('-decor'));
 const FUNERAL_SLUGS = getLeafSlugsUnder(CATEGORY_TREE.find((n) => n.slug === "funeral")!);
 
 /** Leaf category slugs for the main explorer. */
@@ -51,7 +51,7 @@ export default async function Home({
     getSettings(),
     getProductsByCategorySlugs(BOUQUET_SLUGS),
     getProductsByCategorySlugs(ARRANGEMENT_SLUGS),
-    getProductsByCategorySlugs(WEDDING_SLUGS),
+    getProductsByCategorySlugs(DECOR_SLUGS),
     getProductsByCategorySlugs(FUNERAL_SLUGS),
   ]);
 
@@ -61,7 +61,7 @@ export default async function Home({
   const isProd = process.env.NODE_ENV === 'production';
   const resolvedBouquets = bouquetProducts.length > 0 ? bouquetProducts : (isProd ? [] : MOCK_BOUQUETS);
   const resolvedArrangements = basketProducts.length > 0 ? basketProducts : (isProd ? [] : MOCK_BASKETS);
-  const resolvedWedding = decorProducts.length > 0 ? decorProducts : (isProd ? [] : MOCK_DECOR);
+  const resolvedDecor = decorProducts.length > 0 ? decorProducts : (isProd ? [] : MOCK_DECOR);
   const resolvedFuneral = funeralProducts.length > 0 ? funeralProducts : (isProd ? [] : MOCK_FUNERAL);
 
   return (
@@ -160,12 +160,12 @@ export default async function Home({
       {/* Weddings & Parties Cards */}
       <EventsSection />
 
-      {/* Wedding Floristry Showcase */}
+      {/* Decor Showcase */}
       <CategorySection
-        labelKey="wedding_floristry"
-        products={resolvedWedding}
+        labelKey="decor"
+        products={resolvedDecor}
         locale={locale}
-        viewAllHref="/category/wedding-floristry"
+        viewAllHref="/decor"
         gridCols={5}
         isScrollable
         autoScroll

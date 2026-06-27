@@ -27,6 +27,7 @@ export const CATEGORY_TREE: CategoryNode[] = [
             { slug: 'author-bouquets', labelKey: 'author_bouquets', selectable: true },
             { slug: 'premium-bouquets', labelKey: 'premium_bouquets', selectable: true },
             { slug: 'mini-bouquets', labelKey: 'mini_bouquets', selectable: true },
+            { slug: 'bouquets-decor', labelKey: 'bouquets_decor', selectable: true },
         ],
     },
     {
@@ -37,6 +38,7 @@ export const CATEGORY_TREE: CategoryNode[] = [
             { slug: 'basket-arrangements', labelKey: 'basket_arrangements', selectable: true },
             { slug: 'table-arrangements', labelKey: 'table_arrangements', selectable: true },
             { slug: 'interior-arrangements', labelKey: 'interior_arrangements', selectable: true },
+            { slug: 'arrangements-decor', labelKey: 'arrangements_decor', selectable: true },
         ],
     },
     {

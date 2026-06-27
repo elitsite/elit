@@ -162,7 +162,9 @@
     "parties": "Feesten",
     "party_portfolio": "Portfolio",
     "party_packages": "Pakketten & prijzen",
-    "party_decor": "Feestdecoratie"
+    "party_decor": "Feestdecoratie",
+    "bouquets_decor": "Boeket Decor",
+    "arrangements_decor": "Arrangement Decor"
   },
   "Payment": {
     "checking": "Betaling controleren…",
