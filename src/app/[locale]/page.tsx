@@ -91,18 +91,18 @@ export default async function Home({
         {/* Content Overlay */}
         <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
           <div className="flex w-full flex-col items-center text-center sm:max-w-3xl lg:max-w-4xl">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-brand sm:text-xs">
+            <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-brand sm:text-xs sm:tracking-[0.35em]">
               {t("tagline")}
             </span>
-            <h1 className="mt-2 font-display text-3xl font-medium leading-[1.1] text-ink sm:mt-4 sm:text-5xl lg:text-7xl">
+            <h1 className="mt-1 font-display text-[26px] font-medium leading-[1.1] text-ink sm:mt-4 sm:text-5xl lg:text-7xl">
               {t("title")}
             </h1>
-            <p className="mt-2 max-w-lg text-xs text-ink/80 sm:mt-4 sm:text-base lg:text-xl">
+            <p className="mt-1 max-w-[280px] sm:max-w-lg text-[10px] text-ink/80 sm:mt-4 sm:text-base lg:text-xl">
               {t("subtitle")}
             </p>
             <Link
               href="/category/bouquets"
-              className="btn-primary mt-4 sm:mt-6"
+              className="btn-primary mt-2.5 !px-5 !py-2.5 !text-[10px] sm:mt-6 sm:!px-6 sm:!py-3.5 sm:!text-xs"
             >
               {nav("catalog")}
             </Link>
