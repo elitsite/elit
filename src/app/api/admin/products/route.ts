@@ -158,9 +158,12 @@ export async function PUT(request: Request) {
         }
 
         revalidatePath('/');
+        revalidatePath('/', 'layout');
+        revalidatePath('/category/[[...slug]]', 'page');
         return NextResponse.json(data, { headers: NO_CACHE_HEADERS });
     } catch (err) {
         if (err instanceof z.ZodError) {
+            console.error('Products PUT Zod error:', JSON.stringify(err.errors, null, 2));
             return NextResponse.json({ error: 'Validation error', details: err.errors }, { status: 400, headers: NO_CACHE_HEADERS });
         }
         console.error('Products PUT error:', errorMessage(err));

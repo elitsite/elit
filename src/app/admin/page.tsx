@@ -365,6 +365,8 @@ export default function AdminPage() {
                 sizes: productForm.sizes.length > 0 ? productForm.sizes.map(s => ({ size: s.size, price: parseInt(s.price) || 0, details: s.details })) : null,
                 sizes_uk: productForm.sizes_uk.length > 0 ? productForm.sizes_uk.map(s => ({ size: s.size, price: parseInt(s.price) || 0, details: s.details })) : null,
                 sizes_nl: productForm.sizes_nl.length > 0 ? productForm.sizes_nl.map(s => ({ size: s.size, price: parseInt(s.price) || 0, details: s.details })) : null,
+                // Keep existing extra_images when editing (we don't have an extra_images editor in the form)
+                extra_images: editingProduct?.extra_images ?? null,
             };
             const method = editingProduct ? 'PUT' : 'POST';
             const body = editingProduct ? { id: editingProduct.id, ...productData } : productData;
@@ -377,6 +379,7 @@ export default function AdminPage() {
                 const err = await response.json();
                 const details = err.details ? JSON.stringify(err.details) : '';
                 const detail = err.detail ? ` | ${err.detail}` : '';
+                console.error('[Admin] Product save failed:', err);
                 throw new Error(`${err.error || 'Failed'}${details ? `: ${details}` : ''}${detail}`);
             }
             showNotif(editingProduct ? at.msg_updated : at.msg_added, 'success');
