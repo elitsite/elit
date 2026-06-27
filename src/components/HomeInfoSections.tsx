@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { Phone, Send, Truck, Store, CreditCard, Clock } from 'lucide-react';
+import { Phone, Send, Truck, Store, CreditCard, Clock, Instagram } from 'lucide-react';
 import WhatsAppIcon from './icons/WhatsAppIcon';
 import type { LocalizedSettings } from '@/lib/i18n-content';
 
@@ -144,6 +144,12 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
                                     <a href={settings.telegram_link} target="_blank" rel="noopener noreferrer" className="btn-secondary gap-2 flex-1 sm:flex-initial">
                                         <Send size={16} />
                                         <span>Telegram</span>
+                                    </a>
+                                )}
+                                {settings.instagram_link && (
+                                    <a href={settings.instagram_link} target="_blank" rel="noopener noreferrer" className="btn-secondary gap-2 flex-1 sm:flex-initial">
+                                        <Instagram size={16} />
+                                        <span>Instagram</span>
                                     </a>
                                 )}
                                 {settings.whatsapp_link && (
