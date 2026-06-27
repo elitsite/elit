@@ -19,11 +19,11 @@ import { CATEGORY_LEAF_SLUGS } from "@/lib/categories";
 
 
 
-// Slugs for the new showcased categories
-const BOUQUET_SLUGS = ["mono-bouquets", "mixed-bouquets", "author-bouquets", "premium-bouquets", "mini-bouquets"];
-const BASKET_SLUGS = ["basket-arrangements"];
-const DECOR_SLUGS = ["hall-table-decor", "interior-arrangements", "table-arrangements"];
-const FUNERAL_SLUGS = ["funeral-arrangement", "funeral-bouquet", "funeral-ribbon", "funeral-decor"];
+// Slugs for the showcased categories
+const BOUQUET_SLUGS = getLeafSlugsUnder(CATEGORY_TREE.find((n) => n.slug === "bouquets")!);
+const ARRANGEMENT_SLUGS = getLeafSlugsUnder(CATEGORY_TREE.find((n) => n.slug === "arrangements")!);
+const WEDDING_SLUGS = getLeafSlugsUnder(CATEGORY_TREE.find((n) => n.slug === "wedding-floristry")!);
+const FUNERAL_SLUGS = getLeafSlugsUnder(CATEGORY_TREE.find((n) => n.slug === "funeral")!);
 
 /** Leaf category slugs for the main explorer. */
 const EXPLORER_SLUGS = CATEGORY_LEAF_SLUGS.filter(slug => !FUNERAL_SLUGS.includes(slug));
@@ -50,8 +50,8 @@ export default async function Home({
     getProductsByCategorySlugs(EXPLORER_SLUGS),
     getSettings(),
     getProductsByCategorySlugs(BOUQUET_SLUGS),
-    getProductsByCategorySlugs(BASKET_SLUGS),
-    getProductsByCategorySlugs(DECOR_SLUGS),
+    getProductsByCategorySlugs(ARRANGEMENT_SLUGS),
+    getProductsByCategorySlugs(WEDDING_SLUGS),
     getProductsByCategorySlugs(FUNERAL_SLUGS),
   ]);
 
@@ -60,8 +60,8 @@ export default async function Home({
   // Fallback to placeholder data ONLY in development when DB has no products yet
   const isProd = process.env.NODE_ENV === 'production';
   const resolvedBouquets = bouquetProducts.length > 0 ? bouquetProducts : (isProd ? [] : MOCK_BOUQUETS);
-  const resolvedBaskets = basketProducts.length > 0 ? basketProducts : (isProd ? [] : MOCK_BASKETS);
-  const resolvedDecor = decorProducts.length > 0 ? decorProducts : (isProd ? [] : MOCK_DECOR);
+  const resolvedArrangements = basketProducts.length > 0 ? basketProducts : (isProd ? [] : MOCK_BASKETS);
+  const resolvedWedding = decorProducts.length > 0 ? decorProducts : (isProd ? [] : MOCK_DECOR);
   const resolvedFuneral = funeralProducts.length > 0 ? funeralProducts : (isProd ? [] : MOCK_FUNERAL);
 
   return (
@@ -145,12 +145,12 @@ export default async function Home({
         gridCols={4}
       />
 
-      {/* Basket Arrangements Showcase */}
+      {/* Arrangements Showcase */}
       <CategorySection
-        labelKey="basket_arrangements"
-        products={resolvedBaskets}
+        labelKey="arrangements"
+        products={resolvedArrangements}
         locale={locale}
-        viewAllHref="/category/arrangements/basket-arrangements"
+        viewAllHref="/category/arrangements"
         gridCols={5}
         isScrollable
         autoScroll
@@ -160,12 +160,12 @@ export default async function Home({
       {/* Weddings & Parties Cards */}
       <EventsSection />
 
-      {/* Decor Showcase */}
+      {/* Wedding Floristry Showcase */}
       <CategorySection
-        labelKey="decor"
-        products={resolvedDecor}
+        labelKey="wedding_floristry"
+        products={resolvedWedding}
         locale={locale}
-        viewAllHref="/category/arrangements"
+        viewAllHref="/category/wedding-floristry"
         gridCols={5}
         isScrollable
         autoScroll
