@@ -107,6 +107,7 @@ export async function POST(request: Request) {
             .from(DB_TABLES.BOUQUETS).insert(cleanData(validated)).select().single();
         if (error) throw error;
         revalidatePath('/');
+        revalidatePath('/', 'layout');
         return NextResponse.json(data, { status: 201, headers: NO_CACHE_HEADERS });
     } catch (err) {
         if (err instanceof z.ZodError) {
@@ -195,7 +196,8 @@ export async function DELETE(request: Request) {
         }
 
         revalidatePath('/');
-        return NextResponse.json({ success: true }, { headers: NO_CACHE_HEADERS });
+        revalidatePath('/', 'layout');
+    return NextResponse.json({ success: true }, { headers: NO_CACHE_HEADERS });
     } catch (err) {
         console.error('Products DELETE error:', errorMessage(err));
         return NextResponse.json({ error: 'Failed to delete product' }, { status: 500, headers: NO_CACHE_HEADERS });
