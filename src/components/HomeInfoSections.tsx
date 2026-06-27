@@ -43,7 +43,7 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
                         <div className={`grid grid-cols-1 md:grid-cols-2 ${gridColsClass} gap-8 divide-y md:divide-y-0 md:divide-x divide-ink/10`}>
                             {/* Delivery */}
                             {hasDeliveryContent && (
-                                <div className="pt-6 md:pt-0 md:px-6 first:pt-0 first:px-0 flex flex-col justify-start">
+                                <div className="pt-6 md:pt-0 md:px-6 first:pt-0 first:px-0 flex flex-col items-center text-center justify-start">
                                     <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-brand">
                                         <Truck className="h-5 w-5" strokeWidth={1.5} />
                                     </div>
@@ -65,7 +65,7 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
 
                             {/* Pickup */}
                             {hasPickupContent && (
-                                <div className="pt-6 md:pt-0 md:px-6 first:pt-0 first:px-0 flex flex-col justify-start">
+                                <div className="pt-6 md:pt-0 md:px-6 first:pt-0 first:px-0 flex flex-col items-center text-center justify-start">
                                     <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-brand">
                                         <Store className="h-5 w-5" strokeWidth={1.5} />
                                     </div>
@@ -80,7 +80,7 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
 
                             {/* Payment */}
                             {hasPaymentContent && (
-                                <div className="pt-6 md:pt-0 md:px-6 first:pt-0 first:px-0 flex flex-col justify-start">
+                                <div className="pt-6 md:pt-0 md:px-6 first:pt-0 first:px-0 flex flex-col items-center text-center justify-start">
                                     <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-brand">
                                         <CreditCard className="h-5 w-5" strokeWidth={1.5} />
                                     </div>
@@ -95,7 +95,7 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
 
                             {/* Schedule */}
                             {hasScheduleContent && (
-                                <div className="pt-6 md:pt-0 md:px-6 first:pt-0 first:px-0 flex flex-col justify-start">
+                                <div className="pt-6 md:pt-0 md:px-6 first:pt-0 first:px-0 flex flex-col items-center text-center justify-start">
                                     <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-brand">
                                         <Clock className="h-5 w-5" strokeWidth={1.5} />
                                     </div>
