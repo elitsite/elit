@@ -86,26 +86,39 @@ function NavRow({
 
   return (
     <div>
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className={`flex w-full items-center py-3.5 pr-4 text-left transition-colors hover:text-brand ${
+      <div
+        className={`flex w-full items-center text-left transition-colors hover:text-brand group ${
           isTopLevel
-            ? "pl-4 font-display text-[17px] font-medium text-ink"
-            : "pl-[52px] text-[15px] font-medium text-ink/80"
+            ? "font-display text-[17px] font-medium text-ink"
+            : "text-[15px] font-medium text-ink/80"
         }`}
-        aria-expanded={open}
       >
-        {icon && <span className="mr-3.5 flex-shrink-0">{icon}</span>}
-        <span className="flex-1">{label}</span>
-        <ChevronDown
-          size={16}
-          strokeWidth={1.5}
-          className={`shrink-0 text-ink/25 transition-transform duration-300 ${
-            open ? "rotate-180" : ""
-          }`}
-        />
-      </button>
+        <Link
+          href={`/category/${path.join("/")}`}
+          onClick={onNavigate}
+          className={`flex-1 py-3.5 flex items-center ${isTopLevel ? "pl-4" : "pl-[52px]"}`}
+        >
+          {icon && <span className="mr-3.5 flex-shrink-0">{icon}</span>}
+          <span>{label}</span>
+        </Link>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            setOpen((v) => !v);
+          }}
+          className="p-3.5 pr-4 pl-3"
+          aria-expanded={open}
+        >
+          <ChevronDown
+            size={16}
+            strokeWidth={1.5}
+            className={`shrink-0 text-ink/25 transition-transform duration-300 group-hover:text-brand ${
+              open ? "rotate-180" : ""
+            }`}
+          />
+        </button>
+      </div>
       <div
         className={`grid transition-all duration-300 ease-soft-out ${
           open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
