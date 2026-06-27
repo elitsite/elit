@@ -58,36 +58,19 @@ export default function CategorySection({
     return () => observer.disconnect();
   }, [isScrollable, autoScroll]);
 
-  // ── Initialise scroll at middle copy (for seamless loop) ───────────────────
-  useEffect(() => {
-    if (!isScrollable || !scrollRef.current) return;
-    const el = scrollRef.current;
-    // Start at the beginning of the second (middle) copy
-    requestAnimationFrame(() => {
-      el.scrollLeft = el.scrollWidth / 3;
-    });
-  }, [isScrollable]);
-
-  // ── Seamless loop: silently jump when reaching outer copies ────────────────
-  const onScroll = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el || !isScrollable) return;
-    const third = el.scrollWidth / 3;
-    if (el.scrollLeft >= third * 2) {
-      el.scrollLeft -= third; // jumped past end → land in middle
-    } else if (el.scrollLeft < 4) {
-      el.scrollLeft += third; // scrolled before start → land in middle
-    }
-  }, [isScrollable]);
-
   // ── Auto-scroll step ───────────────────────────────────────────────────────
   const scrollStep = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
-    // Scroll by roughly one card width
     const card = el.firstElementChild as HTMLElement | null;
     const step = card ? card.offsetWidth + 16 : 280;
-    el.scrollBy({ left: step, behavior: "smooth" });
+    
+    // If we reached the end, scroll back to start
+    if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 10) {
+      el.scrollTo({ left: 0, behavior: "smooth" });
+    } else {
+      el.scrollBy({ left: step, behavior: "smooth" });
+    }
   }, []);
 
   useEffect(() => {
@@ -121,10 +104,7 @@ export default function CategorySection({
   // ── Early return after all hooks ───────────────────────────────────────────
   if (products.length === 0) return null;
 
-  // For infinite scroll, render items three times ONLY on the client after mount (to prevent SSR duplicate content issues for SEO)
-  const displayItems = (isScrollable && isMounted)
-    ? [...products, ...products, ...products]
-    : products;
+  const displayItems = products;
 
   const gridClass =
     gridCols === 2 ? "grid-cols-2"
@@ -185,7 +165,6 @@ export default function CategorySection({
 
         <div
           ref={scrollRef}
-          onScroll={isScrollable ? onScroll : undefined}
           className={
             isScrollable
               ? "no-scrollbar flex gap-3 overflow-x-auto pb-3 sm:gap-5 sm:pb-5"
