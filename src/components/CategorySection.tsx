@@ -41,8 +41,20 @@ export default function CategorySection({
 
   // Whether the section is currently in the viewport
   const [isVisible, setIsVisible] = useState(false);
-  // Pause on hover / touch
-  const [isPaused, setIsPaused] = useState(false);
+  
+  // Pause on hover (desktop)
+  const [isHovered, setIsHovered] = useState(false);
+  // Pause from user interaction (touch, wheel, arrows) for 30 seconds
+  const [isInteracted, setIsInteracted] = useState(false);
+  const interactionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleUserInteraction = useCallback(() => {
+    setIsInteracted(true);
+    if (interactionTimeoutRef.current) clearTimeout(interactionTimeoutRef.current);
+    interactionTimeoutRef.current = setTimeout(() => {
+      setIsInteracted(false);
+    }, 30000);
+  }, []);
 
   // ── Intersection Observer — only auto-scroll while visible ─────────────────
   useEffect(() => {
@@ -74,6 +86,7 @@ export default function CategorySection({
   }, []);
 
   useEffect(() => {
+    const isPaused = isHovered || isInteracted;
     if (!isScrollable || !autoScroll || !isVisible || isPaused) return;
 
     let intervalId: ReturnType<typeof setInterval>;
@@ -86,10 +99,11 @@ export default function CategorySection({
       clearTimeout(timeoutId);
       clearInterval(intervalId);
     };
-  }, [isScrollable, autoScroll, isVisible, isPaused, index, scrollStep]);
+  }, [isScrollable, autoScroll, isVisible, isHovered, isInteracted, index, scrollStep]);
 
   // ── Manual arrow navigation ────────────────────────────────────────────────
   const handleArrow = useCallback((dir: "left" | "right") => {
+    handleUserInteraction();
     const el = scrollRef.current;
     if (!el) return;
     const amount = el.clientWidth * 0.7;
@@ -131,10 +145,8 @@ export default function CategorySection({
       {/* Carousel / Grid */}
       <div
         className="relative"
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
-        onTouchStart={() => setIsPaused(true)}
-        onTouchEnd={() => setTimeout(() => setIsPaused(false), 1200)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
         {/* Arrows — always visible on scrollable sections */}
         {isScrollable && (
@@ -160,9 +172,11 @@ export default function CategorySection({
 
         <div
           ref={scrollRef}
+          onTouchStart={handleUserInteraction}
+          onWheel={handleUserInteraction}
           className={
             isScrollable
-              ? "no-scrollbar flex gap-3 overflow-x-auto pb-3 sm:gap-5 sm:pb-5"
+              ? "no-scrollbar flex gap-3 overflow-x-auto pb-3 sm:gap-5 sm:pb-5 snap-x snap-mandatory"
               : `grid gap-x-3 gap-y-6 sm:gap-x-5 sm:gap-y-10 lg:gap-x-8 lg:gap-y-14 ${gridClass}`
           }
         >
@@ -171,7 +185,7 @@ export default function CategorySection({
               key={`${product.id}-${i}`}
               className={
                 isScrollable
-                  ? "w-[170px] shrink-0 sm:w-[220px] lg:w-[260px]"
+                  ? "w-[170px] shrink-0 sm:w-[220px] lg:w-[260px] snap-start"
                   : "w-full"
               }
             >
