@@ -136,13 +136,16 @@ export default async function Home({
         </div>
       </section>
 
-      {/* Bouquets Showcase — 4 cols × 2 rows = 8 items on desktop */}
+      {/* Bouquets Showcase */}
       <CategorySection
         labelKey="bouquets"
-        products={resolvedBouquets.slice(0, 8)}
+        products={resolvedBouquets}
         locale={locale}
         viewAllHref="/category/bouquets"
-        gridCols={4}
+        gridCols={5}
+        isScrollable
+        autoScroll
+        index={0}
       />
 
       {/* Arrangements Showcase */}
@@ -154,7 +157,7 @@ export default async function Home({
         gridCols={5}
         isScrollable
         autoScroll
-        index={0}
+        index={1}
       />
 
       {/* Weddings & Parties Cards */}
@@ -169,7 +172,7 @@ export default async function Home({
         gridCols={5}
         isScrollable
         autoScroll
-        index={1}
+        index={2}
       />
 
       {/* Funeral Arrangements Showcase */}
@@ -181,7 +184,7 @@ export default async function Home({
         gridCols={5}
         isScrollable
         autoScroll
-        index={2}
+        index={3}
       />
 
       {/* About Section */}
