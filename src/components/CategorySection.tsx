@@ -96,11 +96,6 @@ export default function CategorySection({
     el.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
   }, []);
 
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   // ── Early return after all hooks ───────────────────────────────────────────
   if (products.length === 0) return null;
 
