@@ -89,8 +89,8 @@ export default async function Home({
         <div className="absolute inset-0 bg-black/10" />
 
         {/* Content Overlay */}
-        <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
-          <div className="flex w-full flex-col items-center text-center sm:max-w-3xl lg:max-w-4xl">
+        <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col items-center justify-center px-4 sm:px-6 lg:px-8 sm:items-start">
+          <div className="flex w-full flex-col items-center text-center sm:max-w-lg lg:max-w-[48%]">
             <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-brand sm:text-xs sm:tracking-[0.35em]">
               {t("tagline")}
             </span>
