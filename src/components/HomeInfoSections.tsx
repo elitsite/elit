@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { Truck, Store, CreditCard, MapPin, Clock, Phone, Send } from 'lucide-react';
+import { Phone, Send } from 'lucide-react';
 import WhatsAppIcon from './icons/WhatsAppIcon';
 import type { LocalizedSettings } from '@/lib/i18n-content';
 
