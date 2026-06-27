@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { Phone, Send } from 'lucide-react';
+import { Phone, Send, Truck, Store, CreditCard, Clock } from 'lucide-react';
 import WhatsAppIcon from './icons/WhatsAppIcon';
 import type { LocalizedSettings } from '@/lib/i18n-content';
 
@@ -26,6 +26,13 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
            (mapEmbed.startsWith("http") ? mapEmbed : null))
         : null;
 
+    const servicesCount = [hasDeliveryContent, hasPickupContent, hasPaymentContent, hasScheduleContent].filter(Boolean).length;
+    const gridColsClass = 
+        servicesCount === 4 ? 'lg:grid-cols-4' : 
+        servicesCount === 3 ? 'lg:grid-cols-3' : 
+        servicesCount === 2 ? 'lg:grid-cols-2' : 
+        'lg:grid-cols-1';
+
     return (
         <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 sm:pb-24 lg:px-8">
             <div className="space-y-8 sm:space-y-12">
@@ -33,10 +40,13 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
                 {/* Block 1: Services (Delivery, Pickup, Payment, Schedule) */}
                 {(hasDeliveryContent || hasPickupContent || hasPaymentContent || hasScheduleContent) && (
                     <div className="card-luxury p-8 sm:p-12">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 divide-y md:divide-y-0 md:divide-x divide-ink/10">
+                        <div className={`grid grid-cols-1 md:grid-cols-2 ${gridColsClass} gap-8 divide-y md:divide-y-0 md:divide-x divide-ink/10`}>
                             {/* Delivery */}
                             {hasDeliveryContent && (
                                 <div className="pt-6 md:pt-0 md:px-6 first:pt-0 first:px-0 flex flex-col justify-start">
+                                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-brand">
+                                        <Truck className="h-5 w-5" strokeWidth={1.5} />
+                                    </div>
                                     <h3 className="font-display text-xl font-medium text-ink mb-3 tracking-wide">
                                         {t('delivery_title')}
                                     </h3>
@@ -56,6 +66,9 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
                             {/* Pickup */}
                             {hasPickupContent && (
                                 <div className="pt-6 md:pt-0 md:px-6 first:pt-0 first:px-0 flex flex-col justify-start">
+                                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-brand">
+                                        <Store className="h-5 w-5" strokeWidth={1.5} />
+                                    </div>
                                     <h3 className="font-display text-xl font-medium text-ink mb-3 tracking-wide">
                                         {t('pickup')}
                                     </h3>
@@ -68,6 +81,9 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
                             {/* Payment */}
                             {hasPaymentContent && (
                                 <div className="pt-6 md:pt-0 md:px-6 first:pt-0 first:px-0 flex flex-col justify-start">
+                                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-brand">
+                                        <CreditCard className="h-5 w-5" strokeWidth={1.5} />
+                                    </div>
                                     <h3 className="font-display text-xl font-medium text-ink mb-3 tracking-wide">
                                         {t('payment_title')}
                                     </h3>
@@ -80,6 +96,9 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
                             {/* Schedule */}
                             {hasScheduleContent && (
                                 <div className="pt-6 md:pt-0 md:px-6 first:pt-0 first:px-0 flex flex-col justify-start">
+                                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-brand">
+                                        <Clock className="h-5 w-5" strokeWidth={1.5} />
+                                    </div>
                                     <h3 className="font-display text-xl font-medium text-ink mb-3 tracking-wide">
                                         {t('schedule_title')}
                                     </h3>
