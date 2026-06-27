@@ -138,7 +138,7 @@ export default function AdminPage() {
     useEffect(() => {
         if (activeTab === 'orders' && !ordersLoaded) {
             setOrdersLoaded(true);
-            fetch('/api/admin/orders')
+            fetch(`/api/admin/orders?t=${Date.now()}`, { cache: 'no-store' })
                 .then(res => {
                     if (res.status === 401) { router.push('/admin/login'); return []; }
                     return res.ok ? res.json() : [];
@@ -151,7 +151,7 @@ export default function AdminPage() {
     useEffect(() => {
         if (activeTab === 'events' && !eventsLoaded) {
             setEventsLoaded(true);
-            fetch('/api/admin/event-pages')
+            fetch(`/api/admin/event-pages?t=${Date.now()}`, { cache: 'no-store' })
                 .then(res => {
                     if (res.status === 401) { router.push('/admin/login'); return []; }
                     return res.ok ? res.json() : [];
@@ -169,11 +169,11 @@ export default function AdminPage() {
         setIsLoading(true);
         try {
             const [productsRes, settingsRes] = await Promise.all([
-                fetch('/api/admin/products').then(r => {
+                fetch(`/api/admin/products?t=${Date.now()}`, { cache: 'no-store' }).then(r => {
                     if (r.status === 401) { router.push('/admin/login'); return null; }
                     return r.ok ? r.json() : null;
                 }),
-                fetch('/api/admin/settings').then(r => {
+                fetch(`/api/admin/settings?t=${Date.now()}`, { cache: 'no-store' }).then(r => {
                     if (r.status === 401) { router.push('/admin/login'); return null; }
                     return r.ok ? r.json() : null;
                 }),
