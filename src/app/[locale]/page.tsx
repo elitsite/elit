@@ -73,7 +73,7 @@ export default async function Home({
       {/* Hero — full-width background image */}
       <section className="relative flex h-[45vh] min-h-[300px] w-full flex-col overflow-hidden sm:h-[60vh] sm:min-h-[420px]">
         <Image
-          src="/logo31.png"
+          src="/logo3.png"
           alt="Alya Bloemen"
           fill
           className="block object-cover object-center sm:hidden"
