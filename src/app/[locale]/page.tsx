@@ -15,7 +15,7 @@ import {
   MOCK_DECOR,
   MOCK_FUNERAL,
 } from "@/lib/mock-products";
-import { CATEGORY_LEAF_SLUGS } from "@/lib/categories";
+import { CATEGORY_LEAF_SLUGS, CATEGORY_TREE, getLeafSlugsUnder } from "@/lib/categories";
 
 
 
