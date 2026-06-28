@@ -5,6 +5,7 @@
  * via the anon client. These functions are meant to be called from Server
  * Components / route handlers only.
  */
+import { unstable_noStore as noStore } from "next/cache";
 import { supabase, type Product, type Settings, type EventPage } from "@/lib/supabase";
 import { DB_TABLES } from "@/lib/constants";
 
@@ -59,6 +60,7 @@ export async function getFeaturedProducts(limit = 8): Promise<Product[]> {
 
 /** Fetch the public settings row (single record). */
 export async function getSettings(): Promise<Settings | null> {
+  noStore(); // never cache – shop_open / delivery_enabled must be fresh on every request
   const { data, error } = await supabase
     .from(DB_TABLES.SETTINGS_PUBLIC)
     .select("*")

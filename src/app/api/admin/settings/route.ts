@@ -172,7 +172,7 @@ export async function PUT(request: Request) {
 
         if (error) throw error;
 
-        revalidatePath('/');
+        revalidatePath('/', 'layout');
         return NextResponse.json(data, { headers: NO_CACHE_HEADERS });
     } catch (err) {
         const message = errorMessage(err);
@@ -212,7 +212,7 @@ export async function PATCH(request: Request) {
                 .from(DB_TABLES.SETTINGS)
                 .insert({ [field]: value } as Record<string, boolean>);
             if (insertErr) throw insertErr;
-            revalidatePath('/');
+            revalidatePath('/', 'layout');
             return NextResponse.json({ success: true }, { headers: NO_CACHE_HEADERS });
         }
 
@@ -222,7 +222,7 @@ export async function PATCH(request: Request) {
             .eq('id', existing.id);
 
         if (error) throw error;
-        revalidatePath('/');
+        revalidatePath('/', 'layout');
         return NextResponse.json({ success: true }, { headers: NO_CACHE_HEADERS });
     } catch (err) {
         console.error('Settings PATCH error:', errorMessage(err));
