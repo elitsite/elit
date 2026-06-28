@@ -51,7 +51,7 @@ export default function AddToCartButton({
       <button
         type="button"
         disabled
-        className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-ink/15 px-4 py-3 text-[11px] font-medium uppercase tracking-[0.15em] text-ink/40 sm:px-6 sm:py-3.5 sm:text-xs sm:tracking-[0.2em]"
+        className="flex w-full cursor-not-allowed items-center justify-center gap-2 border border-ink/15 px-4 py-3 text-[11px] font-medium uppercase tracking-[0.15em] text-ink/40 sm:px-6 sm:py-3.5 sm:text-xs sm:tracking-[0.2em]"
       >
         {soldOutLabel}
       </button>
@@ -62,7 +62,7 @@ export default function AddToCartButton({
     <button
       type="button"
       onClick={handleClick}
-      className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] transition-all duration-300 active:scale-[0.98] sm:gap-2.5 sm:px-6 sm:py-3.5 sm:text-xs ${
+      className={`flex w-full items-center justify-center gap-2 px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] transition-all duration-300 active:scale-[0.98] sm:gap-2.5 sm:px-6 sm:py-3.5 sm:text-xs ${
         added
           ? "bg-brand text-white shadow-sm"
           : "bg-ink text-white hover:bg-brand shadow-sm"

@@ -44,7 +44,7 @@ export default function ProductDetails({ product }: { product: LocalizedProduct 
                             <button
                                 key={variant.size}
                                 onClick={() => setSelectedSizeIdx(idx)}
-                                className={`flex-1 py-3 rounded-xl border-2 text-center font-semibold text-sm transition-all
+                                className={`flex-1 py-3 border-2 text-center font-semibold text-sm transition-all
                                     ${selectedSizeIdx === idx
                                         ? 'border-brand bg-brand/5 text-brand'
                                         : 'border-black/10 text-ink/50 hover:border-ink/25'}`}
@@ -56,7 +56,7 @@ export default function ProductDetails({ product }: { product: LocalizedProduct 
 
                     {/* Size details — what's in the selected size */}
                     {selectedVariant?.details && (
-                        <div className="mt-3 rounded-xl bg-cream/60 px-4 py-3">
+                        <div className="mt-3 bg-cream/60 px-4 py-3">
                             <p className="text-xs font-medium text-ink/40 uppercase tracking-wider mb-1">{t('size_details')}</p>
                             <p className="text-sm text-ink/70 leading-relaxed whitespace-pre-line">
                                 {selectedVariant.details}
@@ -97,7 +97,7 @@ export default function ProductDetails({ product }: { product: LocalizedProduct 
                         {hasDescription && (
                             <button
                                 onClick={() => setActiveTab(activeTab === 'description' ? null : 'description')}
-                                className={`flex-1 py-3 rounded-xl border text-sm font-medium transition-all
+                                className={`flex-1 py-3 border text-sm font-medium transition-all
                                     ${activeTab === 'description'
                                         ? 'border-ink bg-ink text-cream'
                                         : 'border-black/10 text-ink/60 hover:border-ink/25'}`}
@@ -108,7 +108,7 @@ export default function ProductDetails({ product }: { product: LocalizedProduct 
                         {hasDetails && (
                             <button
                                 onClick={() => setActiveTab(activeTab === 'details' ? null : 'details')}
-                                className={`flex-1 py-3 rounded-xl border text-sm font-medium transition-all
+                                className={`flex-1 py-3 border text-sm font-medium transition-all
                                     ${activeTab === 'details'
                                         ? 'border-ink bg-ink text-cream'
                                         : 'border-black/10 text-ink/60 hover:border-ink/25'}`}

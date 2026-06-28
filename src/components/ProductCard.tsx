@@ -23,7 +23,7 @@ export default function ProductCard({ product, locale }: Props) {
   return (
     <div className="group flex flex-col">
       <Link href={`/product/${product.id}`} className="block">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-white shadow-sm transition-shadow hover:shadow-xl sm:rounded-[2.5rem]">
+        <div className="relative aspect-[4/5] overflow-hidden bg-white shadow-sm transition-shadow hover:shadow-xl">
           {product.image_url ? (
             <Image
               src={product.image_url}
