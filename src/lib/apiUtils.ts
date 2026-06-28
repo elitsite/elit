@@ -1,6 +1,7 @@
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 import { NextResponse } from 'next/server';
+import { verifyAdminRequest } from '@/lib/adminAuth';
 
 /**
  * Standard No-Cache headers for sensitive API responses.
@@ -11,14 +12,23 @@ export const NO_CACHE_HEADERS = {
     'Expires': '0',
 };
 
+/** Normalize any thrown value to a string message. */
+export function errorMessage(err: unknown): string {
+    return err instanceof Error ? err.message : String(err);
+}
+
 /**
  * CSRF protection: verify that the request Origin matches the Host.
- * Returns a 403 response if origin is foreign, or null if OK.
- * Only checks mutating requests (POST/PUT/PATCH/DELETE).
+ * Returns a 403 response if origin is foreign or missing, null if OK.
+ * Used on mutating endpoints (POST/PUT/PATCH/DELETE) — browsers always send
+ * Origin on these, so a missing header indicates a non-browser client.
  */
 export function assertSameOrigin(request: Request): NextResponse | null {
     const origin = request.headers.get('origin');
-    if (!origin) return null; // no origin header = same-origin or non-browser
+    if (!origin) {
+        // Browsers always send Origin on mutating requests. Missing = curl/bot/SSRF.
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers: NO_CACHE_HEADERS });
+    }
     const host = request.headers.get('host');
     try {
         const originHost = new URL(origin).host;
@@ -36,14 +46,36 @@ export function assertSameOrigin(request: Request): NextResponse | null {
  */
 const IP_PATTERN = /^[a-zA-Z0-9:.\-]{1,64}$/;
 
+/**
+ * Resolve the client IP from trusted edge headers, preferring those set by
+ * the outermost reverse proxy. Spoofable client-supplied `x-forwarded-for`
+ * is used only as last resort and only its rightmost (proxy-set) entry.
+ */
 export function getClientIp(request: Request): string {
-    const forwarded = request.headers.get('x-forwarded-for') || '';
-    const first = forwarded.split(',')[0]?.trim();
-    const realIp = request.headers.get('x-real-ip')?.trim();
-    const candidate = first || realIp || 'unknown';
+    // Vercel normalizes this from the real client edge connection
+    const vercel = request.headers.get('x-vercel-forwarded-for');
+    if (vercel) {
+        const c = vercel.split(',')[0]?.trim();
+        if (c && IP_PATTERN.test(c)) return c;
+    }
 
-    if (!IP_PATTERN.test(candidate)) return 'unknown';
-    return candidate;
+    // Cloudflare
+    const cf = request.headers.get('cf-connecting-ip')?.trim();
+    if (cf && IP_PATTERN.test(cf)) return cf;
+
+    // Standard reverse proxy (single trusted hop)
+    const real = request.headers.get('x-real-ip')?.trim();
+    if (real && IP_PATTERN.test(real)) return real;
+
+    // X-Forwarded-For: take the LAST entry (set by outermost trusted proxy);
+    // client-controlled entries are prepended and must not be trusted.
+    const xff = request.headers.get('x-forwarded-for');
+    if (xff) {
+        const parts = xff.split(',');
+        const last = parts[parts.length - 1]?.trim();
+        if (last && IP_PATTERN.test(last)) return last;
+    }
+    return 'unknown';
 }
 
 // ── Upstash Redis rate limiting (works on Vercel serverless) ──────────
@@ -170,4 +202,47 @@ export function checkLimit(
     maxTracked: number
 ): { allowed: boolean; remaining: number } {
     return checkLimitInMemory(store, ip, maxAttempts, windowMs, maxTracked);
+}
+
+/**
+ * Combined admin route guard: CSRF check + session verification +
+ * optional in-memory / Upstash rate limiting.
+ * Returns a NextResponse to short-circuit on failure, or null when the
+ * request may proceed.
+ *
+ * Usage:
+ *   const block = await guardAdmin(request, { store, max: 20, windowMs, maxTracked: 5000, prefix: 'upload' });
+ *   if (block) return block;
+ */
+export async function guardAdmin(
+    request: Request,
+    opts?: {
+        store: Map<string, RateLimitRecord>;
+        max: number;
+        windowMs: number;
+        maxTracked: number;
+        prefix: string;
+    }
+): Promise<NextResponse | null> {
+    const csrf = assertSameOrigin(request);
+    if (csrf) return csrf;
+
+    if (!await verifyAdminRequest(request)) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: NO_CACHE_HEADERS });
+    }
+
+    if (opts) {
+        const ip = getClientIp(request);
+        const { allowed } = await checkLimitAsync(
+            opts.store, ip, opts.max, opts.windowMs, opts.maxTracked, opts.prefix
+        );
+        if (!allowed) {
+            return NextResponse.json(
+                { error: 'Too many requests. Try again later.' },
+                { status: 429, headers: NO_CACHE_HEADERS }
+            );
+        }
+    }
+
+    return null;
 }

@@ -368,13 +368,21 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
 
         setTranslating(true);
         try {
-            const res = await fetch('/api/admin/translate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ texts }),
-            });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const { translations } = await res.json();
+            // The backend rejects > 10 texts per request, so split into chunks
+            // of 10 and merge all responses into a single translations map.
+            const CHUNK = 10;
+            const translations: Record<string, Record<string, string>> = {};
+            for (let i = 0; i < texts.length; i += CHUNK) {
+                const slice = texts.slice(i, i + CHUNK);
+                const res = await fetch('/api/admin/translate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ texts: slice }),
+                });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                Object.assign(translations, data.translations);
+            }
 
             setContent(prev => {
                 const next = { ...prev };

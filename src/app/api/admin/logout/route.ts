@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { NO_CACHE_HEADERS } from '@/lib/apiUtils';
+import { NO_CACHE_HEADERS, assertSameOrigin } from '@/lib/apiUtils';
 
-export async function POST() {
+export async function POST(request: Request) {
+    const csrfBlock = assertSameOrigin(request);
+    if (csrfBlock) return csrfBlock;
+
     try {
         const cookieStore = await cookies();
         cookieStore.delete('admin_session');

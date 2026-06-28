@@ -55,7 +55,12 @@ function getCredentials(): { merchantId: string; secretKey: string } {
 /**
  * Generate request/response signature.
  * Algorithm: SHA-1 over secretKey + '|' + sorted non-empty values.
- * Replace this with the specific algorithm of your chosen bank when implementing.
+ *
+ * ⚠️ TODO(PSP-INTEGRATION): Replace this SHA-1 stub with the actual HMAC /
+ *   signature algorithm from the chosen bank or crypto-terminal documentation.
+ *   This code is NOT production-ready until that substitution is complete.
+ *   PAYMENT_ENABLED=false ensures these helpers are never invoked before
+ *   integration is finished.
  */
 function genSignature(params: Record<string, unknown>, secret: string): string {
     const keys = Object.keys(params)
@@ -89,13 +94,18 @@ export function verifyCallbackSignature(body: Record<string, unknown>, secret: s
     }
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 /**
  * Recover our DB order UUID from a gateway order_id.
  * We send `{uuid}-{suffix}` to the gateway; the canonical UUID is the first 36 chars.
+ * Returns null if the prefix is not a valid UUID — callers must short-circuit
+ * to avoid DB lookups on attacker-controlled values.
  */
-export function extractDbOrderId(gatewayOrderId: string): string {
-    if (typeof gatewayOrderId !== 'string') return '';
-    return gatewayOrderId.length >= 36 ? gatewayOrderId.slice(0, 36) : gatewayOrderId;
+export function extractDbOrderId(gatewayOrderId: string): string | null {
+    if (typeof gatewayOrderId !== 'string' || gatewayOrderId.length < 36) return null;
+    const candidate = gatewayOrderId.slice(0, 36);
+    return UUID_RE.test(candidate) ? candidate : null;
 }
 
 // ── Create Payment Order ───────────────────────────────────────────────

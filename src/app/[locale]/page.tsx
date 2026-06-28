@@ -9,12 +9,6 @@ import AboutSection from "@/components/AboutSection";
 import HomeInfoSections from "@/components/HomeInfoSections";
 import CategorySection from "@/components/CategorySection";
 import EventsSection from "@/components/EventsSection";
-import {
-  MOCK_BOUQUETS,
-  MOCK_BASKETS,
-  MOCK_DECOR,
-  MOCK_FUNERAL,
-} from "@/lib/mock-products";
 import { CATEGORY_LEAF_SLUGS, CATEGORY_TREE, getLeafSlugsUnder } from "@/lib/categories";
 
 
@@ -57,12 +51,15 @@ export default async function Home({
 
   const settings = rawSettings ? localizeSettings(rawSettings, locale) : null;
 
-  // Fallback to placeholder data ONLY in development when DB has no products yet
-  const isProd = process.env.NODE_ENV === 'production';
-  const resolvedBouquets = bouquetProducts.length > 0 ? bouquetProducts : (isProd ? [] : MOCK_BOUQUETS);
-  const resolvedArrangements = basketProducts.length > 0 ? basketProducts : (isProd ? [] : MOCK_BASKETS);
-  const resolvedDecor = decorProducts.length > 0 ? decorProducts : (isProd ? [] : MOCK_DECOR);
-  const resolvedFuneral = funeralProducts.length > 0 ? funeralProducts : (isProd ? [] : MOCK_FUNERAL);
+  // Fallback to placeholder data ONLY in development when DB has no products yet.
+  // Dynamic import keeps mock-products out of the production bundle entirely.
+  const mocks = process.env.NODE_ENV !== 'production'
+    ? await import('@/lib/mock-products')
+    : null;
+  const resolvedBouquets = bouquetProducts.length > 0 ? bouquetProducts : (mocks?.MOCK_BOUQUETS ?? []);
+  const resolvedArrangements = basketProducts.length > 0 ? basketProducts : (mocks?.MOCK_BASKETS ?? []);
+  const resolvedDecor = decorProducts.length > 0 ? decorProducts : (mocks?.MOCK_DECOR ?? []);
+  const resolvedFuneral = funeralProducts.length > 0 ? funeralProducts : (mocks?.MOCK_FUNERAL ?? []);
 
   return (
     <main>

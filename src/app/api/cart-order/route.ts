@@ -4,9 +4,11 @@ import { supabaseAdmin } from '@/lib/supabaseServer';
 import { z } from 'zod';
 import { assertSameOrigin, checkLimitAsync, getClientIp, NO_CACHE_HEADERS, type RateLimitRecord } from '@/lib/apiUtils';
 import { DB_TABLES } from '@/lib/constants';
+import { finalPrice } from '@/lib/i18n-content';
 import { createHash } from 'crypto';
 import { sendOrderTelegram } from '@/lib/telegram';
 import { createPayment, getOrderStatus, mapGatewayStatus, sendPaymentTelegram } from '@/lib/paymentGateway';
+import { generateAccessToken } from '@/lib/paymentTokens';
 
 // Rate limiting: 5 new cart orders per IP per 10 minutes (applied AFTER dedup)
 const cartOrderAttempts = new Map<string, RateLimitRecord>();
@@ -75,23 +77,23 @@ export async function POST(request: Request) {
         // Check all items exist and in stock
         const verifiedItems: { id: string; name: string; price: number; quantity: number; finalPrice: number }[] = [];
 
+        // O(1) lookup instead of .find() inside the loop.
+        const productById = new Map(products.map(p => [p.id, p]));
+
         for (const item of order.items) {
-            const product = products.find(p => p.id === item.productId);
+            const product = productById.get(item.productId);
             if (!product) {
                 return NextResponse.json({ error: `Product not found: ${item.productId}` }, { status: 404, headers: NO_CACHE_HEADERS });
             }
             if (!product.in_stock) {
                 return NextResponse.json({ error: `Product out of stock: ${product.name}` }, { status: 400, headers: NO_CACHE_HEADERS });
             }
-            const finalPrice = product.discount > 0
-                ? Math.round(product.price * (1 - product.discount / 100))
-                : product.price;
             verifiedItems.push({
                 id: product.id,
                 name: product.name,
                 price: product.price,
                 quantity: item.quantity,
-                finalPrice,
+                finalPrice: finalPrice(product.price, product.discount),
             });
         }
 
@@ -278,10 +280,10 @@ export async function POST(request: Request) {
                     .eq('id', orderId);
             }
 
-            // sync_error → do NOT auto-retry
+            // sync_error → do NOT auto-retry, do not disclose internal error class
             if (payment_status === 'sync_error') {
                 return NextResponse.json(
-                    { orderId, fallback: true, errorType: 'sync_error' },
+                    { orderId, fallback: true },
                     { status: 200, headers: NO_CACHE_HEADERS }
                 );
             }
@@ -375,6 +377,13 @@ async function createPaymentAndRespond(
     order: { name: string; phone: string; deliveryType: string; address?: string | null; specificTime?: string | null; comment?: string | null },
     request: Request,
 ): Promise<NextResponse> {
+    // ── Kill switch: payment disabled — order is saved & telegram sent, no online payment ──
+    if (process.env.PAYMENT_ENABLED !== 'true') {
+        return NextResponse.json(
+            { orderId, ok: true },
+            { status: 200, headers: NO_CACHE_HEADERS }
+        );
+    }
     const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
 
     // Determine language from accept-language header
@@ -397,23 +406,28 @@ async function createPaymentAndRespond(
         );
     }
 
+    // Ownership token, embedded in the return URL so only the buyer who
+    // initiated this payment can later read /api/payment/status or retry.
+    const accessToken = generateAccessToken(orderId);
+
     try {
         const { paymentId, redirectUrl } = await createPayment({
             orderId,
             totalAmount: serverTotal,
             orderDesc,
             callbackUrl: `${siteUrl}/api/payment/callback`,
-            returnUrl: `${siteUrl}/api/payment/return?orderId=${orderId}`,
+            returnUrl: `${siteUrl}/api/payment/return?orderId=${orderId}&t=${accessToken}`,
             lang: payLang,
         });
 
-        // ── UPDATE payment_id (atomic step) ──
+        // ── UPDATE payment_id + access_token (atomic step) ──
         const { error: updateErr } = await supabaseAdmin
             .from(DB_TABLES.ORDERS)
             .update({
                 payment_id: paymentId,
                 payment_started_at: new Date().toISOString(),
                 payment_redirect_url: redirectUrl,
+                access_token: accessToken,
             })
             .eq('id', orderId);
 

@@ -15,7 +15,7 @@ export async function GET(request: Request) {
 
     const { data, error } = await supabaseAdmin
         .from(DB_TABLES.EVENT_PAGES)
-        .select('*')
+        .select('slug, content, updated_at')
         .order('slug');
 
     if (error) {

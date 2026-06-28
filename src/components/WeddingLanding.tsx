@@ -615,7 +615,7 @@ function InquiryFormSection({ content, locale, slug }: { content: EventContent; 
       const res = await fetch("/api/event-inquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, event_type: slug }),
+        body: JSON.stringify({ ...form, slug }),
       });
       setStatus(res.ok ? "sent" : "error");
     } catch { setStatus("error"); }

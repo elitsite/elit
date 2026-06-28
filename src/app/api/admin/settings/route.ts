@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { verifyAdminRequest } from '@/lib/adminAuth';
 import { supabaseAdmin } from '@/lib/supabaseServer';
-import { NO_CACHE_HEADERS, assertSameOrigin } from '@/lib/apiUtils';
+import { NO_CACHE_HEADERS, assertSameOrigin, errorMessage } from '@/lib/apiUtils';
 import { DB_TABLES } from '@/lib/constants';
 
 // Whitelist of fields allowed to be updated via PUT
@@ -45,9 +45,6 @@ function sanitizeSettings(raw: Record<string, unknown>): Record<string, unknown>
     return clean;
 }
 
-function errorMessage(err: unknown): string {
-    return err instanceof Error ? err.message : String(err);
-}
 
 const URL_FIELDS = ['telegram_link', 'address_link', 'instagram_link', 'facebook_link', 'whatsapp_link'] as const;
 

@@ -85,10 +85,13 @@ export const CATEGORY_TREE: CategoryNode[] = [
 export function getLeafCategories(nodes: CategoryNode[] = CATEGORY_TREE): CategoryNode[] {
     const leaves: CategoryNode[] = [];
     for (const node of nodes) {
+        // A node may be selectable AND have children; include it either way so
+        // selectable parents are never silently dropped.
+        if (node.selectable) {
+            leaves.push(node);
+        }
         if (node.children?.length) {
             leaves.push(...getLeafCategories(node.children));
-        } else if (node.selectable) {
-            leaves.push(node);
         }
     }
     return leaves;

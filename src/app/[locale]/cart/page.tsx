@@ -86,6 +86,24 @@ export default function CartPage() {
 
       // If payment gateway returned a redirect URL, redirect to checkout
       if (data.redirectUrl) {
+        // Open-redirect guard: only allow URLs whose host matches the
+        // configured PSP host. Server returns a public env value via the
+        // build-time NEXT_PUBLIC_ prefix when payment is enabled.
+        const allowedHost = process.env.NEXT_PUBLIC_PAYMENT_GATEWAY_HOST;
+        let safe = false;
+        try {
+          const u = new URL(data.redirectUrl);
+          safe =
+            u.protocol === "https:" &&
+            !!allowedHost &&
+            u.host === allowedHost;
+        } catch {
+          safe = false;
+        }
+        if (!safe) {
+          setError(t("err_generic"));
+          return;
+        }
         clear();
         setForm(initialForm);
         window.location.href = data.redirectUrl;

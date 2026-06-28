@@ -6,6 +6,7 @@ import { LogOut, Plus, Trash2, Edit, Package, Settings, Upload, X, Save, Store, 
 import { Product, Settings as SettingsType, Order, getScheduleOpen, getScheduleTime, setScheduleField, normalizePriceFilters, PriceFilter, EventContent } from '@/lib/supabase';
 import { AdminLang, adminTranslations, adminCategoryLabels } from '@/lib/adminTranslations';
 import { CATEGORY_TREE } from '@/lib/categories';
+import { finalPrice } from '@/lib/i18n-content';
 import EventEditor from '@/components/EventEditor';
 
 // ── Category dropdown helpers (built from CATEGORY_TREE) ──
@@ -29,6 +30,11 @@ const LEAF_LABELKEY_BY_SLUG: Record<string, string> = (() => {
 
 const fmtPrice = (n: number | null | undefined) => `€${(n ?? 0).toLocaleString('nl-NL')}`;
 const errMsg = (e: unknown) => (e instanceof Error ? e.message : String(e));
+// Parse a money/number input keeping up to 2 decimals (e.g. "9.5" → 9.5).
+const parsePrice = (v: string): number => {
+    const n = parseFloat(String(v).replace(',', '.'));
+    return Number.isFinite(n) ? Math.round(n * 100) / 100 : 0;
+};
 
 export default function AdminPage() {
     const router = useRouter();
@@ -40,12 +46,26 @@ export default function AdminPage() {
     const [activeTab, setActiveTab] = useState<'products' | 'settings' | 'orders' | 'events'>('products');
     const [orders, setOrders] = useState<Order[]>([]);
     const [ordersLoaded, setOrdersLoaded] = useState(false);
+    const [orderStatusFilter, setOrderStatusFilter] = useState<'all' | 'new' | 'confirmed' | 'completed' | 'cancelled'>('all');
+    const [productSearch, setProductSearch] = useState('');
     const [notification, setNotification] = useState<{ message: string, type: string } | null>(null);
 
     // Admin language (default RU)
     const [adminLang, setAdminLang] = useState<AdminLang>('ru');
     const at = adminTranslations[adminLang];
     const catLabel = (key: string) => adminCategoryLabels[adminLang][key] || key;
+
+    const newOrdersCount = orders.filter(o => o.status === 'new').length;
+    const filteredOrders = orderStatusFilter === 'all'
+        ? orders
+        : orders.filter(o => o.status === orderStatusFilter);
+
+    const productQuery = productSearch.trim().toLowerCase();
+    const filteredProducts = productQuery
+        ? products.filter(p =>
+            p.name.toLowerCase().includes(productQuery) ||
+            (p.category || '').toLowerCase().includes(productQuery))
+        : products;
 
     useEffect(() => {
         const saved = localStorage.getItem('admin-lang');
@@ -94,6 +114,7 @@ export default function AdminPage() {
     // Event pages state
     const [eventPages, setEventPages] = useState<Record<string, EventContent>>({});
     const [eventsLoaded, setEventsLoaded] = useState(false);
+    const [eventsError, setEventsError] = useState(false);
     const [activeEventSlug, setActiveEventSlug] = useState<'weddings' | 'parties'>('weddings');
 
     // Initial data load
@@ -151,19 +172,30 @@ export default function AdminPage() {
     useEffect(() => {
         if (activeTab === 'events' && !eventsLoaded) {
             setEventsLoaded(true);
+            setEventsError(false);
             fetch(`/api/admin/event-pages?t=${Date.now()}`, { cache: 'no-store' })
                 .then(res => {
-                    if (res.status === 401) { router.push('/admin/login'); return []; }
-                    return res.ok ? res.json() : [];
+                    if (res.status === 401) { router.push('/admin/login'); throw new Error('unauthorized'); }
+                    if (!res.ok) throw new Error('failed');
+                    return res.json();
                 })
                 .then((data: Array<{ slug: string; content: EventContent }>) => {
                     const map: Record<string, EventContent> = {};
                     for (const row of data) map[row.slug] = row.content;
                     setEventPages(map);
                 })
-                .catch(() => showNotif(at.events_err_load, 'error'));
+                .catch((e) => {
+                    // Show an error+retry state instead of an endless spinner.
+                    setEventsError(true);
+                    if (errMsg(e) !== 'unauthorized') showNotif(at.events_err_load, 'error');
+                });
         }
     }, [activeTab, eventsLoaded, router]);
+
+    const retryLoadEvents = () => {
+        setEventsError(false);
+        setEventsLoaded(false);
+    };
 
     const loadData = async () => {
         setIsLoading(true);
@@ -343,8 +375,8 @@ export default function AdminPage() {
                 // Description translations
                 description_uk: productForm.description_uk || autoTrans.description?.uk || productForm.description || null,
                 description_nl: productForm.description_nl || autoTrans.description?.nl || null,
-                price: parseInt(productForm.price) || 0,
-                discount: parseInt(productForm.discount) || 0,
+                price: parsePrice(productForm.price),
+                discount: parsePrice(productForm.discount),
                 image_url: imageUrl,
                 in_stock: productForm.in_stock,
                 category: productForm.category,
@@ -362,9 +394,9 @@ export default function AdminPage() {
                 important_note_uk: productForm.important_note_uk || autoTrans.important_note?.uk || productForm.important_note || null,
                 important_note_nl: productForm.important_note_nl || autoTrans.important_note?.nl || null,
                 // Size variants
-                sizes: productForm.sizes.length > 0 ? productForm.sizes.map(s => ({ size: s.size, price: parseInt(s.price) || 0, details: s.details })) : null,
-                sizes_uk: productForm.sizes_uk.length > 0 ? productForm.sizes_uk.map(s => ({ size: s.size, price: parseInt(s.price) || 0, details: s.details })) : null,
-                sizes_nl: productForm.sizes_nl.length > 0 ? productForm.sizes_nl.map(s => ({ size: s.size, price: parseInt(s.price) || 0, details: s.details })) : null,
+                sizes: productForm.sizes.length > 0 ? productForm.sizes.map(s => ({ size: s.size, price: parsePrice(s.price), details: s.details })) : null,
+                sizes_uk: productForm.sizes_uk.some(s => s.details.trim()) ? productForm.sizes_uk.map(s => ({ size: s.size, price: parsePrice(s.price), details: s.details })) : null,
+                sizes_nl: productForm.sizes_nl.some(s => s.details.trim()) ? productForm.sizes_nl.map(s => ({ size: s.size, price: parsePrice(s.price), details: s.details })) : null,
                 // Keep existing extra_images when editing (we don't have an extra_images editor in the form)
                 extra_images: editingProduct?.extra_images ?? null,
             };
@@ -456,10 +488,59 @@ export default function AdminPage() {
         if (!settings) return;
         setIsSaving(true);
         try {
+            const payload: Record<string, unknown> = { ...settings };
+
+            // Auto-translate: fill only EMPTY uk/nl variants of translatable
+            // text settings. Manual input always wins; translation is best-effort.
+            const TRANSLATABLE_SETTINGS = [
+                'hero_title', 'hero_subtitle', 'about_text',
+                'delivery_info', 'pickup_info', 'payment_info',
+                'schedule', 'address',
+            ];
+            const s = settings as unknown as Record<string, unknown>;
+            const texts: { key: string; value: string }[] = [];
+            for (const base of TRANSLATABLE_SETTINGS) {
+                const val = s[base];
+                if (typeof val !== 'string' || !val.trim()) continue;
+                const uk = s[`${base}_uk`];
+                const nl = s[`${base}_nl`];
+                const ukEmpty = typeof uk !== 'string' || !uk.trim();
+                const nlEmpty = typeof nl !== 'string' || !nl.trim();
+                if (ukEmpty || nlEmpty) texts.push({ key: base, value: val });
+            }
+
+            if (texts.length > 0) {
+                try {
+                    const CHUNK = 10;
+                    const translations: Record<string, Record<string, string>> = {};
+                    for (let i = 0; i < texts.length; i += CHUNK) {
+                        const slice = texts.slice(i, i + CHUNK);
+                        const res = await fetch('/api/admin/translate', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ texts: slice }),
+                        });
+                        if (!res.ok) break;
+                        const data = await res.json();
+                        Object.assign(translations, data.translations);
+                    }
+                    for (const base of TRANSLATABLE_SETTINGS) {
+                        const tr = translations[base];
+                        if (!tr) continue;
+                        const uk = payload[`${base}_uk`];
+                        const nl = payload[`${base}_nl`];
+                        if ((typeof uk !== 'string' || !uk.trim()) && tr.uk) payload[`${base}_uk`] = tr.uk;
+                        if ((typeof nl !== 'string' || !nl.trim()) && tr.nl) payload[`${base}_nl`] = tr.nl;
+                    }
+                } catch {
+                    // Best-effort: continue saving even if translation fails.
+                }
+            }
+
             const response = await fetch('/api/admin/settings', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(settings),
+                body: JSON.stringify(payload),
             });
             if (!response.ok) {
                 const err = await response.json();
@@ -643,10 +724,15 @@ export default function AdminPage() {
                     </button>
                     <button
                         onClick={() => setActiveTab('orders')}
-                        className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-lg font-semibold transition-all ${activeTab === 'orders' ? 'bg-emerald-600 text-white' : 'bg-white text-zinc-700 hover:bg-emerald-50'}`}
+                        className={`relative flex items-center gap-2 px-4 sm:px-6 py-3 rounded-lg font-semibold transition-all ${activeTab === 'orders' ? 'bg-emerald-600 text-white' : 'bg-white text-zinc-700 hover:bg-emerald-50'}`}
                     >
                         <ClipboardList size={20} />
                         <span className="hidden sm:inline">{at.tab_orders}</span>
+                        {newOrdersCount > 0 && (
+                            <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1.5 flex items-center justify-center rounded-full bg-red-600 text-white text-xs font-bold">
+                                {newOrdersCount}
+                            </span>
+                        )}
                     </button>
                     <button
                         onClick={() => setActiveTab('events')}
@@ -895,16 +981,30 @@ export default function AdminPage() {
                         )}
 
                         <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg">
-                            <h2 className="text-xl font-bold mb-4">{at.products_title} ({products.length})</h2>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                                <h2 className="text-xl font-bold">{at.products_title} ({products.length})</h2>
+                                <input
+                                    type="text"
+                                    value={productSearch}
+                                    onChange={(e) => setProductSearch(e.target.value)}
+                                    placeholder={at.products_search}
+                                    className="px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:border-amber-500 focus:outline-none sm:w-64"
+                                />
+                            </div>
                             {products.length === 0 ? (
                                 <div className="text-center py-12 text-zinc-400">
                                     <div className="text-5xl mb-3">🌸</div>
                                     <p>{at.products_empty}</p>
                                 </div>
+                            ) : filteredProducts.length === 0 ? (
+                                <div className="text-center py-12 text-zinc-400">
+                                    <div className="text-5xl mb-3">🔍</div>
+                                    <p>{at.products_search_empty}</p>
+                                </div>
                             ) : (
                                 <div className="space-y-4">
-                                    {products.map((product) => {
-                                        const finalPrice = product.discount > 0 ? Math.round(product.price * (1 - product.discount / 100)) : product.price;
+                                    {filteredProducts.map((product) => {
+                                        const fp = finalPrice(product.price, product.discount);
                                         const labelKey = LEAF_LABELKEY_BY_SLUG[product.category];
                                         const categoryName = labelKey ? catLabel(labelKey) : product.category;
                                         return (
@@ -914,7 +1014,7 @@ export default function AdminPage() {
                                                     <div className="flex-1 min-w-0 sm:hidden">
                                                         <h3 className="font-semibold truncate text-sm">{product.name}</h3>
                                                         <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                                                            <span suppressHydrationWarning className="font-bold text-amber-600 text-sm">{fmtPrice(finalPrice)}</span>
+                                                            <span suppressHydrationWarning className="font-bold text-amber-600 text-sm">{fmtPrice(fp)}</span>
                                                             {product.discount > 0 && <span suppressHydrationWarning className="text-zinc-400 text-xs line-through">{fmtPrice(product.price)}</span>}
                                                         </div>
                                                     </div>
@@ -927,7 +1027,7 @@ export default function AdminPage() {
                                                     <h3 className="font-semibold truncate">{product.name}</h3>
                                                     <p className="text-zinc-500 text-sm truncate">{product.description}</p>
                                                     <div className="flex items-center gap-3 mt-1 flex-wrap">
-                                                        <span suppressHydrationWarning className="font-bold text-amber-600">{fmtPrice(finalPrice)}</span>
+                                                        <span suppressHydrationWarning className="font-bold text-amber-600">{fmtPrice(fp)}</span>
                                                         {product.discount > 0 && <span suppressHydrationWarning className="text-zinc-400 text-sm line-through">{fmtPrice(product.price)}</span>}
                                                         <span className={`text-xs px-2 py-0.5 rounded-full ${product.in_stock ? 'bg-green-100 text-green-600' : 'bg-zinc-100 text-zinc-500'}`}>{product.in_stock ? at.lbl_in_stock : at.lbl_out}</span>
                                                         <span className="text-xs px-2 py-0.5 rounded-full border bg-zinc-100 text-zinc-600 border-zinc-200">{categoryName}</span>
@@ -1283,6 +1383,13 @@ export default function AdminPage() {
                                     }
                                 }}
                             />
+                        ) : eventsError ? (
+                            <div className="bg-white rounded-xl p-12 text-center text-zinc-500">
+                                <p className="mb-4">{at.events_err_load}</p>
+                                <button onClick={retryLoadEvents} className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-medium transition-colors">
+                                    🔄 {at.btn_retry}
+                                </button>
+                            </div>
                         ) : (
                             <div className="bg-white rounded-xl p-12 text-center text-zinc-400">
                                 <Loader2 className="animate-spin mx-auto" size={32} />
@@ -1295,22 +1402,36 @@ export default function AdminPage() {
                 {activeTab === 'orders' && (
                     <div className="space-y-6">
                         <p className="text-sm text-zinc-500">{at.desc_tab_orders}</p>
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <h2 className="text-xl font-bold text-zinc-800">{at.orders_title}</h2>
-                            <button
-                                onClick={async () => {
-                                    try {
-                                        const res = await fetch('/api/admin/orders');
-                                        if (res.ok) { setOrders(await res.json()); showNotif(at.orders_refreshed, 'success'); }
-                                    } catch { showNotif('Error', 'error'); }
-                                }}
-                                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition-colors"
-                            >
-                                🔄 {at.orders_refresh}
-                            </button>
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <label className="text-sm text-zinc-500">{at.orders_filter_label}</label>
+                                <select
+                                    value={orderStatusFilter}
+                                    onChange={(e) => setOrderStatusFilter(e.target.value as typeof orderStatusFilter)}
+                                    className="px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:border-emerald-500 focus:outline-none"
+                                >
+                                    <option value="all">{at.orders_filter_all}</option>
+                                    <option value="new">{at.order_new}</option>
+                                    <option value="confirmed">{at.order_confirmed}</option>
+                                    <option value="completed">{at.order_completed}</option>
+                                    <option value="cancelled">{at.order_cancelled}</option>
+                                </select>
+                                <button
+                                    onClick={async () => {
+                                        try {
+                                            const res = await fetch('/api/admin/orders');
+                                            if (res.ok) { setOrders(await res.json()); showNotif(at.orders_refreshed, 'success'); }
+                                        } catch { showNotif('Error', 'error'); }
+                                    }}
+                                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition-colors"
+                                >
+                                    🔄 {at.orders_refresh}
+                                </button>
+                            </div>
                         </div>
 
-                        {orders.length === 0 ? (
+                        {filteredOrders.length === 0 ? (
                             <div className="bg-white rounded-xl p-12 text-center text-zinc-400">
                                 <ClipboardList size={48} className="mx-auto mb-4 opacity-40" />
                                 <p className="text-lg">{at.orders_empty}</p>
@@ -1318,7 +1439,7 @@ export default function AdminPage() {
                             </div>
                         ) : (
                             <div className="space-y-3">
-                                {orders.map((order) => (
+                                {filteredOrders.map((order) => (
                                     <div key={order.id} className={`bg-white rounded-xl p-4 shadow-sm border-l-4 ${order.status === 'new' ? 'border-amber-500' : order.status === 'confirmed' ? 'border-blue-500' : order.status === 'completed' ? 'border-green-500' : 'border-zinc-300'}`}>
                                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                             <div className="flex-1">

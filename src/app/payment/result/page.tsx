@@ -27,9 +27,12 @@ type PaymentStatus =
 export default function PaymentResultPage() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
+  const accessToken = searchParams.get("t");
   const t = useTranslations("Payment");
 
-  const [status, setStatus] = useState<PaymentStatus>("polling");
+  const [status, setStatus] = useState<PaymentStatus>(
+    orderId && accessToken ? "polling" : "error",
+  );
   const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
   const [isRetrying, setIsRetrying] = useState(false);
   const [retryError, setRetryError] = useState("");
@@ -37,10 +40,12 @@ export default function PaymentResultPage() {
   const maxPolls = 30;
 
   const pollStatus = useCallback(async () => {
-    if (!orderId) return;
+    if (!orderId || !accessToken) return;
 
     try {
-      const res = await fetch(`/api/payment/status?orderId=${orderId}`);
+      const res = await fetch(
+        `/api/payment/status?orderId=${orderId}&t=${encodeURIComponent(accessToken)}`,
+      );
       if (!res.ok) {
         if (res.status === 404) {
           setStatus("error");
@@ -76,10 +81,10 @@ export default function PaymentResultPage() {
     } catch {
       // Network error — keep polling
     }
-  }, [orderId]);
+  }, [orderId, accessToken]);
 
   useEffect(() => {
-    if (!orderId || status !== "polling") return;
+    if (!orderId || !accessToken || status !== "polling") return;
 
     const interval = setInterval(() => {
       pollCountRef.current++;
@@ -96,10 +101,10 @@ export default function PaymentResultPage() {
     pollStatus();
 
     return () => clearInterval(interval);
-  }, [orderId, status, pollStatus]);
+  }, [orderId, accessToken, status, pollStatus]);
 
   const handleRetry = async () => {
-    if (isRetrying || !orderId) return;
+    if (isRetrying || !orderId || !accessToken) return;
     setIsRetrying(true);
     setRetryError("");
 
@@ -107,7 +112,7 @@ export default function PaymentResultPage() {
       const res = await fetch("/api/payment/retry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderId }),
+        body: JSON.stringify({ orderId, accessToken }),
       });
 
       const data = await res.json();

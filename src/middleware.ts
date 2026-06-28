@@ -1,11 +1,7 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextResponse, type NextRequest } from 'next/server';
 import { routing } from './i18n/routing';
-
-const SESSION_MAX_AGE_MS = 24 * 60 * 60 * 1000;
-const MAX_FUTURE_SKEW_MS = 5 * 60 * 1000;
-const HEX_32_RE = /^[a-f0-9]{32}$/;
-const HEX_64_RE = /^[a-f0-9]{64}$/;
+import { parseSessionToken, verifyHmacHex } from '@/lib/hmacSession';
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -16,72 +12,32 @@ function applyNoStoreHeaders(response: NextResponse): NextResponse {
     return response;
 }
 
-// Edge-compatible HMAC verification (Web Crypto).
-async function verifyHmac(data: string, providedHash: string, secretKey: string): Promise<boolean> {
-    try {
-        const encoder = new TextEncoder();
-        const key = await crypto.subtle.importKey(
-            'raw',
-            encoder.encode(secretKey),
-            { name: 'HMAC', hash: 'SHA-256' },
-            false,
-            ['sign']
-        );
-        const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(data));
-        const expectedHex = Array.from(new Uint8Array(signature))
-            .map(b => b.toString(16).padStart(2, '0'))
-            .join('');
-
-        if (expectedHex.length !== providedHash.length) return false;
-        let diff = 0;
-        for (let i = 0; i < expectedHex.length; i++) {
-            diff |= expectedHex.charCodeAt(i) ^ providedHash.charCodeAt(i);
-        }
-        return diff === 0;
-    } catch {
-        return false;
-    }
+function redirectToLogin(request: NextRequest, clearCookie: boolean): NextResponse {
+    const response = NextResponse.redirect(new URL('/admin/login', request.url));
+    if (clearCookie) response.cookies.delete('admin_session');
+    return applyNoStoreHeaders(response);
 }
 
 async function adminMiddleware(request: NextRequest): Promise<NextResponse> {
     if (!request.nextUrl.pathname.startsWith('/admin/login')) {
         const authCookie = request.cookies.get('admin_session');
 
-        if (!authCookie || !authCookie.value || authCookie.value.length < 20) {
-            return applyNoStoreHeaders(NextResponse.redirect(new URL('/admin/login', request.url)));
+        if (!authCookie?.value) {
+            return redirectToLogin(request, false);
         }
 
-        const parts = authCookie.value.split(':');
-        if (parts.length !== 3) {
-            return applyNoStoreHeaders(NextResponse.redirect(new URL('/admin/login', request.url)));
-        }
-
-        const [timestamp, random, providedHash] = parts;
-        if (!HEX_32_RE.test(random) || !HEX_64_RE.test(providedHash)) {
-            const response = NextResponse.redirect(new URL('/admin/login', request.url));
-            response.cookies.delete('admin_session');
-            return applyNoStoreHeaders(response);
-        }
-
-        const ts = Number.parseInt(timestamp, 10);
-        const now = Date.now();
-        if (!Number.isFinite(ts) || ts > now + MAX_FUTURE_SKEW_MS || now - ts > SESSION_MAX_AGE_MS) {
-            const response = NextResponse.redirect(new URL('/admin/login', request.url));
-            response.cookies.delete('admin_session');
-            return applyNoStoreHeaders(response);
-        }
+        const parts = parseSessionToken(authCookie.value);
+        if (!parts) return redirectToLogin(request, true);
 
         const SECRET_KEY = process.env.ADMIN_SECRET_KEY || '';
-        if (!SECRET_KEY) {
-            return applyNoStoreHeaders(NextResponse.redirect(new URL('/admin/login', request.url)));
-        }
+        if (!SECRET_KEY) return redirectToLogin(request, false);
 
-        const isValid = await verifyHmac(`${timestamp}:${random}`, providedHash, SECRET_KEY);
-        if (!isValid) {
-            const response = NextResponse.redirect(new URL('/admin/login', request.url));
-            response.cookies.delete('admin_session');
-            return applyNoStoreHeaders(response);
-        }
+        const isValid = await verifyHmacHex(
+            `${parts.timestamp}:${parts.random}`,
+            parts.hash,
+            SECRET_KEY,
+        );
+        if (!isValid) return redirectToLogin(request, true);
     }
 
     return applyNoStoreHeaders(NextResponse.next());

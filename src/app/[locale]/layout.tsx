@@ -20,6 +20,7 @@ import { CartProvider } from "@/lib/cart";
 import { getSettings } from "@/lib/products";
 import { extractWorkingHours } from "@/lib/workingHours";
 import ShopClosedSplash from "@/components/ShopClosedSplash";
+import { safeJsonLd } from "@/lib/safeJsonLd";
 import "../globals.css";
 
 const geistSans = localFont({
@@ -62,6 +63,13 @@ export async function generateMetadata({
   const title = t("title");
   const description = t("description");
 
+  const ogImage = {
+    url: `${SITE_URL}/lol.png`,
+    width: 1200,
+    height: 630,
+    alt: BRAND_NAME,
+  };
+
   return {
     metadataBase: new URL(SITE_URL),
     title: {
@@ -71,6 +79,11 @@ export async function generateMetadata({
     description,
     keywords: t("keywords"),
     applicationName: BRAND_NAME,
+    icons: {
+      icon: "/lol.png",
+      shortcut: "/lol.png",
+      apple: "/lol.png",
+    },
     alternates: {
       canonical: canonicalUrl(locale as Locale),
       languages: buildLanguageAlternates(),
@@ -85,11 +98,13 @@ export async function generateMetadata({
       alternateLocale: routing.locales
         .filter((l) => l !== locale)
         .map((l) => ogLocaleMap[l]),
+      images: [ogImage],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: [ogImage.url],
     },
     robots: {
       index: true,
@@ -128,24 +143,36 @@ export default async function LocaleLayout({
   // Fail-open: only treat the shop as closed when the flag is explicitly false.
   const shopClosed = settings?.shop_open === false;
 
+  // Prefer real, admin-managed contact data from settings; fall back to the
+  // static BUSINESS config when a field is not configured yet.
+  const telephone = settings?.phone?.trim() || BUSINESS.telephone;
+  const streetAddress = settings?.address?.trim() || BUSINESS.streetAddress;
+  const sameAs = [
+    settings?.instagram_link,
+    settings?.facebook_link,
+    settings?.whatsapp_link,
+    settings?.telegram_link,
+    ...BUSINESS.sameAs,
+  ].filter((v): v is string => typeof v === "string" && v.trim().length > 0);
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": ["Florist", "LocalBusiness"],
     name: BRAND_NAME,
     url: canonicalUrl(locale),
-    image: `${SITE_URL}/og-image.jpg`,
+    image: `${SITE_URL}/lol.png`,
     priceRange: BUSINESS.priceRange,
     address: {
       "@type": "PostalAddress",
-      streetAddress: BUSINESS.streetAddress || undefined,
+      streetAddress: streetAddress || undefined,
       addressLocality: BUSINESS.addressLocality || undefined,
       postalCode: BUSINESS.postalCode || undefined,
       addressCountry: BUSINESS.addressCountry,
     },
     areaServed: { "@type": "Country", name: "Netherlands" },
-    ...(BUSINESS.telephone ? { telephone: BUSINESS.telephone } : {}),
+    ...(telephone ? { telephone } : {}),
     ...(BUSINESS.email ? { email: BUSINESS.email } : {}),
-    ...(BUSINESS.sameAs.length ? { sameAs: BUSINESS.sameAs } : {}),
+    ...(sameAs.length ? { sameAs } : {}),
   };
 
   return (
@@ -155,7 +182,7 @@ export default async function LocaleLayout({
       >
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
         />
         <NextIntlClientProvider>
           {shopClosed ? (

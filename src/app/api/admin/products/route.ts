@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { verifyAdminRequest } from '@/lib/adminAuth';
 import { supabaseAdmin } from '@/lib/supabaseServer';
-import { NO_CACHE_HEADERS, assertSameOrigin } from '@/lib/apiUtils';
+import { NO_CACHE_HEADERS, assertSameOrigin, errorMessage } from '@/lib/apiUtils';
 import { z } from 'zod';
 import { DB_TABLES } from '@/lib/constants';
 
@@ -51,9 +51,6 @@ function cleanData<T extends Record<string, unknown>>(validated: T): Partial<T> 
     return result;
 }
 
-function errorMessage(err: unknown): string {
-    return err instanceof Error ? err.message : String(err);
-}
 
 /**
  * Extract storage path from a Supabase public URL and delete the file.
@@ -79,13 +76,24 @@ async function deleteMultipleImages(urls: string[]): Promise<void> {
     await Promise.allSettled(urls.filter(Boolean).map(url => deleteStorageImage(url)));
 }
 
+// Explicit column whitelist (avoids leaking unrelated DB columns to admin UI).
+const PRODUCT_COLUMNS = `
+    id, name, description, price, discount, image_url, in_stock,
+    category, created_at, extra_images,
+    sizes, sizes_uk, sizes_nl,
+    name_uk, name_nl, description_uk, description_nl,
+    composition, composition_uk, composition_nl,
+    kit_info, kit_info_uk, kit_info_nl,
+    important_note, important_note_uk, important_note_nl
+`;
+
 // GET
 export async function GET(request: Request) {
     if (!await verifyAdminRequest(request)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: NO_CACHE_HEADERS });
     }
     const { data, error } = await supabaseAdmin
-        .from(DB_TABLES.BOUQUETS).select('*').order('created_at', { ascending: false }).limit(500);
+        .from(DB_TABLES.BOUQUETS).select(PRODUCT_COLUMNS).order('created_at', { ascending: false }).limit(500);
     if (error) {
         console.error('Failed to fetch products:', error);
         return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500, headers: NO_CACHE_HEADERS });

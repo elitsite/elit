@@ -32,7 +32,7 @@ export async function POST(request: Request) {
 
         // Rate limiting
         const ip = getClientIp(request);
-        const { allowed, remaining } = await checkLimitAsync(loginAttempts, ip, MAX_ATTEMPTS, WINDOW_MS, MAX_TRACKED_IPS, 'login');
+        const { allowed } = await checkLimitAsync(loginAttempts, ip, MAX_ATTEMPTS, WINDOW_MS, MAX_TRACKED_IPS, 'login');
 
         if (!allowed) {
             return NextResponse.json(
@@ -100,7 +100,7 @@ export async function POST(request: Request) {
         }
 
         return NextResponse.json(
-            { error: 'Invalid password', remaining },
+            { error: 'Invalid password' },
             { status: 401, headers: NO_CACHE_HEADERS }
         );
     } catch (err) {

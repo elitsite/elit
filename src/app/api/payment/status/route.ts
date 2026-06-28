@@ -3,6 +3,7 @@ import { supabaseAdmin } from '@/lib/supabaseServer';
 import { DB_TABLES } from '@/lib/constants';
 import { getOrderStatus, mapGatewayStatus } from '@/lib/paymentGateway';
 import { checkLimitAsync, getClientIp, NO_CACHE_HEADERS, type RateLimitRecord } from '@/lib/apiUtils';
+import { verifyAccessToken } from '@/lib/paymentTokens';
 
 // Rate limit: 40 req/min per IP
 const statusAttempts = new Map<string, RateLimitRecord>();
@@ -17,6 +18,9 @@ const MAX_TRACKED_IPS = 10000;
  * Returns current payment status, with reconciliation for stale pending orders.
  */
 export async function GET(request: Request) {
+    if (process.env.PAYMENT_ENABLED !== 'true') {
+        return NextResponse.json({ error: 'Not found' }, { status: 404, headers: NO_CACHE_HEADERS });
+    }
     try {
         const ip = getClientIp(request);
         const { allowed } = await checkLimitAsync(statusAttempts, ip, MAX_REQUESTS, WINDOW_MS, MAX_TRACKED_IPS, 'payment-status');
@@ -29,9 +33,14 @@ export async function GET(request: Request) {
 
         const { searchParams } = new URL(request.url);
         const orderId = searchParams.get('orderId');
+        const accessToken = searchParams.get('t');
 
         if (!orderId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderId)) {
-            return NextResponse.json({ error: 'Invalid orderId' }, { status: 400, headers: NO_CACHE_HEADERS });
+            return NextResponse.json({ error: 'Not found' }, { status: 404, headers: NO_CACHE_HEADERS });
+        }
+        if (!verifyAccessToken(orderId, accessToken)) {
+            // Treat as not-found to avoid order-id enumeration.
+            return NextResponse.json({ error: 'Not found' }, { status: 404, headers: NO_CACHE_HEADERS });
         }
 
         const { data: order, error: findErr } = await supabaseAdmin
@@ -139,20 +148,14 @@ export async function GET(request: Request) {
             }
         }
 
-        // ── Pending with no payment_id → failed initialization ──
+        // ── Pending with no payment_id ──
+        // GET is read-only. Report as still pending; the reconciliation /
+        // expiry transition is the responsibility of cart-order / retry / callback.
         if (order.payment_status === 'pending' && !order.payment_id) {
-            await supabaseAdmin
-                .from(DB_TABLES.ORDERS)
-                .update({
-                    payment_status: 'bank_unavailable',
-                    payment_error: 'init_failed',
-                })
-                .eq('id', orderId);
-
-            return NextResponse.json({
-                status: 'bank_unavailable',
-                error: 'Payment initialization failed',
-            }, { status: 200, headers: NO_CACHE_HEADERS });
+            return NextResponse.json(
+                { status: 'pending' },
+                { status: 200, headers: NO_CACHE_HEADERS }
+            );
         }
 
         // ── No payment_status (legacy order or null) ──

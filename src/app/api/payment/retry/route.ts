@@ -3,6 +3,7 @@ import { supabaseAdmin } from '@/lib/supabaseServer';
 import { DB_TABLES } from '@/lib/constants';
 import { createPayment, sendPaymentTelegram } from '@/lib/paymentGateway';
 import { assertSameOrigin, checkLimitAsync, getClientIp, NO_CACHE_HEADERS, type RateLimitRecord } from '@/lib/apiUtils';
+import { generateAccessToken, verifyAccessToken } from '@/lib/paymentTokens';
 import { z } from 'zod';
 
 // Rate limit: 5 retries per IP per 10 minutes
@@ -13,6 +14,7 @@ const MAX_TRACKED_IPS = 10000;
 
 const retrySchema = z.object({
     orderId: z.string().uuid(),
+    accessToken: z.string().min(32).max(128),
 });
 
 /**
@@ -21,6 +23,9 @@ const retrySchema = z.object({
  * Retry payment for an existing order using the IMMUTABLE saved snapshot from DB.
  */
 export async function POST(request: Request) {
+    if (process.env.PAYMENT_ENABLED !== 'true') {
+        return NextResponse.json({ error: 'Not found' }, { status: 404, headers: NO_CACHE_HEADERS });
+    }
     try {
         const csrfResponse = assertSameOrigin(request);
         if (csrfResponse) return csrfResponse;
@@ -35,7 +40,12 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json();
-        const { orderId } = retrySchema.parse(body);
+        const { orderId, accessToken } = retrySchema.parse(body);
+
+        // Ownership check: only the buyer who placed the order may retry.
+        if (!verifyAccessToken(orderId, accessToken)) {
+            return NextResponse.json({ error: 'Order not found' }, { status: 404, headers: NO_CACHE_HEADERS });
+        }
 
         const { data: order, error: findErr } = await supabaseAdmin
             .from(DB_TABLES.ORDERS)
@@ -75,25 +85,6 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Shop is closed' }, { status: 400, headers: NO_CACHE_HEADERS });
         }
 
-        // ── Reset payment fields ──
-        const { error: resetErr } = await supabaseAdmin
-            .from(DB_TABLES.ORDERS)
-            .update({
-                payment_status: 'pending',
-                payment_id: null,
-                payment_error: null,
-                paid_at: null,
-                payment_method_used: null,
-                payment_started_at: null,
-                payment_redirect_url: null,
-            })
-            .eq('id', orderId);
-
-        if (resetErr) {
-            console.error('Retry: failed to reset payment fields:', resetErr.message);
-            return NextResponse.json({ error: 'Failed to process retry' }, { status: 500, headers: NO_CACHE_HEADERS });
-        }
-
         const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
         const serverTotal = order.product_price;
         const orderDesc = `Alya Bloemen order ${orderId.slice(0, 8)}`;
@@ -101,22 +92,35 @@ export async function POST(request: Request) {
         const acceptLang = request.headers.get('accept-language') || '';
         const payLang: 'en' | 'uk' | 'nl' = acceptLang.startsWith('uk') ? 'uk' : acceptLang.startsWith('nl') ? 'nl' : 'en';
 
+        // Token is deterministic (HMAC of orderId), so the same value carries
+        // across retries — no need to issue a new one.
+        const fresh = generateAccessToken(orderId);
+
         try {
+            // Create payment FIRST. If this throws, the existing DB row is
+            // untouched, so the previous redirect / status remain valid.
             const { paymentId, redirectUrl } = await createPayment({
                 orderId,
                 totalAmount: serverTotal,
                 orderDesc,
                 callbackUrl: `${siteUrl}/api/payment/callback`,
-                returnUrl: `${siteUrl}/api/payment/return?orderId=${orderId}`,
+                returnUrl: `${siteUrl}/api/payment/return?orderId=${orderId}&t=${fresh}`,
                 lang: payLang,
             });
 
+            // Atomic state transition: reset stale fields and write the new
+            // payment in a single UPDATE.
             const { error: updateErr } = await supabaseAdmin
                 .from(DB_TABLES.ORDERS)
                 .update({
+                    payment_status: 'pending',
                     payment_id: paymentId,
                     payment_started_at: new Date().toISOString(),
                     payment_redirect_url: redirectUrl,
+                    payment_error: null,
+                    paid_at: null,
+                    payment_method_used: null,
+                    access_token: fresh,
                 })
                 .eq('id', orderId);
 

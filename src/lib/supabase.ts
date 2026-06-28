@@ -1,7 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co').trim();
-const supabaseAnonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder_key').trim();
+const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+const rawAnon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+
+if (process.env.NODE_ENV === 'production' && (!rawUrl || !rawAnon)) {
+    throw new Error('NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are required in production');
+}
+
+const supabaseUrl = rawUrl || 'https://placeholder.supabase.co';
+const supabaseAnonKey = rawAnon || 'placeholder_key';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 

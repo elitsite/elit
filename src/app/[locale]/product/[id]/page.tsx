@@ -5,11 +5,13 @@ import { type Locale } from "@/i18n/routing";
 import { getProductById, getSimilarProducts } from "@/lib/products";
 import {
   localizeProduct,
+  finalPrice,
 } from "@/lib/i18n-content";
 import { BRAND_NAME, buildLanguageAlternates, canonicalUrl } from "@/lib/site";
 import ProductGallery from "@/components/ProductGallery";
 import ProductDetails from "@/components/ProductDetails";
 import SimilarProducts from "@/components/SimilarProducts";
+import { safeJsonLd } from "@/lib/safeJsonLd";
 
 export const revalidate = 300;
 
@@ -58,7 +60,7 @@ export default async function ProductPage({
   const localizedSimilar = similar.map((p) => localizeProduct(p, locale as Locale));
 
   const gallery = [product.image_url, ...(product.extra_images ?? [])];
-  const finalPrice = product.discount > 0 ? Math.round(product.price * (1 - product.discount / 100)) : product.price;
+  const finalPriceValue = finalPrice(product.price, product.discount);
 
   const productJsonLd = {
     "@context": "https://schema.org",
@@ -68,7 +70,7 @@ export default async function ProductPage({
     image: gallery.filter(Boolean),
     offers: {
       "@type": "Offer",
-      price: finalPrice,
+      price: finalPriceValue,
       priceCurrency: "EUR",
       availability: product.in_stock
         ? "https://schema.org/InStock"
@@ -81,7 +83,7 @@ export default async function ProductPage({
     <main className="mx-auto max-w-content px-4 pb-24 pt-4 sm:px-6 sm:pt-8 lg:px-8">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(productJsonLd) }}
       />
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-16">
         <ProductGallery images={gallery} alt={localized.display.name} />

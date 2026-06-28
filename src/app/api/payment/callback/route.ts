@@ -11,6 +11,9 @@ import { NO_CACHE_HEADERS } from '@/lib/apiUtils';
  * We MUST return HTTP 200 (otherwise the gateway retries).
  */
 export async function POST(request: Request) {
+    if (process.env.PAYMENT_ENABLED !== 'true') {
+        return NextResponse.json({ error: 'Not found' }, { status: 404, headers: NO_CACHE_HEADERS });
+    }
     try {
         // ── Step 1: Parse body ──
         let callbackData: GatewayOrderResponse;
@@ -39,6 +42,10 @@ export async function POST(request: Request) {
             return NextResponse.json({ ok: true }, { status: 200, headers: NO_CACHE_HEADERS });
         }
         const orderId = extractDbOrderId(gatewayOrderId);
+        if (!orderId) {
+            console.error('Callback: invalid order_id format:', gatewayOrderId);
+            return NextResponse.json({ ok: true }, { status: 200, headers: NO_CACHE_HEADERS });
+        }
 
         const { data: dbOrder, error: findErr } = await supabaseAdmin
             .from(DB_TABLES.ORDERS)

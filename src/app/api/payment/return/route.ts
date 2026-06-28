@@ -1,5 +1,13 @@
 import { NextResponse } from 'next/server';
 import { extractDbOrderId } from '@/lib/paymentGateway';
+import { NO_CACHE_HEADERS } from '@/lib/apiUtils';
+
+function paymentDisabled(): NextResponse | null {
+    if (process.env.PAYMENT_ENABLED !== 'true') {
+        return NextResponse.json({ error: 'Not found' }, { status: 404, headers: NO_CACHE_HEADERS });
+    }
+    return null;
+}
 
 /**
  * Payment gateway return URL landing endpoint.
@@ -21,11 +29,15 @@ function resultRedirect(request: Request, orderId: string | null): NextResponse 
 }
 
 export async function GET(request: Request) {
+    const blocked = paymentDisabled();
+    if (blocked) return blocked;
     const orderId = new URL(request.url).searchParams.get('orderId');
     return resultRedirect(request, orderId);
 }
 
 export async function POST(request: Request) {
+    const blocked = paymentDisabled();
+    if (blocked) return blocked;
     let orderId = new URL(request.url).searchParams.get('orderId');
 
     if (!orderId) {

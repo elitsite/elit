@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
 import { SITE_URL, buildLanguageAlternates } from "@/lib/site";
 import { CATEGORY_PATHS } from "@/lib/categories";
+import { getAllProductIds } from "@/lib/products";
 
 /**
  * Multilingual sitemap. Every entry lists all locale alternates under
@@ -9,8 +10,10 @@ import { CATEGORY_PATHS } from "@/lib/categories";
  * language version of every page. Locale-prefixed URLs match `localePrefix:
  * 'always'` in the routing config.
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+
+  const productIds = await getAllProductIds();
 
   // Locale-independent paths ('' = home). Legal pages are built in Step 6.
   const contentPaths: { path: string; priority: number; freq: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
@@ -18,6 +21,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...CATEGORY_PATHS.map((p) => ({
       path: `/category/${p}`,
       priority: 0.8,
+      freq: "weekly" as const,
+    })),
+    { path: "/decor", priority: 0.8, freq: "weekly" as const },
+    ...productIds.map((id) => ({
+      path: `/product/${id}`,
+      priority: 0.7,
       freq: "weekly" as const,
     })),
     { path: "/privacy", priority: 0.3, freq: "yearly" as const },

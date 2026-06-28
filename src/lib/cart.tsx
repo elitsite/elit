@@ -16,6 +16,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { finalPrice } from "@/lib/i18n-content";
 
 export type CartItem = {
   id: string;
@@ -46,12 +47,6 @@ const STORAGE_KEY = "alya-bloemen-cart";
 const MAX_QTY = 10;
 
 const CartContext = createContext<CartContextValue | null>(null);
-
-/** Final price after applying a percentage discount (rounded to integer). */
-function finalPrice(price: number, discount: number): number {
-  if (!discount || discount <= 0) return price;
-  return Math.round(price * (1 - discount / 100));
-}
 
 function clampQty(qty: number): number {
   if (!Number.isFinite(qty)) return 1;

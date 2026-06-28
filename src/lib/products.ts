@@ -5,6 +5,7 @@
  * via the anon client. These functions are meant to be called from Server
  * Components / route handlers only.
  */
+import { cache } from "react";
 import { unstable_noStore as noStore } from "next/cache";
 import { supabase, type Product, type Settings, type EventPage } from "@/lib/supabase";
 import { DB_TABLES } from "@/lib/constants";
@@ -29,8 +30,12 @@ export async function getProductsByCategorySlugs(
   return (data ?? []) as Product[];
 }
 
-/** Fetch a single product by id (uuid). Returns null if not found. */
-export async function getProductById(id: string): Promise<Product | null> {
+/**
+ * Fetch a single product by id (uuid). Returns null if not found.
+ * Wrapped in React cache() so generateMetadata + the page component share a
+ * single DB round-trip per request instead of querying twice.
+ */
+export const getProductById = cache(async (id: string): Promise<Product | null> => {
   const { data, error } = await supabase
     .from(DB_TABLES.BOUQUETS_PUBLIC)
     .select("*")
@@ -41,7 +46,7 @@ export async function getProductById(id: string): Promise<Product | null> {
     return null;
   }
   return (data as Product) ?? null;
-}
+});
 
 /** Fetch the most recent in-stock products (for homepage showcases). */
 export async function getFeaturedProducts(limit = 8): Promise<Product[]> {
@@ -58,9 +63,15 @@ export async function getFeaturedProducts(limit = 8): Promise<Product[]> {
   return (data ?? []) as Product[];
 }
 
-/** Fetch the public settings row (single record). */
-export async function getSettings(): Promise<Settings | null> {
-  noStore(); // never cache – shop_open / delivery_enabled must be fresh on every request
+/**
+ * Fetch the public settings row (single record).
+ * Wrapped in React cache() so the multiple callers on a single page
+ * (layout + page + WhatsAppButton) share one DB round-trip per request.
+ * noStore() keeps it uncached ACROSS requests so shop_open / delivery_enabled
+ * stay fresh.
+ */
+export const getSettings = cache(async (): Promise<Settings | null> => {
+  noStore();
   const { data, error } = await supabase
     .from(DB_TABLES.SETTINGS_PUBLIC)
     .select("*")
@@ -71,7 +82,7 @@ export async function getSettings(): Promise<Settings | null> {
     return null;
   }
   return (data as Settings) ?? null;
-}
+});
 
 /** Distinct in-stock product ids (for generateStaticParams on product pages). */
 export async function getAllProductIds(): Promise<string[]> {
