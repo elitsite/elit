@@ -49,19 +49,19 @@ body {
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-xl bg-ink px-6 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-white transition-all duration-300 hover:bg-brand active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none shadow-sm;
+    @apply inline-flex items-center justify-center bg-ink px-6 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-white transition-all duration-300 hover:bg-brand active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none shadow-sm;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-xl border border-ink/20 bg-transparent px-6 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-ink transition-all duration-300 hover:border-ink hover:bg-ink/5 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center border border-ink/20 bg-transparent px-6 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-ink transition-all duration-300 hover:border-ink hover:bg-ink/5 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-xs font-medium tracking-wide text-ink/70 transition-all duration-200 hover:text-ink hover:bg-ink/5;
+    @apply inline-flex items-center justify-center px-4 py-2.5 text-xs font-medium tracking-wide text-ink/70 transition-all duration-200 hover:text-ink hover:bg-ink/5;
   }
 
   .card-luxury {
-    @apply rounded-2xl bg-white border border-ink/5 shadow-sm transition-all duration-300 hover:shadow-md hover:border-ink/10;
+    @apply bg-white border border-ink/5 shadow-sm transition-all duration-300 hover:shadow-md hover:border-ink/10;
   }
 }
 
