@@ -57,7 +57,7 @@ export default function Footer({ contact }: Props) {
               <li><Link href="/category/bouquets" className="transition-colors hover:text-brand">{tNav("catalog")}</Link></li>
               <li><Link href="/category/weddings" className="transition-colors hover:text-brand">{tCat("weddings")}</Link></li>
               <li><Link href="/category/parties" className="transition-colors hover:text-brand">{tCat("parties")}</Link></li>
-              <li><Link href="/about" className="transition-colors hover:text-brand">{tNav("about")}</Link></li>
+              <li><Link href="/#about" className="transition-colors hover:text-brand">{tNav("about")}</Link></li>
             </ul>
           </div>
 
@@ -67,11 +67,9 @@ export default function Footer({ contact }: Props) {
               {t("customer_service")}
             </h4>
             <ul className="space-y-2.5 text-[13px] text-ink/60">
-              <li><Link href="/delivery" className="transition-colors hover:text-brand">{t("delivery") || "Delivery"}</Link></li>
-              <li><Link href="/payment" className="transition-colors hover:text-brand">{t("payment") || "Payment"}</Link></li>
-              <li><Link href="/returns" className="transition-colors hover:text-brand">{t("returns") || "Returns"}</Link></li>
-              <li><Link href="/faq" className="transition-colors hover:text-brand">{t("faq") || "FAQ"}</Link></li>
-              <li><Link href="/contact" className="transition-colors hover:text-brand">{t("contact")}</Link></li>
+              <li><Link href="/#services" className="transition-colors hover:text-brand">{t("delivery") || "Delivery"}</Link></li>
+              <li><Link href="/#services" className="transition-colors hover:text-brand">{t("payment") || "Payment"}</Link></li>
+              <li><Link href="/#contacts" className="transition-colors hover:text-brand">{t("contact")}</Link></li>
             </ul>
           </div>
 

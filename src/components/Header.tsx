@@ -21,6 +21,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import CategoryNav from "./CategoryNav";
 import CartDrawer from "./CartDrawer";
 import CartOrderModal from "./CartOrderModal";
+import type { WorkingHours } from "@/lib/workingHours";
 
 export type HeaderContact = {
   phone?: string;
@@ -30,7 +31,15 @@ export type HeaderContact = {
   telegram_link?: string;
 };
 
-export default function Header({ contact }: { contact?: HeaderContact }) {
+export default function Header({
+  contact,
+  deliveryEnabled = true,
+  workingHours,
+}: {
+  contact?: HeaderContact;
+  deliveryEnabled?: boolean;
+  workingHours?: WorkingHours;
+}) {
   const t = useTranslations("Nav");
   const { totalQuantity } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -239,6 +248,8 @@ export default function Header({ contact }: { contact?: HeaderContact }) {
       <CartOrderModal
         isOpen={orderOpen}
         onClose={() => setOrderOpen(false)}
+        deliveryEnabled={deliveryEnabled}
+        workingHours={workingHours}
       />
     </>
   );

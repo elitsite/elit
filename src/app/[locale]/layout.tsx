@@ -18,6 +18,8 @@ import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { CartProvider } from "@/lib/cart";
 import { getSettings } from "@/lib/products";
+import { extractWorkingHours } from "@/lib/workingHours";
+import ShopClosedSplash from "@/components/ShopClosedSplash";
 import "../globals.css";
 
 const geistSans = localFont({
@@ -121,6 +123,11 @@ export default async function LocaleLayout({
       }
     : undefined;
 
+  const deliveryEnabled = settings?.delivery_enabled !== false;
+  const workingHours = settings ? extractWorkingHours(settings) : undefined;
+  // Fail-open: only treat the shop as closed when the flag is explicitly false.
+  const shopClosed = settings?.shop_open === false;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": ["Florist", "LocalBusiness"],
@@ -151,12 +158,20 @@ export default async function LocaleLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <NextIntlClientProvider>
-          <CartProvider>
-            <Header contact={headerContact} />
-            {children}
-            <Footer contact={headerContact} />
-            <WhatsAppButton />
-          </CartProvider>
+          {shopClosed ? (
+            <ShopClosedSplash phone={settings?.phone} />
+          ) : (
+            <CartProvider>
+              <Header
+                contact={headerContact}
+                deliveryEnabled={deliveryEnabled}
+                workingHours={workingHours}
+              />
+              {children}
+              <Footer contact={headerContact} />
+              <WhatsAppButton />
+            </CartProvider>
+          )}
         </NextIntlClientProvider>
       </body>
     </html>

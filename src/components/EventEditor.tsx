@@ -465,6 +465,9 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
     };
 
     const cardClass = "bg-white rounded-xl p-3 sm:p-6 shadow-lg";
+    // Weddings and parties use different landing layouts, so each tab only
+    // shows the fields its own page actually renders (no cross-page clutter).
+    const isWedding = slug === 'weddings';
 
     return (
         <div className="space-y-6">
@@ -486,10 +489,14 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                 <h3 className="text-lg font-bold mb-4">{at.events_hero}</h3>
                 <div className="space-y-4">
                     <ImageUploadField url={content.hero_image || ''} onUpload={url => setField('hero_image', url)} label={at.events_hero_image} uploadImage={uploadImage} clickLabel={at.form_photo_click} sizeHint="1920×1080 px (16:9)" />
-                    <LangInputs label={at.events_hero_kicker || 'Hero kicker (e.g. "A touch of magic")'} value={getLocalized('hero_kicker')} onChange={(lang, val) => handleLocalizedChange('hero_kicker', lang, val)} at={at} />
+                    {isWedding && (
+                        <LangInputs label={at.events_hero_kicker || 'Hero kicker (e.g. "A touch of magic")'} value={getLocalized('hero_kicker')} onChange={(lang, val) => handleLocalizedChange('hero_kicker', lang, val)} at={at} />
+                    )}
                     <LangInputs label={at.events_hero_title} value={getLocalized('hero_title')} onChange={(lang, val) => handleLocalizedChange('hero_title', lang, val)} at={at} />
                     <LangInputs label={at.events_hero_subtitle} value={getLocalized('hero_subtitle')} onChange={(lang, val) => handleLocalizedChange('hero_subtitle', lang, val)} at={at} />
-                    <LangInputs label={at.events_hero_button || 'Hero button text'} value={getLocalized('hero_button')} onChange={(lang, val) => handleLocalizedChange('hero_button', lang, val)} at={at} />
+                    {isWedding && (
+                        <LangInputs label={at.events_hero_button || 'Hero button text'} value={getLocalized('hero_button')} onChange={(lang, val) => handleLocalizedChange('hero_button', lang, val)} at={at} />
+                    )}
                 </div>
             </div>
 
@@ -501,20 +508,25 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                     <LangInputs label={at.events_kicker} value={getLocalized('intro_kicker')} onChange={(lang, val) => handleLocalizedChange('intro_kicker', lang, val)} at={at} />
                     <LangInputs label={at.events_title_field} value={getLocalized('intro_title')} onChange={(lang, val) => handleLocalizedChange('intro_title', lang, val)} at={at} />
                     <LangInputs label={`${at.events_text} (column 1, italic)`} value={getLocalized('intro_text')} onChange={(lang, val) => handleLocalizedChange('intro_text', lang, val)} at={at} multiline />
-                    <LangInputs label={at.events_text_col2 || 'Text column 2'} value={getLocalized('intro_text_col2')} onChange={(lang, val) => handleLocalizedChange('intro_text_col2', lang, val)} at={at} multiline />
+                    {isWedding && (
+                        <LangInputs label={at.events_text_col2 || 'Text column 2'} value={getLocalized('intro_text_col2')} onChange={(lang, val) => handleLocalizedChange('intro_text_col2', lang, val)} at={at} multiline />
+                    )}
                     <LangInputs label={at.events_button} value={getLocalized('intro_button')} onChange={(lang, val) => handleLocalizedChange('intro_button', lang, val)} at={at} />
                 </div>
             </div>
 
-            {/* ── Media Section (used by Parties) ── */}
-            <SectionHeader title="Media Section (Parties only)" />
+            {/* ── Media Section (Parties only) ── */}
+            {!isWedding && (<>
+            <SectionHeader title="Media Section" />
             <div className={cardClass}>
                 <h3 className="text-lg font-bold mb-4">{at.events_media}</h3>
                 <ImageUploadField url={content.media_image || ''} onUpload={url => setField('media_image', url)} label={at.events_media_image} uploadImage={uploadImage} clickLabel={at.form_photo_click} sizeHint="1920×1080 px (16:9)" />
             </div>
+            </>)}
 
-            {/* ── Full Service Section (Weddings) ── */}
-            <SectionHeader title="Full Service Section (Weddings)" />
+            {/* ── Full Service Section (Weddings only) ── */}
+            {isWedding && (<>
+            <SectionHeader title="Full Service Section" />
             <div className={cardClass}>
                 <h3 className="text-lg font-bold mb-4">Full Service</h3>
                 <div className="space-y-4">
@@ -525,9 +537,11 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                     <LangInputs label="Included items (one per line, e.g. '+ Locatiemanagement')" value={getLocalized('full_service_included')} onChange={(lang, val) => handleLocalizedChange('full_service_included', lang, val)} at={at} multiline />
                 </div>
             </div>
+            </>)}
 
-            {/* ── Other Services Section (Weddings) ── */}
-            <SectionHeader title="Other Services Section (Weddings)" />
+            {/* ── Other Services Section (Weddings only) ── */}
+            {isWedding && (<>
+            <SectionHeader title="Other Services Section" />
             <div className={cardClass}>
                 <h3 className="text-lg font-bold mb-4">Other Services</h3>
                 <div className="space-y-4">
@@ -545,9 +559,11 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                     <LangInputs label="Service 2 button" value={getLocalized('service2_cta')} onChange={(lang, val) => handleLocalizedChange('service2_cta', lang, val)} at={at} />
                 </div>
             </div>
+            </>)}
 
-            {/* ── Final Choices Section (Weddings) ── */}
-            <SectionHeader title="Final Choices Section (Weddings)" />
+            {/* ── Final Choices Section (Weddings only) ── */}
+            {isWedding && (<>
+            <SectionHeader title="Final Choices Section" />
             <div className={cardClass}>
                 <h3 className="text-lg font-bold mb-4">Final Choices</h3>
                 <div className="space-y-4">
@@ -556,8 +572,10 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                     <LangInputs label="Underline link text" value={getLocalized('final_choices_link')} onChange={(lang, val) => handleLocalizedChange('final_choices_link', lang, val)} at={at} />
                 </div>
             </div>
+            </>)}
 
-            {/* ── Framed Sections ── */}
+            {/* ── Framed Sections (Parties only) ── */}
+            {!isWedding && (<>
             <SectionHeader title="Framed Sections" />
             <div className={cardClass}>
                 <div className="flex items-center justify-between mb-4">
@@ -593,6 +611,7 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                     ))}
                 </div>
             </div>
+            </>)}
 
             {/* ── Quote Section ── */}
             <SectionHeader title="Quote Section" />
@@ -647,11 +666,13 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
 
             {/* ── Portfolio Section ── */}
             <SectionHeader title="Portfolio Section" />
-            <div className={cardClass}>
-                <div className="mb-4">
-                    <LangInputs label="Sidebar text (shown next to portfolio grid, Weddings)" value={getLocalized('portfolio_sidebar_text')} onChange={(lang, val) => handleLocalizedChange('portfolio_sidebar_text', lang, val)} at={at} multiline />
+            {isWedding && (
+                <div className={cardClass}>
+                    <div className="mb-4">
+                        <LangInputs label="Sidebar text (shown next to portfolio grid, Weddings)" value={getLocalized('portfolio_sidebar_text')} onChange={(lang, val) => handleLocalizedChange('portfolio_sidebar_text', lang, val)} at={at} multiline />
+                    </div>
                 </div>
-            </div>
+            )}
             <ItemsSection
                 content={content}
                 itemKey="portfolio"
@@ -675,7 +696,8 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                 onItemLocalizedChange={handleItemLocalizedChange}
             />
 
-            {/* ── Packages Section ── */}
+            {/* ── Packages Section (Parties only) ── */}
+            {!isWedding && (<>
             <SectionHeader title="Packages Section" />
             <ItemsSection
                 content={content}
@@ -699,8 +721,10 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                 onItemImageChange={handleItemImageChange}
                 onItemLocalizedChange={handleItemLocalizedChange}
             />
+            </>)}
 
-            {/* ── Decor Section ── */}
+            {/* ── Decor Section (Parties only) ── */}
+            {!isWedding && (<>
             <SectionHeader title="Decor Section" />
             <ItemsSection
                 content={content}
@@ -724,9 +748,11 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                 onItemImageChange={handleItemImageChange}
                 onItemLocalizedChange={handleItemLocalizedChange}
             />
+            </>)}
 
-            {/* ── Bloom With Us Section (Weddings) ── */}
-            <SectionHeader title="Bloom With Us Section (Weddings)" />
+            {/* ── Bloom With Us Section (Weddings only) ── */}
+            {isWedding && (<>
+            <SectionHeader title="Bloom With Us Section" />
             <div className={cardClass}>
                 <h3 className="text-lg font-bold mb-4">Bloom With Us</h3>
                 <div className="space-y-4">
@@ -737,9 +763,11 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                     <LangInputs label="Button text" value={getLocalized('bloom_button')} onChange={(lang, val) => handleLocalizedChange('bloom_button', lang, val)} at={at} />
                 </div>
             </div>
+            </>)}
 
-            {/* ── CTA Banner Section (Weddings) ── */}
-            <SectionHeader title="CTA Banner Section (Weddings)" />
+            {/* ── CTA Banner Section (Weddings only) ── */}
+            {isWedding && (<>
+            <SectionHeader title="CTA Banner Section" />
             <div className={cardClass}>
                 <h3 className="text-lg font-bold mb-4">CTA Banner</h3>
                 <div className="space-y-4">
@@ -748,6 +776,7 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                     <LangInputs label="Button text" value={getLocalized('cta_button')} onChange={(lang, val) => handleLocalizedChange('cta_button', lang, val)} at={at} />
                 </div>
             </div>
+            </>)}
 
             {/* ── Gallery Section ── */}
             <SectionHeader title="Gallery Section (Instagram strip)" />

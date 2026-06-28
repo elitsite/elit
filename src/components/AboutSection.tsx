@@ -17,7 +17,7 @@ export default function AboutSection({
   }
 
   return (
-    <section className="border-y border-black/5 bg-white">
+    <section id="about" className="border-y border-black/5 bg-white scroll-mt-24">
       <div className="mx-auto max-w-3xl px-6 py-16 text-center sm:py-20">
         <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-brand">
           {t("about_eyebrow")}

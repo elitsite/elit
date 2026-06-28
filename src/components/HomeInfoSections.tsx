@@ -2,6 +2,7 @@ import { useTranslations } from 'next-intl';
 import { Phone, Send, Truck, Store, CreditCard, Clock, Instagram } from 'lucide-react';
 import WhatsAppIcon from './icons/WhatsAppIcon';
 import type { LocalizedSettings } from '@/lib/i18n-content';
+import { extractWorkingHours, SCHEDULE_DAYS } from '@/lib/workingHours';
 
 export default function HomeInfoSections({ settings }: { settings: LocalizedSettings }) {
     const t = useTranslations('Info');
@@ -11,12 +12,16 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
     const showPayment = settings.show_payment !== false;
     const showSchedule = settings.schedule_enabled !== false;
 
+    // Per-day working hours (admin-managed via sched_* fields).
+    const workingHours = extractWorkingHours(settings);
+    const hasAnyHours = SCHEDULE_DAYS.some(d => workingHours[d].time.trim());
+
     // We only show blocks if they are toggled ON and have some content to display.
     // For delivery, price_enabled might be true even if info is empty.
     const hasDeliveryContent = showDelivery && (settings.delivery_price_enabled || settings.display.delivery_info);
     const hasPickupContent = showPickup && settings.display.pickup_info;
     const hasPaymentContent = showPayment && settings.display.payment_info;
-    const hasScheduleContent = showSchedule && settings.display.schedule;
+    const hasScheduleContent = showSchedule && hasAnyHours;
     const hasContactContent = settings.phone || settings.telegram_link || settings.display.address || settings.whatsapp_link;
 
     // Extract the iframe src from the admin-provided Google Maps embed code.
@@ -39,7 +44,7 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
                 
                 {/* Block 1: Services (Delivery, Pickup, Payment, Schedule) */}
                 {(hasDeliveryContent || hasPickupContent || hasPaymentContent || hasScheduleContent) && (
-                    <div className="card-luxury p-8 sm:p-12">
+                    <div id="services" className="card-luxury p-8 sm:p-12 scroll-mt-24">
                         <div className={`grid grid-cols-1 md:grid-cols-2 ${gridColsClass} gap-8 divide-y md:divide-y-0 md:divide-x divide-ink/10`}>
                             {/* Delivery */}
                             {hasDeliveryContent && (
@@ -93,7 +98,7 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
                                 </div>
                             )}
 
-                            {/* Schedule */}
+                            {/* Schedule — rendered per day from admin-managed sched_* fields */}
                             {hasScheduleContent && (
                                 <div className="pt-6 md:pt-0 md:px-6 first:pt-0 first:px-0 flex flex-col items-center text-center justify-start">
                                     <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-brand">
@@ -102,9 +107,19 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
                                     <h3 className="font-display text-xl font-medium text-ink mb-3 tracking-wide">
                                         {t('schedule_title')}
                                     </h3>
-                                    <p className="text-sm text-ink/70 leading-relaxed whitespace-pre-line">
-                                        {settings.display.schedule}
-                                    </p>
+                                    <ul className="w-full max-w-[220px] space-y-1 text-sm text-ink/70">
+                                        {SCHEDULE_DAYS.map(day => {
+                                            const { open, time } = workingHours[day];
+                                            return (
+                                                <li key={day} className="flex items-center justify-between gap-3">
+                                                    <span className="text-ink/50">{t(`day_${day}`)}</span>
+                                                    <span className={open && time ? 'font-medium text-ink' : 'text-ink/40'}>
+                                                        {open && time ? time : t('day_closed')}
+                                                    </span>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
                                 </div>
                             )}
                         </div>
@@ -113,7 +128,7 @@ export default function HomeInfoSections({ settings }: { settings: LocalizedSett
 
                 {/* Block 2: Contacts & Location */}
                 {hasContactContent && (
-                    <div className="card-luxury p-8 sm:p-12">
+                    <div id="contacts" className="card-luxury p-8 sm:p-12 scroll-mt-24">
                         <div className="flex flex-col lg:flex-row items-start justify-between gap-8 lg:gap-12">
                             <div className="flex flex-col space-y-4 max-w-md">
                                 <h3 className="font-display text-2xl sm:text-3xl font-medium text-ink">

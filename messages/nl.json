@@ -104,7 +104,18 @@
     "success_text": "We hebben je bestelling ontvangen en nemen spoedig contact met je op ter bevestiging.",
     "back_home": "Terug naar home",
     "err_consent": "Ga akkoord met de gegevensverwerking om door te gaan.",
-    "err_generic": "Er ging iets mis. Probeer het opnieuw."
+    "err_generic": "Er ging iets mis. Probeer het opnieuw.",
+    "date": "Datum",
+    "time_label": "Tijd",
+    "day_today": "Vandaag",
+    "day_tomorrow": "Morgen",
+    "no_slots": "Geen bezorgmomenten beschikbaar de komende dagen. Kies \"Zo snel mogelijk\" of neem contact op.",
+    "delivery_disabled": "Bezorging is tijdelijk niet beschikbaar. Alleen afhalen."
+  },
+  "Closed": {
+    "title": "De winkel is tijdelijk gesloten",
+    "desc": "We nemen op dit moment geen bestellingen aan. Kom binnenkort terug.",
+    "sub": "Bedankt voor je geduld."
   },
   "Footer": {
     "tagline": "Decoratie voor bruiloften en feesten · bogen, boeketten, composities",
@@ -194,6 +205,14 @@
     "pickup": "Afhalen",
     "payment_title": "Betaling",
     "schedule_title": "Openingstijden",
-    "contact_title": "Contact"
+    "contact_title": "Contact",
+    "day_mon": "Ma",
+    "day_tue": "Di",
+    "day_wed": "Wo",
+    "day_thu": "Do",
+    "day_fri": "Vr",
+    "day_sat": "Za",
+    "day_sun": "Zo",
+    "day_closed": "Gesloten"
   }
 }

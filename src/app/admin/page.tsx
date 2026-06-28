@@ -599,6 +599,7 @@ export default function AdminPage() {
                         </button>
                         <button
                             onClick={toggleShopOpen}
+                            title={at.tip_shop_open}
                             className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex-1 sm:flex-none justify-center ${settings?.shop_open ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
                         >
                             <Store size={16} />
@@ -606,6 +607,7 @@ export default function AdminPage() {
                         </button>
                         <button
                             onClick={toggleDelivery}
+                            title={at.tip_delivery_enabled}
                             className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex-1 sm:flex-none justify-center ${settings?.delivery_enabled ? 'bg-blue-600 hover:bg-blue-700' : 'bg-zinc-600 hover:bg-zinc-500'}`}
                         >
                             🚚 {settings?.delivery_enabled ? at.btn_delivery_on : at.btn_delivery_off}
@@ -658,6 +660,7 @@ export default function AdminPage() {
                 {/* Products Tab */}
                 {activeTab === 'products' && (
                     <div className="space-y-6">
+                        <p className="text-sm text-zinc-500">{at.desc_tab_products}</p>
                         {!showProductForm && (
                             <button
                                 onClick={() => setShowProductForm(true)}
@@ -950,8 +953,10 @@ export default function AdminPage() {
                 {/* Settings Tab */}
                 {activeTab === 'settings' && settings && (
                     <div className="space-y-6">
+                        <p className="text-sm text-zinc-500">{at.desc_tab_settings}</p>
                         <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg">
-                            <h2 className="text-lg sm:text-xl font-bold mb-4">{at.settings_branding}</h2>
+                            <h2 className="text-lg sm:text-xl font-bold mb-1">{at.settings_branding}</h2>
+                            <p className="text-sm text-zinc-500 mb-4">{at.desc_branding}</p>
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium mb-1">{at.settings_shop_name}</label>
@@ -961,7 +966,8 @@ export default function AdminPage() {
                         </div>
 
                         <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg">
-                            <h2 className="text-lg sm:text-xl font-bold mb-4">{at.settings_contacts}</h2>
+                            <h2 className="text-lg sm:text-xl font-bold mb-1">{at.settings_contacts}</h2>
+                            <p className="text-sm text-zinc-500 mb-4">{at.desc_contacts}</p>
                             <div className="grid md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium mb-1">📞 {at.settings_phone}</label>
@@ -995,6 +1001,7 @@ export default function AdminPage() {
                                     <label className="block text-sm font-medium mb-1">🗺️ Google Maps Embed</label>
                                     <textarea
                                         rows={3}
+                                        title={at.tip_maps_embed}
                                         value={settings.google_maps_embed || ''}
                                         onChange={(e) => setSettings({ ...settings, google_maps_embed: e.target.value })}
                                         placeholder={at.settings_maps_embed_hint}
@@ -1006,7 +1013,7 @@ export default function AdminPage() {
                                 </div>
                                 <div>
                                     <div className="flex items-center justify-between mb-4">
-                                        <label className="text-sm font-medium">🕐 {at.settings_schedule_title}</label>
+                                        <label className="text-sm font-medium" title={at.desc_schedule}>🕐 {at.settings_schedule_title}</label>
                                         <button onClick={() => setSettings({ ...settings, schedule_enabled: !settings.schedule_enabled })} className={`relative w-12 h-6 rounded-full transition-colors ${settings.schedule_enabled ? 'bg-green-500' : 'bg-zinc-300'}`}>
                                             <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${settings.schedule_enabled ? 'translate-x-6' : ''}`} />
                                         </button>
@@ -1045,12 +1052,13 @@ export default function AdminPage() {
                         </div>
 
                         <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
-                            <h2 className="text-lg sm:text-xl font-bold mb-4">{at.settings_content}</h2>
+                            <h2 className="text-lg sm:text-xl font-bold mb-1">{at.settings_content}</h2>
+                            <p className="text-sm text-zinc-500 mb-4">{at.desc_content}</p>
                             <div className="space-y-4">
 
                                 <div className="border border-zinc-200 rounded-lg p-4">
                                     <div className="flex items-center justify-between mb-2">
-                                        <label className="text-sm font-medium">💰 {at.settings_delivery_cost}</label>
+                                        <label className="text-sm font-medium" title={at.tip_delivery_price}>💰 {at.settings_delivery_cost}</label>
                                         <button onClick={() => setSettings({ ...settings, delivery_price_enabled: !settings.delivery_price_enabled })} className={`relative w-12 h-6 rounded-full transition-colors ${settings.delivery_price_enabled ? 'bg-green-500' : 'bg-zinc-300'}`}>
                                             <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${settings.delivery_price_enabled ? 'translate-x-6' : ''}`} />
                                         </button>
@@ -1238,6 +1246,7 @@ export default function AdminPage() {
                 {/* Events Tab */}
                 {activeTab === 'events' && (
                     <div className="space-y-6">
+                        <p className="text-sm text-zinc-500">{at.desc_tab_events}</p>
                         {/* Sub-tabs: Weddings / Parties */}
                         <div className="flex gap-2">
                             {(['weddings', 'parties'] as const).map(es => (
@@ -1285,6 +1294,7 @@ export default function AdminPage() {
                 {/* Orders Tab */}
                 {activeTab === 'orders' && (
                     <div className="space-y-6">
+                        <p className="text-sm text-zinc-500">{at.desc_tab_orders}</p>
                         <div className="flex items-center justify-between">
                             <h2 className="text-xl font-bold text-zinc-800">{at.orders_title}</h2>
                             <button

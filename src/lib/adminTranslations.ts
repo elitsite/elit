@@ -118,6 +118,21 @@ const en = {
     msg_delivery_on: 'Delivery enabled',
     msg_delivery_off: 'Delivery disabled',
 
+    // Section descriptions & tooltips
+    desc_tab_products: 'Manage the catalog. Changes appear in the shop immediately.',
+    desc_tab_settings: 'Shop-wide settings: contacts, working hours, delivery and content shown on the site.',
+    desc_tab_orders: 'Incoming customer orders. Update their status as you process them.',
+    desc_tab_events: 'Content of the Weddings and Parties landing pages. Each tab shows only the fields its page uses.',
+    desc_branding: 'The shop name used across the site and notifications.',
+    desc_contacts: 'Phone, socials, address and map shown on the homepage contact block and footer.',
+    desc_schedule: 'Working hours per day. Shown on the homepage and used to limit delivery-time choices in the cart.',
+    desc_content: 'Delivery / pickup / payment info blocks shown on the homepage. Toggles control visibility.',
+    desc_price_filters: 'Price ranges offered as filters in the catalog.',
+    tip_shop_open: 'Open/closed switch for the whole shop. When closed, visitors see a "temporarily closed" page and cannot order.',
+    tip_delivery_enabled: 'Enables delivery as an order option. When off, the cart offers pickup only.',
+    tip_maps_embed: 'Paste the full Google Maps "Embed a map" iframe code to show a map on the homepage.',
+    tip_delivery_price: 'Delivery fee added at checkout for delivery orders.',
+
     // Orders
     orders_title: 'Orders',
     orders_empty: 'No orders yet',
@@ -305,6 +320,21 @@ const ru: typeof en = {
     msg_shop_closed: 'Магазин закрыт',
     msg_delivery_on: 'Доставка включена',
     msg_delivery_off: 'Доставка отключена',
+
+    // Section descriptions & tooltips
+    desc_tab_products: 'Управление каталогом. Изменения сразу отображаются в магазине.',
+    desc_tab_settings: 'Общие настройки: контакты, график работы, доставка и контент на сайте.',
+    desc_tab_orders: 'Входящие заказы клиентов. Меняйте статус по мере обработки.',
+    desc_tab_events: 'Контент лендингов «Свадьбы» и «Вечеринки». В каждой вкладке только те поля, что нужны её странице.',
+    desc_branding: 'Название магазина, используемое на сайте и в уведомлениях.',
+    desc_contacts: 'Телефон, соцсети, адрес и карта — показываются в блоке контактов на главной и в футере.',
+    desc_schedule: 'Часы работы по дням. Отображаются на главной и ограничивают выбор времени доставки в корзине.',
+    desc_content: 'Блоки доставки / самовывоза / оплаты на главной. Переключатели управляют видимостью.',
+    desc_price_filters: 'Диапазоны цен, доступные как фильтры в каталоге.',
+    tip_shop_open: 'Переключатель «открыт/закрыт» для всего магазина. В режиме «закрыто» посетители видят заглушку и не могут оформить заказ.',
+    tip_delivery_enabled: 'Включает доставку как способ получения. Когда выключено — в корзине доступен только самовывоз.',
+    tip_maps_embed: 'Вставьте полный код iframe «Встроить карту» из Google Maps, чтобы показать карту на главной.',
+    tip_delivery_price: 'Стоимость доставки, добавляемая при оформлении заказа с доставкой.',
 
     orders_title: 'Заказы',
     orders_empty: 'Заказов пока нет',

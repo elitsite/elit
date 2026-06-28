@@ -1,25 +1,57 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { X, Truck, Store, Clock, Loader2, AlertTriangle } from 'lucide-react';
 import Image from 'next/image';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useCart, finalPrice, type CartItem } from '@/lib/cart';
 import { formatEUR } from '@/lib/format';
+import { buildTimeSlots, dayKeyFromDate, type WorkingHours } from '@/lib/workingHours';
 
 interface CartOrderModalProps {
     isOpen: boolean;
     onClose: () => void;
+    /** When false, delivery is disabled shop-wide; the cart offers pickup only. */
+    deliveryEnabled?: boolean;
+    /** Per-day working hours used to constrain the delivery-time picker. */
+    workingHours?: WorkingHours;
 }
 
-export default function CartOrderModal({ isOpen, onClose }: CartOrderModalProps) {
+/** Build selectable "HH:MM" slots for a given YYYY-MM-DD, filtering past hours for today. */
+function getSlotsForDate(dateStr: string, workingHours?: WorkingHours): string[] {
+    if (!workingHours || !dateStr) return [];
+    const [y, mo, d] = dateStr.split('-').map(Number);
+    if (!y || !mo || !d) return [];
+    const date = new Date(y, mo - 1, d);
+    const day = workingHours[dayKeyFromDate(date)];
+    if (!day || !day.open) return [];
+
+    const slots = buildTimeSlots(day.time, 30);
+    if (slots.length === 0) return [];
+
+    // For today, drop slots that have already passed.
+    const now = new Date();
+    const isToday = date.toDateString() === now.toDateString();
+    if (isToday) {
+        const nowMin = now.getHours() * 60 + now.getMinutes();
+        return slots.filter(s => {
+            const [h, m] = s.split(':').map(Number);
+            return h * 60 + m > nowMin;
+        });
+    }
+    return slots;
+}
+
+export default function CartOrderModal({ isOpen, onClose, deliveryEnabled = true, workingHours }: CartOrderModalProps) {
     const t = useTranslations('Cart');
+    const locale = useLocale();
     const { items, subtotal, clear } = useCart();
 
     const [step, setStep] = useState(1);
-    const [deliveryType, setDeliveryType] = useState<'delivery' | 'pickup' | null>(null);
+    const [deliveryType, setDeliveryType] = useState<'delivery' | 'pickup' | null>(deliveryEnabled ? null : 'pickup');
     const [timeType, setTimeType] = useState<'urgent' | 'specific'>('urgent');
-    const [specificTime, setSpecificTime] = useState('');
+    const [selectedDay, setSelectedDay] = useState('');
+    const [selectedTime, setSelectedTime] = useState('');
     const [formData, setFormData] = useState({ name: '', phone: '', address: '', comment: '' });
     const [consent, setConsent] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,6 +64,44 @@ export default function CartOrderModal({ isOpen, onClose }: CartOrderModalProps)
         orderId?: string;
     }>({ show: false });
 
+    // Next 14 calendar days as { value: 'YYYY-MM-DD', label }
+    const days = useMemo(() => {
+        const fmt = new Intl.DateTimeFormat(locale, { weekday: 'short', day: '2-digit', month: '2-digit' });
+        const list: { value: string; label: string }[] = [];
+        for (let i = 0; i < 14; i++) {
+            const date = new Date();
+            date.setDate(date.getDate() + i);
+            const value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            const label = i === 0 ? t('day_today') : i === 1 ? t('day_tomorrow') : fmt.format(date);
+            list.push({ value, label });
+        }
+        return list;
+    }, [locale, t]);
+
+    // Only offer days the shop is open and still has free slots.
+    const availableDays = useMemo(
+        () => days.filter(d => getSlotsForDate(d.value, workingHours).length > 0),
+        [days, workingHours],
+    );
+    const availableTimeSlots = useMemo(
+        () => getSlotsForDate(selectedDay, workingHours),
+        [selectedDay, workingHours],
+    );
+
+    // Keep selectedDay valid (first open day).
+    useEffect(() => {
+        if (availableDays.length > 0 && !availableDays.find(d => d.value === selectedDay)) {
+            setSelectedDay(availableDays[0].value);
+        }
+    }, [availableDays, selectedDay]);
+
+    // Keep selectedTime valid (first slot of the day).
+    useEffect(() => {
+        if (availableTimeSlots.length > 0 && !availableTimeSlots.includes(selectedTime)) {
+            setSelectedTime(availableTimeSlots[0]);
+        }
+    }, [availableTimeSlots, selectedTime]);
+
     // Reset state when opened
     useEffect(() => {
         if (isOpen) {
@@ -40,9 +110,9 @@ export default function CartOrderModal({ isOpen, onClose }: CartOrderModalProps)
             setPhoneError('');
             setConsent(false);
             setFallbackState({ show: false });
-            setDeliveryType(null);
+            setDeliveryType(deliveryEnabled ? null : 'pickup');
         }
-    }, [isOpen]);
+    }, [isOpen, deliveryEnabled]);
 
     // Prevent body scroll
     useEffect(() => {
@@ -55,6 +125,10 @@ export default function CartOrderModal({ isOpen, onClose }: CartOrderModalProps)
     }, [isOpen]);
 
     if (!isOpen) return null;
+
+    const specificTimeStr = timeType === 'specific'
+        ? `${days.find(d => d.value === selectedDay)?.label || selectedDay}, ${selectedTime}`
+        : '';
 
     const handleSubmit = async () => {
         if (isSubmitting) return;
@@ -82,7 +156,7 @@ export default function CartOrderModal({ isOpen, onClose }: CartOrderModalProps)
                 address: deliveryType === 'delivery' ? formData.address.trim() : undefined,
                 deliveryType: deliveryType as 'delivery' | 'pickup',
                 timeType,
-                specificTime: timeType === 'specific' ? specificTime.trim() : undefined,
+                specificTime: specificTimeStr || undefined,
                 comment: formData.comment.trim() || undefined,
                 consent: true,
             };
@@ -145,7 +219,7 @@ export default function CartOrderModal({ isOpen, onClose }: CartOrderModalProps)
     const canProceedStep1 = deliveryType !== null;
     const canProceedStep2 =
         (deliveryType === 'pickup' || (deliveryType === 'delivery' && formData.address.trim().length > 0))
-        && (timeType === 'urgent' || specificTime.trim().length > 0);
+        && (timeType === 'urgent' || availableTimeSlots.length > 0);
     const canProceedStep3 = formData.name.trim().length >= 2 && formData.phone.trim().length >= 10 && consent;
 
     return (
@@ -217,18 +291,23 @@ export default function CartOrderModal({ isOpen, onClose }: CartOrderModalProps)
                             {/* Delivery selection */}
                             <div className="pt-3 border-t border-black/5">
                                 <h3 className="text-xs font-semibold text-ink/40 uppercase tracking-wider mb-3">{t('delivery_method')}</h3>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <button onClick={() => setDeliveryType('delivery')}
-                                        className={`flex flex-col items-center gap-2 py-4 rounded-2xl border-2 transition-all ${deliveryType === 'delivery' ? 'border-brand bg-brand/5 text-brand' : 'border-black/10 text-ink/40 hover:border-ink/20'}`}>
-                                        <Truck size={24} />
-                                        <span className="text-sm font-semibold">{t('delivery')}</span>
-                                    </button>
+                                <div className={`grid gap-3 ${deliveryEnabled ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                                    {deliveryEnabled && (
+                                        <button onClick={() => setDeliveryType('delivery')}
+                                            className={`flex flex-col items-center gap-2 py-4 rounded-2xl border-2 transition-all ${deliveryType === 'delivery' ? 'border-brand bg-brand/5 text-brand' : 'border-black/10 text-ink/40 hover:border-ink/20'}`}>
+                                            <Truck size={24} />
+                                            <span className="text-sm font-semibold">{t('delivery')}</span>
+                                        </button>
+                                    )}
                                     <button onClick={() => setDeliveryType('pickup')}
                                         className={`flex flex-col items-center gap-2 py-4 rounded-2xl border-2 transition-all ${deliveryType === 'pickup' ? 'border-brand bg-brand/5 text-brand' : 'border-black/10 text-ink/40 hover:border-ink/20'}`}>
                                         <Store size={24} />
                                         <span className="text-sm font-semibold">{t('pickup')}</span>
                                     </button>
                                 </div>
+                                {!deliveryEnabled && (
+                                    <p className="text-xs text-ink/40 mt-2">{t('delivery_disabled')}</p>
+                                )}
                             </div>
 
                             {/* Totals */}
@@ -278,15 +357,29 @@ export default function CartOrderModal({ isOpen, onClose }: CartOrderModalProps)
                                 </div>
                             </div>
 
-                            {/* Specific time input */}
+                            {/* Specific date & time pickers (constrained to working hours) */}
                             {timeType === 'specific' && (
-                                <div>
-                                    <label className="text-sm font-medium text-ink/60 mb-1.5 block">{t('specific_time')}</label>
-                                    <input type="text" value={specificTime}
-                                        onChange={e => setSpecificTime(e.target.value)}
-                                        placeholder={t('specific_time_ph')}
-                                        className="w-full px-4 py-3 border border-black/10 rounded-xl focus:ring-2 focus:ring-brand/30 focus:border-brand outline-none text-sm transition-all" />
-                                </div>
+                                availableDays.length === 0 ? (
+                                    <p className="text-sm text-ink/50 bg-cream/60 rounded-xl p-3">{t('no_slots')}</p>
+                                ) : (
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="text-sm font-medium text-ink/60 mb-1.5 block">{t('date')}</label>
+                                            <select value={selectedDay} onChange={e => setSelectedDay(e.target.value)}
+                                                className="w-full px-3 py-3 border border-black/10 rounded-xl focus:ring-2 focus:ring-brand/30 focus:border-brand outline-none text-sm bg-white transition-all">
+                                                {availableDays.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="text-sm font-medium text-ink/60 mb-1.5 block">{t('time_label')}</label>
+                                            <select value={selectedTime} onChange={e => setSelectedTime(e.target.value)}
+                                                disabled={availableTimeSlots.length === 0}
+                                                className="w-full px-3 py-3 border border-black/10 rounded-xl focus:ring-2 focus:ring-brand/30 focus:border-brand outline-none text-sm bg-white disabled:opacity-50 transition-all">
+                                                {availableTimeSlots.map(ts => <option key={ts} value={ts}>{ts}</option>)}
+                                            </select>
+                                        </div>
+                                    </div>
+                                )
                             )}
 
                             <div className="flex gap-3 pt-2">

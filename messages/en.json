@@ -104,7 +104,18 @@
     "success_text": "We have received your order and will contact you shortly to confirm.",
     "back_home": "Back to home",
     "err_consent": "Please agree to the data processing to continue.",
-    "err_generic": "Something went wrong. Please try again."
+    "err_generic": "Something went wrong. Please try again.",
+    "date": "Date",
+    "time_label": "Time",
+    "day_today": "Today",
+    "day_tomorrow": "Tomorrow",
+    "no_slots": "No delivery slots available in the coming days. Please choose \"As soon as possible\" or contact us.",
+    "delivery_disabled": "Delivery is temporarily unavailable. Pickup only."
+  },
+  "Closed": {
+    "title": "The shop is temporarily closed",
+    "desc": "We are not taking orders at the moment. Please check back soon.",
+    "sub": "Thank you for your patience."
   },
   "Footer": {
     "tagline": "Decoration for weddings and parties · arches, bouquets, arrangements",
@@ -194,6 +205,14 @@
     "pickup": "Pickup",
     "payment_title": "Payment",
     "schedule_title": "Working Hours",
-    "contact_title": "Contact Us"
+    "contact_title": "Contact Us",
+    "day_mon": "Mon",
+    "day_tue": "Tue",
+    "day_wed": "Wed",
+    "day_thu": "Thu",
+    "day_fri": "Fri",
+    "day_sat": "Sat",
+    "day_sun": "Sun",
+    "day_closed": "Closed"
   }
 }
