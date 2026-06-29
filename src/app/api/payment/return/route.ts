@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { extractDbOrderId } from '@/lib/paymentGateway';
 import { NO_CACHE_HEADERS } from '@/lib/apiUtils';
 
 function paymentDisabled(): NextResponse | null {
@@ -10,52 +9,45 @@ function paymentDisabled(): NextResponse | null {
 }
 
 /**
- * Payment gateway return URL landing endpoint.
+ * Payment return URL landing endpoint (GET /api/payment/return).
  *
- * The gateway redirects the customer back here using either GET or POST.
- * Our /payment/result page is a client component (GET only), so a POST would
- * yield 405. This endpoint accepts BOTH methods and 303-redirects the browser
- * to /payment/result, which then polls /api/payment/status for the real result.
+ * Rabo Smart Pay redirects the customer back to our merchantReturnURL after
+ * payment completion/cancellation. The return URL includes our orderId and
+ * access token as query parameters (set during createPayment).
+ *
+ * Additionally, Rabo appends `order_id`, `status`, and `signature` query params
+ * which can be used for immediate client-side feedback (not relied on for
+ * authoritative status — that comes via webhook).
+ *
+ * We 303-redirect to /payment/result which polls /api/payment/status.
  */
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-function resultRedirect(request: Request, orderId: string | null): NextResponse {
-    const base = process.env.SITE_URL || new URL(request.url).origin;
-    const target = orderId && UUID_RE.test(orderId)
-        ? `${base}/payment/result?orderId=${orderId}`
-        : `${base}/payment/result`;
+function resultRedirect(request: Request): NextResponse {
+    const url = new URL(request.url);
+    const orderId = url.searchParams.get('orderId');
+    const t = url.searchParams.get('t');
+
+    const base = process.env.SITE_URL || url.origin;
+
+    let target = `${base}/payment/result`;
+    if (orderId && UUID_RE.test(orderId)) {
+        target += `?orderId=${orderId}`;
+        if (t) target += `&t=${encodeURIComponent(t)}`;
+    }
+
     return NextResponse.redirect(target, 303);
 }
 
 export async function GET(request: Request) {
     const blocked = paymentDisabled();
     if (blocked) return blocked;
-    const orderId = new URL(request.url).searchParams.get('orderId');
-    return resultRedirect(request, orderId);
+    return resultRedirect(request);
 }
 
 export async function POST(request: Request) {
     const blocked = paymentDisabled();
     if (blocked) return blocked;
-    let orderId = new URL(request.url).searchParams.get('orderId');
-
-    if (!orderId) {
-        try {
-            const contentType = request.headers.get('content-type') || '';
-            if (contentType.includes('application/json')) {
-                const body = await request.json();
-                const raw = body?.order_id ?? body?.response?.order_id;
-                if (typeof raw === 'string') orderId = extractDbOrderId(raw);
-            } else {
-                const form = await request.formData();
-                const raw = form.get('order_id');
-                if (typeof raw === 'string') orderId = extractDbOrderId(raw);
-            }
-        } catch {
-            // Ignore body parse errors
-        }
-    }
-
-    return resultRedirect(request, orderId);
+    return resultRedirect(request);
 }

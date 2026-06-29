@@ -87,7 +87,7 @@ export async function POST(request: Request) {
 
         const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
         const serverTotal = order.product_price;
-        const orderDesc = `Alya Bloemen order ${orderId.slice(0, 8)}`;
+        const orderDesc = `Alina Bloemen order ${orderId.slice(0, 8)}`;
 
         const acceptLang = request.headers.get('accept-language') || '';
         const payLang: 'en' | 'uk' | 'nl' = acceptLang.startsWith('uk') ? 'uk' : acceptLang.startsWith('nl') ? 'nl' : 'en';

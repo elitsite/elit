@@ -1060,7 +1060,7 @@ export default function AdminPage() {
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium mb-1">{at.settings_shop_name}</label>
-                                    <input type="text" value={settings.shop_name || ''} onChange={(e) => setSettings({ ...settings, shop_name: e.target.value })} placeholder="Alya Bloemen" className="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:border-amber-500 focus:outline-none" />
+                                    <input type="text" value={settings.shop_name || ''} onChange={(e) => setSettings({ ...settings, shop_name: e.target.value })} placeholder="Alina Bloemen" className="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:border-amber-500 focus:outline-none" />
                                 </div>
                             </div>
                         </div>

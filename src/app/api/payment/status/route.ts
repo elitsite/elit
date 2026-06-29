@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseServer';
 import { DB_TABLES } from '@/lib/constants';
-import { getOrderStatus, mapGatewayStatus } from '@/lib/paymentGateway';
+import { getOrderStatus, mapRaboOrderStatus } from '@/lib/paymentGateway';
 import { checkLimitAsync, getClientIp, NO_CACHE_HEADERS, type RateLimitRecord } from '@/lib/apiUtils';
 import { verifyAccessToken } from '@/lib/paymentTokens';
 
@@ -39,7 +39,6 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: 'Not found' }, { status: 404, headers: NO_CACHE_HEADERS });
         }
         if (!verifyAccessToken(orderId, accessToken)) {
-            // Treat as not-found to avoid order-id enumeration.
             return NextResponse.json({ error: 'Not found' }, { status: 404, headers: NO_CACHE_HEADERS });
         }
 
@@ -78,10 +77,17 @@ export async function GET(request: Request) {
                 );
             }
 
-            // ≥ 5 min → reconcile via gateway status API
+            // ≥ 5 min → reconcile via Rabo order status API
             try {
-                const receipt = await getOrderStatus(order.payment_id);
-                const { status: mappedStatus, paymentMethodUsed } = mapGatewayStatus(receipt);
+                const orderDetails = await getOrderStatus(order.payment_id);
+                if (!orderDetails) {
+                    return NextResponse.json(
+                        { status: 'pending' },
+                        { status: 200, headers: NO_CACHE_HEADERS }
+                    );
+                }
+
+                const { status: mappedStatus, paymentMethodUsed } = mapRaboOrderStatus(orderDetails);
 
                 if (mappedStatus === 'paid') {
                     await supabaseAdmin
@@ -101,9 +107,7 @@ export async function GET(request: Request) {
                 }
 
                 if (mappedStatus === 'expired' || mappedStatus === 'failed') {
-                    const errorDetail = receipt.response_code != null && receipt.response_code !== ''
-                        ? String(receipt.response_code)
-                        : (receipt.response_description ? String(receipt.response_description) : null);
+                    const errorDetail = orderDetails.errorCode || null;
                     await supabaseAdmin
                         .from(DB_TABLES.ORDERS)
                         .update({
@@ -118,13 +122,13 @@ export async function GET(request: Request) {
                     }, { status: 200, headers: NO_CACHE_HEADERS });
                 }
 
-                // Still pending — > 20 min and still created → expire
-                if (elapsed > TWENTY_MIN && receipt.order_status === 'created') {
+                // Still IN_PROGRESS — > 20 min → expire
+                if (elapsed > TWENTY_MIN) {
                     await supabaseAdmin
                         .from(DB_TABLES.ORDERS)
                         .update({
                             payment_status: 'expired',
-                            payment_error: 'Timeout: order created but never processed',
+                            payment_error: 'Timeout: payment session expired',
                         })
                         .eq('id', orderId);
 
@@ -149,8 +153,6 @@ export async function GET(request: Request) {
         }
 
         // ── Pending with no payment_id ──
-        // GET is read-only. Report as still pending; the reconciliation /
-        // expiry transition is the responsibility of cart-order / retry / callback.
         if (order.payment_status === 'pending' && !order.payment_id) {
             return NextResponse.json(
                 { status: 'pending' },

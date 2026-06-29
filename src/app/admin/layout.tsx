@@ -1,8 +1,8 @@
 import '../globals.css';
 
 export const metadata = {
-  title: 'Admin — Alya Bloemen',
-  description: 'Alya Bloemen admin panel',
+  title: 'Admin — Alina Bloemen',
+  description: 'Alina Bloemen admin panel',
   robots: { index: false, follow: false },
 }
 

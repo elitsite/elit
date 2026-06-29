@@ -15,7 +15,7 @@ type Props = {
 };
 
 /**
- * Clean, structured footer matching the new Alya Bloemen design.
+ * Clean, structured footer matching the new Alina Bloemen design.
  */
 export default function Footer({ contact }: Props) {
   const t = useTranslations("Footer");
@@ -36,7 +36,7 @@ export default function Footer({ contact }: Props) {
             <Link href="/" className="inline-block mb-3">
               <Image
                 src="/logo.png"
-                alt="Alya Bloemen"
+                alt="Alina Bloemen"
                 width={120}
                 height={60}
                 className="h-10 w-auto opacity-90 transition-opacity hover:opacity-100"
@@ -101,7 +101,7 @@ export default function Footer({ contact }: Props) {
 
         {/* Copyright */}
         <div className="mt-8 border-t border-black/5 pt-6 text-center text-[11px] text-ink/40 sm:mt-10 sm:text-left">
-          <p>© {new Date().getFullYear()} Alya Bloemen. {t("rights")}.</p>
+          <p>© {new Date().getFullYear()} Alina Bloemen. {t("rights")}.</p>
         </div>
       </div>
     </footer>

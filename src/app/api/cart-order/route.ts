@@ -7,7 +7,7 @@ import { DB_TABLES } from '@/lib/constants';
 import { finalPrice } from '@/lib/i18n-content';
 import { createHash } from 'crypto';
 import { sendOrderTelegram } from '@/lib/telegram';
-import { createPayment, getOrderStatus, mapGatewayStatus, sendPaymentTelegram } from '@/lib/paymentGateway';
+import { createPayment, getOrderStatus, mapRaboOrderStatus, sendPaymentTelegram } from '@/lib/paymentGateway';
 import { generateAccessToken } from '@/lib/paymentTokens';
 
 // Rate limiting: 5 new cart orders per IP per 10 minutes (applied AFTER dedup)
@@ -210,48 +210,55 @@ export async function POST(request: Request) {
                 );
             }
 
-            // Pending with payment_id → check gateway status
+            // Pending with payment_id → check Rabo order status
             if (payment_status === 'pending' && payment_id) {
                 try {
-                    const receipt = await getOrderStatus(payment_id);
-                    const { status: mappedStatus, paymentMethodUsed } = mapGatewayStatus(receipt);
+                    const orderDetails = await getOrderStatus(payment_id);
+                    if (orderDetails) {
+                        const { status: mappedStatus, paymentMethodUsed } = mapRaboOrderStatus(orderDetails);
 
-                    if (mappedStatus === 'paid') {
+                        if (mappedStatus === 'paid') {
+                            await supabaseAdmin
+                                .from(DB_TABLES.ORDERS)
+                                .update({
+                                    payment_status: 'paid',
+                                    paid_at: new Date().toISOString(),
+                                    payment_method_used: paymentMethodUsed,
+                                })
+                                .eq('id', orderId);
+
+                            return NextResponse.json(
+                                { orderId, alreadyPaid: true },
+                                { status: 200, headers: NO_CACHE_HEADERS }
+                            );
+                        }
+
+                        if (mappedStatus === 'pending' && existingOrder.payment_redirect_url) {
+                            return NextResponse.json(
+                                { orderId, redirectUrl: existingOrder.payment_redirect_url },
+                                { status: 200, headers: NO_CACHE_HEADERS }
+                            );
+                        }
+
+                        // failed/expired → reset and create new payment
                         await supabaseAdmin
                             .from(DB_TABLES.ORDERS)
                             .update({
-                                payment_status: 'paid',
-                                paid_at: new Date().toISOString(),
-                                payment_method_used: paymentMethodUsed,
+                                payment_status: 'pending',
+                                payment_id: null,
+                                payment_error: null,
+                                paid_at: null,
+                                payment_method_used: null,
+                                payment_started_at: null,
+                                payment_redirect_url: null,
                             })
                             .eq('id', orderId);
-
-                        return NextResponse.json(
-                            { orderId, alreadyPaid: true },
-                            { status: 200, headers: NO_CACHE_HEADERS }
-                        );
-                    }
-
-                    if (mappedStatus === 'pending' && existingOrder.payment_redirect_url) {
+                    } else if (existingOrder.payment_redirect_url) {
                         return NextResponse.json(
                             { orderId, redirectUrl: existingOrder.payment_redirect_url },
                             { status: 200, headers: NO_CACHE_HEADERS }
                         );
                     }
-
-                    // failed/expired → reset and create new payment
-                    await supabaseAdmin
-                        .from(DB_TABLES.ORDERS)
-                        .update({
-                            payment_status: 'pending',
-                            payment_id: null,
-                            payment_error: null,
-                            paid_at: null,
-                            payment_method_used: null,
-                            payment_started_at: null,
-                            payment_redirect_url: null,
-                        })
-                        .eq('id', orderId);
 
                 } catch (receiptErr) {
                     console.error('Payment status check failed during dedup:', receiptErr instanceof Error ? receiptErr.message : receiptErr);
@@ -390,16 +397,12 @@ async function createPaymentAndRespond(
     const acceptLang = request.headers.get('accept-language') || '';
     const payLang: 'en' | 'uk' | 'nl' = acceptLang.startsWith('uk') ? 'uk' : acceptLang.startsWith('nl') ? 'nl' : 'en';
 
-    const orderDesc = `Alya Bloemen order ${orderId.slice(0, 8)}`;
+    const orderDesc = `Alina Bloemen order ${orderId.slice(0, 8)}`;
     const itemsSummary = verifiedItems.map(i => `${i.name} ×${i.quantity}`).join(', ');
 
-    // Check if payment gateway is configured
-    const merchantId = process.env.PAYMENT_MERCHANT_ID;
-    const secretKey = process.env.PAYMENT_SECRET_KEY;
-
-    if (!merchantId || !secretKey) {
-        // Payment gateway not configured — order saved, but no online payment
-        console.log('[cart-order] Payment gateway not configured — order saved without online payment');
+    // Check if Rabo Smart Pay is configured
+    if (!process.env.RABO_REFRESH_TOKEN || !process.env.RABO_SIGNING_KEY) {
+        console.log('[cart-order] Rabo Smart Pay not configured — order saved without online payment');
         return NextResponse.json(
             { orderId, fallback: true, errorType: 'not_configured' },
             { status: 200, headers: NO_CACHE_HEADERS }

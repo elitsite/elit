@@ -1,5 +1,5 @@
 /**
- * Central SEO / site configuration for Alya Bloemen.
+ * Central SEO / site configuration for Alina Bloemen.
  *
  * Single source of truth for the canonical site URL, locale → hreflang and
  * locale → Open Graph locale mappings, and business contact data used for
@@ -9,10 +9,10 @@ import { routing, type Locale } from '@/i18n/routing';
 
 /** Absolute, canonical site origin (no trailing slash). Override per env. */
 export const SITE_URL = (
-    process.env.NEXT_PUBLIC_SITE_URL || 'https://alyabloemen.com'
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://alinabloemen.com'
 ).replace(/\/$/, '');
 
-export const BRAND_NAME = 'Alya Bloemen';
+export const BRAND_NAME = 'Alina Bloemen';
 
 /** Locales re-exported from routing so SEO code has one import surface. */
 export const locales = routing.locales;
@@ -63,7 +63,7 @@ export const BUSINESS = {
     legalType: 'Florist',
     // TODO: replace placeholders with real shop data before launch.
     telephone: '',
-    email: 'info@alyabloemen.com',
+    email: 'info@alinabloemen.com',
     streetAddress: '',
     addressLocality: '',
     postalCode: '',

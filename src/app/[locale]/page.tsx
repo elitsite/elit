@@ -67,14 +67,14 @@ export default async function Home({
       <section className="relative flex h-[45vh] min-h-[300px] w-full flex-col overflow-hidden sm:h-[60vh] sm:min-h-[420px]">
         <Image
           src="/logo3.png"
-          alt="Alya Bloemen"
+          alt="Alina Bloemen"
           fill
           className="block object-cover object-center sm:hidden"
           priority
         />
         <Image
           src="/logo2.png"
-          alt="Alya Bloemen"
+          alt="Alina Bloemen"
           fill
           className="hidden object-cover object-center sm:block"
           priority

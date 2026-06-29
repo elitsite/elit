@@ -1,4 +1,10 @@
-import { createHash, timingSafeEqual } from 'crypto';
+import { createHmac, timingSafeEqual } from 'crypto';
+import { randomUUID } from 'crypto';
+
+// ══════════════════════════════════════════════════════════════════════════
+// Rabo Smart Pay (OmniKassa 2.0) — TypeScript integration
+// Direct REST API + HMAC-SHA512 signature verification
+// ══════════════════════════════════════════════════════════════════════════
 
 // ── Types ──────────────────────────────────────────────────────────────
 
@@ -13,215 +19,392 @@ export interface CreatePaymentParams {
 }
 
 export interface CreatePaymentResult {
-    /** The payment reference ID sent to the gateway (stored in DB payment_id). */
+    /** The omnikassaOrderId returned by Rabo (stored in DB payment_id). */
     paymentId: string;
     redirectUrl: string;
 }
 
-export interface GatewayOrderResponse {
-    order_id?: string;
-    order_status?: string;
-    response_status?: string;
-    amount?: string | number;
-    currency?: string;
-    payment_id?: string | number;
-    payment_system?: string;
-    masked_card?: string;
-    response_code?: string | number;
-    response_description?: string;
-    error_code?: number;
-    error_message?: string;
-    signature?: string;
-    [key: string]: unknown;
+/** Rabo Smart Pay order statuses */
+export type RaboOrderStatus = 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'EXPIRED';
+
+/** Rabo Smart Pay transaction statuses */
+export type RaboTransactionStatus = 'SUCCESS' | 'CANCELLED' | 'EXPIRED' | 'FAILURE' | 'OPEN' | 'NEW' | 'ACCEPTED';
+
+export interface RaboMoney {
+    currency: string;
+    amount: number; // cents
+}
+
+export interface RaboTransactionInfo {
+    id: string;
+    paymentBrand: string;
+    type: string;
+    status: RaboTransactionStatus;
+    amount: RaboMoney;
+    confirmedAmount?: RaboMoney | null;
+    startTime: string;
+    lastUpdateTime: string;
+}
+
+export interface RaboMerchantOrderResult {
+    merchantOrderId: string;
+    omnikassaOrderId: string;
+    poiId: number;
+    orderStatus: RaboOrderStatus;
+    orderStatusDateTime: string;
+    errorCode: string;
+    paidAmount: RaboMoney;
+    totalAmount: RaboMoney;
+    transactions?: RaboTransactionInfo[];
+}
+
+export interface RaboMerchantOrderStatusResponse {
+    moreOrderResultsAvailable: boolean;
+    orderResults: RaboMerchantOrderResult[];
+    signature: string;
+}
+
+export interface RaboAnnouncementPayload {
+    authentication: string;
+    expiry: string;
+    eventName: string;
+    poiId: number;
+    signature: string;
+}
+
+export interface RaboAccessToken {
+    token: string;
+    validUntil: string;
+    durationInMillis: number;
 }
 
 export type OurPaymentStatus = 'pending' | 'paid' | 'failed' | 'expired' | 'bank_unavailable' | 'sync_error';
 
-// ── Credentials helper ─────────────────────────────────────────────────
+// ── Environment & Configuration ────────────────────────────────────────
 
-function getCredentials(): { merchantId: string; secretKey: string } {
-    const merchantId = process.env.PAYMENT_MERCHANT_ID;
-    const secretKey = process.env.PAYMENT_SECRET_KEY;
+const RABO_PRODUCTION_BASE = 'https://api.pay.rabobank.nl';
+const RABO_SANDBOX_BASE = 'https://api.pay-sandbox.rabobank.nl';
 
-    if (!merchantId || !secretKey) {
-        throw new Error('PAYMENT_MERCHANT_ID and PAYMENT_SECRET_KEY are required');
-    }
-
-    return { merchantId, secretKey };
+function getRaboBaseUrl(): string {
+    const env = process.env.RABO_ENVIRONMENT || 'sandbox';
+    return env === 'production' ? RABO_PRODUCTION_BASE : RABO_SANDBOX_BASE;
 }
 
-// ── Signature ──────────────────────────────────────────────────────────
+function getRaboRefreshToken(): string {
+    const token = process.env.RABO_REFRESH_TOKEN;
+    if (!token) throw new Error('RABO_REFRESH_TOKEN is required');
+    return token;
+}
+
+function getRaboSigningKey(): Buffer {
+    const key = process.env.RABO_SIGNING_KEY;
+    if (!key) throw new Error('RABO_SIGNING_KEY is required');
+    return Buffer.from(key, 'base64');
+}
+
+// ── HMAC-SHA512 Signature Utilities ────────────────────────────────────
 
 /**
- * Generate request/response signature.
- * Algorithm: SHA-1 over secretKey + '|' + sorted non-empty values.
- *
- * ⚠️ TODO(PSP-INTEGRATION): Replace this SHA-1 stub with the actual HMAC /
- *   signature algorithm from the chosen bank or crypto-terminal documentation.
- *   This code is NOT production-ready until that substitution is complete.
- *   PAYMENT_ENABLED=false ensures these helpers are never invoked before
- *   integration is finished.
+ * Recursively flatten nested arrays and join with comma.
+ * Mirrors the PHP SDK's Signable::flattenAndJoin().
  */
-function genSignature(params: Record<string, unknown>, secret: string): string {
-    const keys = Object.keys(params)
-        .filter((k) => k !== 'signature' && k !== 'response_signature_string')
-        .sort();
-
-    const values: string[] = [];
-    for (const key of keys) {
-        const value = params[key];
-        if (value === '' || value === null || value === undefined) continue;
-        values.push(String(value));
+function flattenDeep(arr: unknown[]): string[] {
+    const result: string[] = [];
+    for (const item of arr) {
+        if (Array.isArray(item)) {
+            result.push(...flattenDeep(item));
+        } else {
+            result.push(String(item ?? ''));
+        }
     }
+    return result;
+}
 
-    const signString = secret + '|' + values.join('|');
-    return createHash('sha1').update(signString, 'utf-8').digest('hex');
+function calculateSignature(signatureData: unknown[], signingKey: Buffer): string {
+    const flattened = flattenDeep(signatureData);
+    const payload = flattened.join(',');
+    return createHmac('sha512', signingKey).update(payload, 'utf8').digest('hex');
 }
 
 /**
- * Verify the signature of a gateway callback / response payload.
- * Replace with the specific verification of your chosen bank.
+ * Verify HMAC-SHA512 signature (timing-safe).
  */
-export function verifyCallbackSignature(body: Record<string, unknown>, secret: string): boolean {
-    const provided = body.signature;
-    if (!provided || typeof provided !== 'string') return false;
-    const expected = genSignature(body, secret);
-    if (expected.length !== provided.length) return false;
+function verifySignature(signatureData: unknown[], expectedSignature: string, signingKey: Buffer): boolean {
+    const calculated = calculateSignature(signatureData, signingKey);
+    if (calculated.length !== expectedSignature.length) return false;
     try {
-        return timingSafeEqual(Buffer.from(expected), Buffer.from(provided));
+        return timingSafeEqual(Buffer.from(calculated, 'hex'), Buffer.from(expectedSignature, 'hex'));
     } catch {
         return false;
     }
 }
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+// ── Signature Data Builders ────────────────────────────────────────────
 
-/**
- * Recover our DB order UUID from a gateway order_id.
- * We send `{uuid}-{suffix}` to the gateway; the canonical UUID is the first 36 chars.
- * Returns null if the prefix is not a valid UUID — callers must short-circuit
- * to avoid DB lookups on attacker-controlled values.
- */
-export function extractDbOrderId(gatewayOrderId: string): string | null {
-    if (typeof gatewayOrderId !== 'string' || gatewayOrderId.length < 36) return null;
-    const candidate = gatewayOrderId.slice(0, 36);
-    return UUID_RE.test(candidate) ? candidate : null;
+function moneySignatureData(money: RaboMoney): [string, number] {
+    return [money.currency, money.amount];
 }
 
-// ── Create Payment Order ───────────────────────────────────────────────
+function transactionSignatureData(tx: RaboTransactionInfo): unknown[] {
+    return [
+        tx.id,
+        tx.paymentBrand,
+        tx.type,
+        tx.status,
+        moneySignatureData(tx.amount),
+        tx.confirmedAmount ? moneySignatureData(tx.confirmedAmount) : [null, null],
+        tx.startTime,
+        tx.lastUpdateTime,
+    ];
+}
 
-/**
- * Create a payment order and return the checkout redirect URL + payment id.
- *
- * ABSTRACT IMPLEMENTATION: This is a placeholder that mirrors the Flitt API
- * structure. When the actual bank is chosen, replace the endpoint URL,
- * request/response format, and signature algorithm as needed.
- */
-export async function createPayment(params: CreatePaymentParams): Promise<CreatePaymentResult> {
-    const { merchantId, secretKey } = getCredentials();
+function orderResultSignatureData(result: RaboMerchantOrderResult): unknown[] {
+    const data: unknown[] = [
+        result.merchantOrderId,
+        result.omnikassaOrderId,
+        result.poiId,
+        result.orderStatus,
+        result.orderStatusDateTime,
+        result.errorCode,
+        moneySignatureData(result.paidAmount),
+        moneySignatureData(result.totalAmount),
+    ];
+    if (result.transactions) {
+        for (const tx of result.transactions) {
+            data.push(transactionSignatureData(tx));
+        }
+    }
+    return data;
+}
 
-    // Amount in minor units (cents). €50 → 5000.
-    const amountCents = Math.round(params.totalAmount * 100);
+function statusResponseSignatureData(response: RaboMerchantOrderStatusResponse): unknown[] {
+    const orderResultsData: unknown[] = [];
+    for (const result of response.orderResults) {
+        orderResultsData.push(orderResultSignatureData(result));
+    }
+    return [
+        response.moreOrderResultsAvailable ? 'true' : 'false',
+        orderResultsData,
+    ];
+}
 
-    // Unique order_id per attempt to avoid duplicate rejection on retries.
-    const sentOrderId = `${params.orderId}-${Date.now().toString(36)}`;
+function announcementSignatureData(announcement: RaboAnnouncementPayload): unknown[] {
+    return [announcement.authentication, announcement.expiry, announcement.eventName, announcement.poiId];
+}
 
-    const gatewayUrl = process.env.PAYMENT_GATEWAY_URL || 'https://gateway.example.com/api/checkout/url';
+// ── Access Token Management ────────────────────────────────────────────
 
-    const requestParams: Record<string, unknown> = {
-        order_id: sentOrderId,
-        merchant_id: merchantId,
-        order_desc: params.orderDesc,
-        amount: amountCents,
-        currency: 'EUR',
-        response_url: params.returnUrl,
-        server_callback_url: params.callbackUrl,
-        lang: params.lang,
-        lifetime: 900, // 15 minutes
-        delayed: 'N',
-    };
+let cachedAccessToken: RaboAccessToken | null = null;
 
-    requestParams.signature = genSignature(requestParams, secretKey);
+function isTokenExpired(token: RaboAccessToken): boolean {
+    const validUntil = new Date(token.validUntil).getTime();
+    const now = Date.now();
+    const durationMs = token.durationInMillis;
+    const remaining = validUntil - now;
+    return (remaining / durationMs) < 0.05;
+}
+
+async function getAccessToken(): Promise<string> {
+    if (cachedAccessToken && !isTokenExpired(cachedAccessToken)) {
+        return cachedAccessToken.token;
+    }
+
+    const baseUrl = getRaboBaseUrl();
+    const refreshToken = getRaboRefreshToken();
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15_000);
 
     try {
-        const response = await fetch(gatewayUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ request: requestParams }),
+        const response = await fetch(`${baseUrl}/omnikassa-api/gatekeeper/refresh`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${refreshToken}`,
+            },
             signal: controller.signal,
         });
 
         if (!response.ok) {
             const text = await response.text().catch(() => '');
-            throw new Error(`Payment gateway create payment failed: ${response.status} ${text.slice(0, 300)}`);
+            throw new Error(`Rabo token refresh failed: ${response.status} ${text.slice(0, 300)}`);
         }
 
-        const json = await response.json();
-        const data: GatewayOrderResponse = json?.response ?? json ?? {};
+        const data: RaboAccessToken = await response.json();
+        cachedAccessToken = data;
+        return data.token;
+    } finally {
+        clearTimeout(timeout);
+    }
+}
 
-        if (data.response_status === 'failure' || data.error_code) {
-            throw new Error(`Payment gateway error: ${data.error_code ?? ''} ${data.error_message ?? ''}`.trim());
+// ── Public: Verify Announcement (Webhook) Signature ────────────────────
+
+/**
+ * Verify the webhook announcement POST from Rabo Smart Pay.
+ * Returns the parsed announcement if valid, null otherwise.
+ */
+export function verifyAnnouncementSignature(body: RaboAnnouncementPayload): boolean {
+    const signingKey = getRaboSigningKey();
+    const sigData = announcementSignatureData(body);
+    return verifySignature(sigData, body.signature, signingKey);
+}
+
+// ── Public: Verify Order Status Response Signature ─────────────────────
+
+export function verifyStatusResponseSignature(response: RaboMerchantOrderStatusResponse): boolean {
+    const signingKey = getRaboSigningKey();
+    const sigData = statusResponseSignatureData(response);
+    return verifySignature(sigData, response.signature, signingKey);
+}
+
+// ── Public: Retrieve Order Results (webhook-pull) ──────────────────────
+
+/**
+ * After receiving a webhook announcement, pull the actual order results
+ * using the authentication token and eventName from the announcement.
+ */
+export async function retrieveOrderResults(announcement: RaboAnnouncementPayload): Promise<RaboMerchantOrderStatusResponse> {
+    const baseUrl = getRaboBaseUrl();
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15_000);
+
+    try {
+        const response = await fetch(
+            `${baseUrl}/omnikassa-api/order/server/api/events/results/${announcement.eventName}`,
+            {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${announcement.authentication}`,
+                },
+                signal: controller.signal,
+            }
+        );
+
+        if (!response.ok) {
+            const text = await response.text().catch(() => '');
+            throw new Error(`Rabo retrieveOrderResults failed: ${response.status} ${text.slice(0, 300)}`);
         }
 
-        const checkoutUrl = (data.checkout_url as string | undefined) || (data.redirect_url as string | undefined);
+        return await response.json();
+    } finally {
+        clearTimeout(timeout);
+    }
+}
 
-        if (!checkoutUrl) {
-            throw new Error('Payment gateway: invalid response — missing checkout URL');
+// ── Public: extractDbOrderId ───────────────────────────────────────────
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Rabo's merchantOrderId is our DB UUID directly (no suffix needed).
+ */
+export function extractDbOrderId(merchantOrderId: string): string | null {
+    if (typeof merchantOrderId !== 'string') return null;
+    const candidate = merchantOrderId.trim();
+    return UUID_RE.test(candidate) ? candidate : null;
+}
+
+// ── Public: Create Payment (Announce Order) ────────────────────────────
+
+/**
+ * Announce an order to Rabo Smart Pay.
+ * Returns the redirect URL to the hosted payment page + the omnikassaOrderId.
+ */
+export async function createPayment(params: CreatePaymentParams): Promise<CreatePaymentResult> {
+    const accessToken = await getAccessToken();
+    const baseUrl = getRaboBaseUrl();
+
+    // Amount in cents
+    const amountCents = Math.round(params.totalAmount * 100);
+
+    // Map language code
+    const langMap: Record<string, string> = { nl: 'NL', en: 'EN', uk: 'EN' };
+    const language = langMap[params.lang] || 'NL';
+
+    const merchantOrder = {
+        merchantOrderId: params.orderId,
+        description: params.orderDesc,
+        amount: {
+            currency: 'EUR',
+            amount: amountCents,
+        },
+        merchantReturnURL: params.returnUrl,
+        language,
+        // Do NOT set paymentBrand or paymentBrandForce — let all methods appear
+    };
+
+    const orderRequest = {
+        timestamp: new Date().toISOString(),
+        ...merchantOrder,
+    };
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15_000);
+
+    try {
+        const response = await fetch(`${baseUrl}/omnikassa-api/order/server/api/v2/order`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+                'Request-ID': randomUUID(),
+            },
+            body: JSON.stringify(orderRequest),
+            signal: controller.signal,
+        });
+
+        if (!response.ok) {
+            const text = await response.text().catch(() => '');
+            throw new Error(`Rabo announce order failed: ${response.status} ${text.slice(0, 300)}`);
+        }
+
+        const data = await response.json();
+        const redirectUrl: string | undefined = data.redirectUrl;
+        const omnikassaOrderId: string | undefined = data.omnikassaOrderId;
+
+        if (!redirectUrl) {
+            throw new Error('Rabo Smart Pay: invalid response — missing redirectUrl');
         }
 
         return {
-            paymentId: sentOrderId,
-            redirectUrl: checkoutUrl,
+            paymentId: omnikassaOrderId || params.orderId,
+            redirectUrl,
         };
     } finally {
         clearTimeout(timeout);
     }
 }
 
-// ── Get Order Status ───────────────────────────────────────────────────
+// ── Public: Get Order Status (active poll) ─────────────────────────────
 
 /**
- * Fetch order status by the order_id we sent to the gateway on creation.
+ * Fetch order details by omnikassaOrderId.
+ * Used for reconciliation when webhook hasn't arrived yet.
  */
-export async function getOrderStatus(orderReference: string): Promise<GatewayOrderResponse> {
-    const { merchantId, secretKey } = getCredentials();
-
-    const statusUrl = process.env.PAYMENT_STATUS_URL || 'https://gateway.example.com/api/status/order_id';
-
-    const requestParams: Record<string, unknown> = {
-        order_id: orderReference,
-        merchant_id: merchantId,
-    };
-
-    requestParams.signature = genSignature(requestParams, secretKey);
+export async function getOrderStatus(omnikassaOrderId: string): Promise<RaboMerchantOrderResult | null> {
+    const accessToken = await getAccessToken();
+    const baseUrl = getRaboBaseUrl();
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10_000);
 
     try {
-        const response = await fetch(statusUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ request: requestParams }),
+        const response = await fetch(`${baseUrl}/v2/orders/${omnikassaOrderId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Request-ID': randomUUID(),
+            },
             signal: controller.signal,
         });
 
         if (!response.ok) {
             const text = await response.text().catch(() => '');
-            throw new Error(`Payment gateway get status failed: ${response.status} ${text.slice(0, 200)}`);
+            throw new Error(`Rabo getOrderStatus failed: ${response.status} ${text.slice(0, 300)}`);
         }
 
-        const json = await response.json();
-        const data: GatewayOrderResponse = json?.response ?? json ?? {};
-
-        if (data.response_status === 'failure' || data.error_code) {
-            throw new Error(`Payment gateway get status error: ${data.error_code ?? ''} ${data.error_message ?? ''}`.trim());
-        }
-
-        return data;
+        return await response.json();
     } finally {
         clearTimeout(timeout);
     }
@@ -230,45 +413,39 @@ export async function getOrderStatus(orderReference: string): Promise<GatewayOrd
 // ── Status Mapping ─────────────────────────────────────────────────────
 
 /**
- * Map a gateway order_status to our internal status.
+ * Map Rabo Smart Pay orderStatus to our internal status.
  *
- * Common statuses (adjust when the actual bank is chosen):
- *   created / processing → pending
- *   approved             → paid
- *   declined             → failed
- *   expired              → expired
- *   reversed             → failed (refund)
+ * Rabo statuses:
+ *   IN_PROGRESS → pending
+ *   COMPLETED   → paid (if paidAmount matches totalAmount)
+ *   CANCELLED   → failed
+ *   EXPIRED     → expired
+ *
+ * Transaction statuses (for paymentMethodUsed):
+ *   SUCCESS, CANCELLED, EXPIRED, FAILURE, OPEN, NEW, ACCEPTED
  */
-export function mapGatewayStatus(
-    data: GatewayOrderResponse
+export function mapRaboOrderStatus(
+    result: RaboMerchantOrderResult
 ): { status: OurPaymentStatus; paymentMethodUsed: string | null } {
-    const orderStatus = data.order_status;
-    const paymentMethodUsed = data.payment_system ? String(data.payment_system) : null;
+    const paymentMethodUsed = result.transactions && result.transactions.length > 0
+        ? result.transactions[0].paymentBrand
+        : null;
 
-    switch (orderStatus) {
-        case 'approved':
-        case 'success':
-        case 'paid':
+    switch (result.orderStatus) {
+        case 'COMPLETED':
             return { status: 'paid', paymentMethodUsed };
 
-        case 'declined':
-        case 'failed':
+        case 'CANCELLED':
             return { status: 'failed', paymentMethodUsed: null };
 
-        case 'expired':
+        case 'EXPIRED':
             return { status: 'expired', paymentMethodUsed: null };
 
-        case 'created':
-        case 'processing':
-        case 'pending':
+        case 'IN_PROGRESS':
             return { status: 'pending', paymentMethodUsed: null };
 
-        case 'reversed':
-        case 'refunded':
-            return { status: 'failed', paymentMethodUsed: null };
-
         default:
-            console.error('Unknown gateway order status:', orderStatus);
+            console.error('Unknown Rabo order status:', result.orderStatus);
             return { status: 'failed', paymentMethodUsed: null };
     }
 }
