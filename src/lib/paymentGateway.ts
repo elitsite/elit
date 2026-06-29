@@ -295,14 +295,28 @@ export async function retrieveOrderResults(announcement: RaboAnnouncementPayload
 // ── Public: extractDbOrderId ───────────────────────────────────────────
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_NO_HYPHENS_RE = /^[0-9a-f]{32}$/i;
 
 /**
- * Rabo's merchantOrderId is our DB UUID directly (no suffix needed).
+ * Convert DB UUID to Rabo-safe merchantOrderId (alphanumeric only, hyphens removed).
+ * e.g. "550e8400-e29b-41d4-a716-446655440000" → "550e8400e29b41d4a716446655440000"
+ */
+export function toRaboMerchantOrderId(dbOrderId: string): string {
+    return dbOrderId.replace(/-/g, '');
+}
+
+/**
+ * Convert Rabo merchantOrderId (no hyphens) back to DB UUID format.
+ * e.g. "550e8400e29b41d4a716446655440000" → "550e8400-e29b-41d4-a716-446655440000"
  */
 export function extractDbOrderId(merchantOrderId: string): string | null {
     if (typeof merchantOrderId !== 'string') return null;
     const candidate = merchantOrderId.trim();
-    return UUID_RE.test(candidate) ? candidate : null;
+    if (UUID_RE.test(candidate)) return candidate;
+    if (UUID_NO_HYPHENS_RE.test(candidate)) {
+        return candidate.replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, '$1-$2-$3-$4-$5');
+    }
+    return null;
 }
 
 // ── Public: Create Payment (Announce Order) ────────────────────────────
@@ -323,7 +337,7 @@ export async function createPayment(params: CreatePaymentParams): Promise<Create
     const language = langMap[params.lang] || 'NL';
 
     const merchantOrder = {
-        merchantOrderId: params.orderId,
+        merchantOrderId: toRaboMerchantOrderId(params.orderId),
         description: params.orderDesc,
         amount: {
             currency: 'EUR',
