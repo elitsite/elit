@@ -98,15 +98,6 @@ export default async function Home({
         {/* Content Overlay */}
         <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col justify-center items-start px-6 sm:px-6 lg:px-8">
           <div className="flex max-w-[80%] sm:w-full flex-col items-start text-left sm:max-w-lg lg:max-w-[50%] lg:-ml-2 p-4 sm:p-0">
-            <div className="relative w-[310px] h-[207px] sm:w-[414px] sm:h-[275px] mb-2 sm:mb-4 -translate-x-[20%] translate-y-[12%]">
-              <Image 
-                src="/logo.png" 
-                alt="Alina Bloemen" 
-                fill 
-                className="object-contain object-left" 
-                priority
-              />
-            </div>
             <Link
               href="/category/bouquets"
               className="btn-primary mt-2.5 !px-5 !py-2.5 !text-[10px] sm:mt-6 sm:!px-6 sm:!py-3.5 sm:!text-xs"
