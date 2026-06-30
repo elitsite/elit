@@ -1,7 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { type Locale } from "@/i18n/routing";
-import Image from "next/image";
 import { getProductsByCategorySlugs, getSettings } from "@/lib/products";
 import { localizeSettings } from "@/lib/i18n-content";
 import CollectionExplorer from "@/components/CollectionExplorer";
