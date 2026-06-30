@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { type Product } from "@/lib/products";
+import { type Product } from "@/lib/supabase";
 
 interface EventsSectionProps {
   products?: Product[];
