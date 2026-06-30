@@ -301,6 +301,9 @@ export interface EventContent {
     decor_title: LocalizedText;
     decor: PortfolioItem[];
 
+    // ── Homepage slider images (Wedding only) ──
+    slider_images?: string[];
+
     // ── Gallery (Instagram strip) ──
     gallery: string[];
 

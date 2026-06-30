@@ -4,22 +4,17 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { type Product } from "@/lib/supabase";
-
 interface EventsSectionProps {
-  products?: Product[];
+  images?: string[];
 }
 
-export default function EventsSection({ products = [] }: EventsSectionProps) {
+export default function EventsSection({ images: propImages = [] }: EventsSectionProps) {
   const t = useTranslations("Categories");
   const tHome = useTranslations("Home");
 
-  // Extract all images from the passed products
-  const productImages = products.flatMap((p) => p.images || []).filter(Boolean);
-  
-  // Fallback to the default image if no products with images are provided
-  const images = productImages.length > 0 
-    ? productImages 
+  // Fallback to the default image if no images are provided
+  const images = propImages && propImages.length > 0 
+    ? propImages 
     : ["https://images.pexels.com/photos/19024679/pexels-photo-19024679.jpeg"];
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -44,11 +39,10 @@ export default function EventsSection({ products = [] }: EventsSectionProps) {
         <div className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-ink/5 sm:aspect-[16/10] sm:rounded-[2.5rem]">
           {/* Background Images Slider */}
           {images.map((img, idx) => (
-            <div 
-              key={img + idx} 
-              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                idx === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0"
-              }`}
+            <div
+              key={img + idx}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${idx === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0"
+                }`}
             >
               <Image
                 src={img}
@@ -61,7 +55,7 @@ export default function EventsSection({ products = [] }: EventsSectionProps) {
 
           {/* Overlay */}
           <div className="absolute inset-0 z-20 bg-black/35 transition-colors group-hover:bg-black/45" />
-          
+
           {/* Content */}
           <div className="absolute inset-0 z-30 flex flex-col items-start justify-end p-5 sm:p-8 lg:p-14">
             <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-white/80 sm:text-[11px] sm:tracking-[0.3em]">

@@ -2,7 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { type Locale } from "@/i18n/routing";
 import Image from "next/image";
-import { getProductsByCategorySlugs, getSettings } from "@/lib/products";
+import { getProductsByCategorySlugs, getSettings, getEventPage } from "@/lib/products";
 import { localizeSettings } from "@/lib/i18n-content";
 import CollectionExplorer from "@/components/CollectionExplorer";
 import AboutSection from "@/components/AboutSection";
@@ -21,7 +21,6 @@ const PLUK_BOUQUET_SLUGS = ["pluk-bouquets"];
 const ARRANGEMENT_SLUGS = getLeafSlugsUnder(CATEGORY_TREE.find((n) => n.slug === "arrangements")!);
 const DECOR_RENTAL_SLUGS = ["decor-rental"];
 const FUNERAL_SLUGS = getLeafSlugsUnder(CATEGORY_TREE.find((n) => n.slug === "funeral")!);
-const WEDDINGS_SLUGS = getLeafSlugsUnder(CATEGORY_TREE.find((n) => n.slug === "weddings")!);
 
 /** Leaf category slugs for the main explorer. */
 const EXPLORER_SLUGS = CATEGORY_LEAF_SLUGS.filter(slug => !FUNERAL_SLUGS.includes(slug));
@@ -47,7 +46,7 @@ export default async function Home({
     arrangementProducts,
     decorProducts,
     funeralProducts,
-    weddingsProducts
+    weddingsPage
   ] = await Promise.all([
     getProductsByCategorySlugs(EXPLORER_SLUGS),
     getSettings(),
@@ -58,7 +57,7 @@ export default async function Home({
     getProductsByCategorySlugs(ARRANGEMENT_SLUGS),
     getProductsByCategorySlugs(DECOR_RENTAL_SLUGS),
     getProductsByCategorySlugs(FUNERAL_SLUGS),
-    getProductsByCategorySlugs(WEDDINGS_SLUGS),
+    getEventPage('weddings'),
   ]);
 
   const settings = rawSettings ? localizeSettings(rawSettings, locale) : null;
@@ -210,7 +209,7 @@ export default async function Home({
       />
 
       {/* Weddings & Parties Cards */}
-      <EventsSection products={weddingsProducts} />
+      <EventsSection images={weddingsPage?.content?.slider_images} />
 
       {/* Decor Rental Showcase */}
       <CategorySection
