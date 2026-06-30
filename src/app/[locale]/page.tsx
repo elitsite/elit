@@ -22,6 +22,15 @@ const ARRANGEMENT_SLUGS = getLeafSlugsUnder(CATEGORY_TREE.find((n) => n.slug ===
 const DECOR_RENTAL_SLUGS = ["decor-rental"];
 const FUNERAL_SLUGS = getLeafSlugsUnder(CATEGORY_TREE.find((n) => n.slug === "funeral")!);
 
+// New Wedding Showcase Slugs
+const BRIDAL_BOUQUET_SLUGS = ["bridal-bouquet"];
+const GROOM_BOUTONNIERE_SLUGS = ["groom-boutonniere"];
+const BRIDESMAIDS_AND_BRACELETS_SLUGS = ["bridesmaids-bouquets", "bracelets-floral"];
+const CHAIR_DECOR_SLUGS = ["chair-decor"];
+const WEDDING_ARCH_SLUGS = ["wedding-arch"];
+const GUEST_TABLES_DECOR_SLUGS = ["guest-tables-decor"];
+const CAR_DECOR_SLUGS = ["car-decor"];
+
 /** Leaf category slugs for the main explorer. */
 const EXPLORER_SLUGS = CATEGORY_LEAF_SLUGS.filter(slug => !FUNERAL_SLUGS.includes(slug));
 
@@ -46,7 +55,15 @@ export default async function Home({
     arrangementProducts,
     decorProducts,
     funeralProducts,
-    weddingsPage
+    weddingsPage,
+    // Wedding categories
+    bridalBouquetProducts,
+    groomBoutonniereProducts,
+    bridesmaidsProducts,
+    chairDecorProducts,
+    weddingArchProducts,
+    guestTablesDecorProducts,
+    carDecorProducts
   ] = await Promise.all([
     getProductsByCategorySlugs(EXPLORER_SLUGS),
     getSettings(),
@@ -58,6 +75,14 @@ export default async function Home({
     getProductsByCategorySlugs(DECOR_RENTAL_SLUGS),
     getProductsByCategorySlugs(FUNERAL_SLUGS),
     getEventPage('weddings'),
+    // Wedding categories
+    getProductsByCategorySlugs(BRIDAL_BOUQUET_SLUGS),
+    getProductsByCategorySlugs(GROOM_BOUTONNIERE_SLUGS),
+    getProductsByCategorySlugs(BRIDESMAIDS_AND_BRACELETS_SLUGS),
+    getProductsByCategorySlugs(CHAIR_DECOR_SLUGS),
+    getProductsByCategorySlugs(WEDDING_ARCH_SLUGS),
+    getProductsByCategorySlugs(GUEST_TABLES_DECOR_SLUGS),
+    getProductsByCategorySlugs(CAR_DECOR_SLUGS)
   ]);
 
   const settings = rawSettings ? localizeSettings(rawSettings, locale) : null;
@@ -202,28 +227,112 @@ export default async function Home({
       {/* Weddings & Parties Cards */}
       <EventsSection images={weddingsPage?.content?.slider_images} />
 
-      {/* Decor Rental Showcase */}
+      {/* Wedding Category: Bridal Bouquet */}
       <CategorySection
-        labelKey="decor_rental"
-        products={resolvedDecor}
+        labelKey="bridal_bouquet"
+        products={bridalBouquetProducts}
         locale={locale}
-        viewAllHref="/category/decor-rental"
+        viewAllHref="/category/wedding-floristry/bridal-bouquet"
         gridCols={5}
         isScrollable
         autoScroll
         index={5}
       />
 
+      {/* Wedding Category: Groom Boutonniere */}
+      <CategorySection
+        labelKey="groom_boutonniere"
+        products={groomBoutonniereProducts}
+        locale={locale}
+        viewAllHref="/category/wedding-floristry/groom-boutonniere"
+        gridCols={5}
+        isScrollable
+        autoScroll
+        index={6}
+      />
+
+      {/* Wedding Category: Bridesmaids & Bracelets */}
+      <CategorySection
+        labelKey="bridesmaids_bouquets"
+        products={bridesmaidsProducts}
+        locale={locale}
+        viewAllHref="/category/wedding-floristry/bridesmaids-bouquets"
+        gridCols={5}
+        isScrollable
+        autoScroll
+        index={7}
+      />
+
+      {/* Wedding Category: Chair Decor */}
+      <CategorySection
+        labelKey="chair_decor"
+        products={chairDecorProducts}
+        locale={locale}
+        viewAllHref="/category/wedding-floristry/chair-decor"
+        gridCols={5}
+        isScrollable
+        autoScroll
+        index={8}
+      />
+
+      {/* Wedding Category: Wedding Arch */}
+      <CategorySection
+        labelKey="wedding_arch"
+        products={weddingArchProducts}
+        locale={locale}
+        viewAllHref="/category/wedding-floristry/wedding-arch"
+        gridCols={5}
+        isScrollable
+        autoScroll
+        index={9}
+      />
+
+      {/* Wedding Category: Guest Tables Decor */}
+      <CategorySection
+        labelKey="guest_tables_decor"
+        products={guestTablesDecorProducts}
+        locale={locale}
+        viewAllHref="/category/wedding-floristry/guest-tables-decor"
+        gridCols={5}
+        isScrollable
+        autoScroll
+        index={10}
+      />
+
+      {/* Wedding Category: Car Decor */}
+      <CategorySection
+        labelKey="car_decor"
+        products={carDecorProducts}
+        locale={locale}
+        viewAllHref="/category/wedding-floristry/car-decor"
+        gridCols={5}
+        isScrollable
+        autoScroll
+        index={11}
+      />
+
       {/* Funeral Arrangements Showcase */}
       <CategorySection
         labelKey="funeral"
-        products={resolvedFuneral}
+        products={funeralProducts}
         locale={locale}
         viewAllHref="/category/funeral"
         gridCols={5}
         isScrollable
         autoScroll
-        index={6}
+        index={12}
+      />
+
+      {/* Decor Rental Showcase */}
+      <CategorySection
+        labelKey="decor_rental"
+        products={decorProducts}
+        locale={locale}
+        viewAllHref="/category/decor-rental"
+        gridCols={5}
+        isScrollable
+        autoScroll
+        index={13}
       />
 
       {/* About Section */}

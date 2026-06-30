@@ -12,7 +12,7 @@ export default function AboutSection({
 }) {
   const t = useTranslations("Home");
 
-  if (!settings.about_enabled || !settings.display.about_text?.trim()) {
+  if (!settings.about_enabled) {
     return null;
   }
 
@@ -27,7 +27,7 @@ export default function AboutSection({
         </h2>
         <div className="mx-auto mt-6 h-px w-12 bg-brand/40" />
         <p className="mt-6 whitespace-pre-line text-base leading-relaxed text-ink/70 sm:text-lg">
-          {settings.display.about_text}
+          {t("about_text")}
         </p>
       </div>
     </section>
