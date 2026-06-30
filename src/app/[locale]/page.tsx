@@ -78,35 +78,36 @@ export default async function Home({
   return (
     <main>
       {/* Hero — full-width background image */}
-      <section className="relative flex h-[45vh] min-h-[300px] w-full flex-col overflow-hidden sm:h-[60vh] sm:min-h-[420px]">
+      <section className="relative w-full flex flex-col">
+        {/* Mobile Image */}
         <Image
           src="/logo3.png"
           alt="Alina Bloemen"
-          fill
-          className="block object-cover object-center sm:hidden"
+          width={1080}
+          height={1080}
+          className="block w-full h-auto sm:hidden"
           priority
         />
+        {/* Desktop Image */}
         <Image
           src="/logo2.png"
           alt="Alina Bloemen"
-          fill
-          className="hidden object-cover object-center sm:block"
+          width={1920}
+          height={1080}
+          className="hidden w-full h-auto sm:block"
           priority
         />
         <div className="absolute inset-0 bg-black/10" />
 
-        {/* Content Overlay */}
-        <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col justify-center items-start px-6 sm:px-6 lg:px-8">
-          <div className="flex max-w-[80%] sm:w-full flex-col items-start text-left sm:max-w-lg lg:max-w-[50%] lg:-ml-2 p-4 sm:p-0">
+        {/* Content Overlay for Button */}
+        <div className="absolute inset-0 z-10 w-full h-full">
             <Link
               href="/category/bouquets"
-              className="btn-primary mt-2.5 !px-5 !py-2.5 !text-[10px] sm:mt-6 sm:!px-6 sm:!py-3.5 sm:!text-xs"
+              className="absolute left-[10%] top-[60%] sm:left-[15%] sm:top-[65%] btn-primary !px-5 !py-2.5 !text-[10px] sm:!px-6 sm:!py-3.5 sm:!text-xs"
             >
               {nav("catalog")}
             </Link>
-          </div>
-
-          {/* Animated Scroll Indicator */}
+        </div>
           <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center text-ink/60 animate-gentle-bounce sm:bottom-5">
             <svg
               className="h-5 w-5 sm:h-6 sm:w-6"
