@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import {
   ChevronDown,
   Flower,
+  Flower2,
   Gift,
   Gem,
   CalendarHeart,
@@ -45,7 +46,7 @@ function CelebrationIcon({ className }: { className?: string }) {
 /** Map top-level category slugs to clean icons */
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   bouquets: <Flower size={20} strokeWidth={1.3} className="text-ink/40" />,
-  arrangements: <Gift size={20} strokeWidth={1.3} className="text-ink/40" />,
+  arrangements: <Flower2 size={20} strokeWidth={1.3} className="text-ink/40" />,
   "wedding-floristry": <Gem size={20} strokeWidth={1.3} className="text-ink/40" />,
   funeral: <DeceasedIcon className="text-ink/40" />,
   weddings: <CalendarHeart size={20} strokeWidth={1.3} className="text-ink/40" />,
