@@ -314,7 +314,7 @@ export default async function Home({
       {/* Funeral Arrangements Showcase */}
       <CategorySection
         labelKey="funeral"
-        products={funeralProducts}
+        products={resolvedFuneral}
         locale={locale}
         viewAllHref="/category/funeral"
         gridCols={5}
@@ -326,7 +326,7 @@ export default async function Home({
       {/* Decor Rental Showcase */}
       <CategorySection
         labelKey="decor_rental"
-        products={decorProducts}
+        products={resolvedDecor}
         locale={locale}
         viewAllHref="/category/decor-rental"
         gridCols={5}
