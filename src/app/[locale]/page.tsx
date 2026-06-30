@@ -1,5 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { type Locale } from "@/i18n/routing";
+import Image from "next/image";
 import { getProductsByCategorySlugs, getSettings } from "@/lib/products";
 import { localizeSettings } from "@/lib/i18n-content";
 import CollectionExplorer from "@/components/CollectionExplorer";
@@ -31,6 +33,7 @@ export default async function Home({
   setRequestLocale(params.locale);
   const locale = params.locale as Locale;
   const t = await getTranslations("Home");
+  const nav = await getTranslations("Nav");
 
   // Fetch all showcased products in parallel for performance
   const [
@@ -74,16 +77,54 @@ export default async function Home({
     <main>
       {/* Hero — full-width background image */}
       <section className="relative flex h-[45vh] min-h-[300px] w-full flex-col overflow-hidden sm:h-[60vh] sm:min-h-[420px]">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 h-full w-full object-cover object-center"
-        >
-          <source src="/hero.mp4" type="video/mp4" />
-        </video>
+        <Image
+          src="/logo3.png"
+          alt="Alina Bloemen"
+          fill
+          className="block object-cover object-center sm:hidden"
+          priority
+        />
+        <Image
+          src="/logo2.png"
+          alt="Alina Bloemen"
+          fill
+          className="hidden object-cover object-center sm:block"
+          priority
+        />
+        <div className="absolute inset-0 bg-black/10" />
 
+        {/* Content Overlay */}
+        <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col items-center justify-center px-4 sm:px-6 lg:px-8 sm:items-start">
+          <div className="flex w-full flex-col items-center text-center sm:max-w-lg lg:max-w-[40%] lg:-ml-2">
+            <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-brand sm:text-xs sm:tracking-[0.35em]">
+              {t("tagline")}
+            </span>
+            <h1 className="mt-1 font-display text-[26px] font-medium leading-[1.1] text-ink sm:mt-4 sm:text-5xl lg:text-7xl">
+              {t("title")}
+            </h1>
+            <p className="mt-1 max-w-[280px] sm:max-w-lg text-[10px] text-ink/80 sm:mt-4 sm:text-base lg:text-xl">
+              {t("subtitle")}
+            </p>
+            <Link
+              href="/category/bouquets"
+              className="btn-primary mt-2.5 !px-5 !py-2.5 !text-[10px] sm:mt-6 sm:!px-6 sm:!py-3.5 sm:!text-xs"
+            >
+              {nav("catalog")}
+            </Link>
+          </div>
+
+          {/* Animated Scroll Indicator */}
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center text-ink/60 animate-gentle-bounce sm:bottom-5">
+            <svg
+              className="h-5 w-5 sm:h-6 sm:w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
       </section>
 
 
