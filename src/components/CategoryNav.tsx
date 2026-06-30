@@ -8,6 +8,7 @@ import {
   Gift,
   Gem,
   CalendarHeart,
+  Sparkles,
 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { CATEGORY_TREE, type CategoryNode } from "@/lib/categories";
@@ -49,6 +50,7 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   funeral: <DeceasedIcon className="text-ink/40" />,
   weddings: <CalendarHeart size={20} strokeWidth={1.3} className="text-ink/40" />,
   parties: <CelebrationIcon className="text-ink/40" />,
+  "decor-rental": <Sparkles size={20} strokeWidth={1.3} className="text-ink/40" />,
 };
 
 /** A single tree row: leaf = link, branch = collapsible group. */
@@ -77,9 +79,14 @@ function NavRow({
       <Link
         href={`/category/${path.join("/")}`}
         onClick={onNavigate}
-        className="block py-2.5 pl-[52px] pr-4 text-[15px] text-ink/70 transition-colors hover:text-brand"
+        className={
+          isTopLevel
+            ? "flex items-center py-3.5 pl-4 pr-4 font-display text-[17px] font-medium text-ink transition-colors hover:text-brand"
+            : "block py-2.5 pl-[52px] pr-4 text-[15px] text-ink/70 transition-colors hover:text-brand"
+        }
       >
-        {label}
+        {isTopLevel && icon && <span className="mr-3.5 flex-shrink-0">{icon}</span>}
+        <span>{label}</span>
       </Link>
     );
   }
