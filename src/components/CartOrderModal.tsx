@@ -280,7 +280,7 @@ export default function CartOrderModal({ isOpen, onClose, deliveryEnabled = true
                                                 fill className="object-cover" sizes="48px" />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-ink truncate">{item.name}</p>
+                                            <p className="text-sm font-medium text-ink truncate">{locale === 'uk' && item.name_uk ? item.name_uk : locale === 'nl' && item.name_nl ? item.name_nl : item.name}</p>
                                             <p className="text-xs text-ink/40">{formatEUR(fp)} × {item.quantity}</p>
                                         </div>
                                         <span className="text-sm font-bold text-ink">{formatEUR(fp * item.quantity)}</span>
@@ -430,7 +430,7 @@ export default function CartOrderModal({ isOpen, onClose, deliveryEnabled = true
                                     const fp = finalPrice(item.price, item.discount);
                                     return (
                                         <div key={item.id} className="flex justify-between text-sm">
-                                            <span className="text-ink/60 truncate pr-2">{item.name} × {item.quantity}</span>
+                                            <span className="text-ink/60 truncate pr-2">{locale === 'uk' && item.name_uk ? item.name_uk : locale === 'nl' && item.name_nl ? item.name_nl : item.name} × {item.quantity}</span>
                                             <span className="text-ink font-medium whitespace-nowrap">{formatEUR(fp * item.quantity)}</span>
                                         </div>
                                     );

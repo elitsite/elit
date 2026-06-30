@@ -129,6 +129,7 @@ export default async function Home({
             locale={locale}
             priceFilters={rawSettings?.price_filters}
             pageSize={8}
+            mobilePageSize={4}
           />
         </div>
       </section>

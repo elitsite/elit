@@ -9,7 +9,7 @@
  * Fixed light theme for a consistent boutique feel (no OS dark flip).
  */
 :root {
-  --background: #f7f4ef;
+  --background: #ffffff;
   --foreground: #262220;
   --brand: #8c7e70;
   --brand-light: #a89a8c;

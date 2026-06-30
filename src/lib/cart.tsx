@@ -21,6 +21,8 @@ import { finalPrice } from "@/lib/i18n-content";
 export type CartItem = {
   id: string;
   name: string;
+  name_uk?: string;
+  name_nl?: string;
   price: number;
   discount: number;
   image_url: string;

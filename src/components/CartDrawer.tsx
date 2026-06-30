@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { X, Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useCart, finalPrice, type CartItem } from '@/lib/cart';
 import { formatEUR } from '@/lib/format';
 
@@ -16,6 +16,7 @@ interface CartDrawerProps {
 export default function CartDrawer({ isOpen, onClose, onCheckout }: CartDrawerProps) {
     const { items, removeItem, setQuantity, subtotal, clear } = useCart();
     const t = useTranslations('Cart');
+    const locale = useLocale();
 
     // Close on Escape
     useEffect(() => {
@@ -96,7 +97,7 @@ export default function CartDrawer({ isOpen, onClose, onCheckout }: CartDrawerPr
 
                                     <div className="flex-1 min-w-0">
                                         <h4 className="font-display text-sm text-ink truncate">
-                                            {item.name}
+                                            {locale === 'uk' && item.name_uk ? item.name_uk : locale === 'nl' && item.name_nl ? item.name_nl : item.name}
                                             {item.selectedSize && (
                                                 <span className="ml-1.5 text-[10px] font-bold bg-ink/5 text-ink/60 px-1.5 py-0.5 rounded">
                                                     {item.selectedSize}

@@ -20,6 +20,7 @@ type Props = {
   priceFilters?: PriceFilter[];
   categories?: { slug: string; labelKey: string }[];
   pageSize?: number;
+  mobilePageSize?: number;
 };
 
 export default function CollectionExplorer({
@@ -28,6 +29,7 @@ export default function CollectionExplorer({
   priceFilters,
   categories,
   pageSize,
+  mobilePageSize,
 }: Props) {
   const t = useTranslations("Catalog");
   const tCat = useTranslations("Categories");
@@ -47,7 +49,9 @@ export default function CollectionExplorer({
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  const activePageSize = pageSize || (isMobile ? 16 : 24);
+  const activePageSize = isMobile 
+    ? (mobilePageSize || 16) 
+    : (pageSize || 24);
 
   const localized = useMemo(
     () =>

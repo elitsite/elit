@@ -80,6 +80,8 @@ export default function ProductDetails({ product }: { product: LocalizedProduct 
                 <AddToCartButton
                     productId={product.id}
                     name={display.name}
+                    name_uk={product.name_uk}
+                    name_nl={product.name_nl}
                     price={activePrice}
                     discount={product.discount}
                     imageUrl={product.image_url}

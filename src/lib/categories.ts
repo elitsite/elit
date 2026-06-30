@@ -28,6 +28,8 @@ export const CATEGORY_TREE: CategoryNode[] = [
             { slug: 'premium-bouquets', labelKey: 'premium_bouquets', selectable: true },
             { slug: 'mini-bouquets', labelKey: 'mini_bouquets', selectable: true },
             { slug: 'bouquets-decor', labelKey: 'bouquets_decor', selectable: true },
+            { slug: 'men-bouquets', labelKey: 'men_bouquets', selectable: true },
+            { slug: 'pluk-bouquets', labelKey: 'pluk_bouquets', selectable: true },
         ],
     },
     {
@@ -45,10 +47,17 @@ export const CATEGORY_TREE: CategoryNode[] = [
         slug: 'wedding-floristry',
         labelKey: 'wedding_floristry',
         children: [
-            { slug: 'bridal-bouquet', labelKey: 'bridal_bouquet', selectable: true },
             { slug: 'boutonnieres', labelKey: 'boutonnieres', selectable: true },
-            { slug: 'hall-table-decor', labelKey: 'hall_table_decor', selectable: true },
-            { slug: 'floral-arches', labelKey: 'floral_arches', selectable: true },
+            { slug: 'bridal-bouquet', labelKey: 'bridal_bouquet', selectable: true },
+            { slug: 'groom-boutonniere', labelKey: 'groom_boutonniere', selectable: true },
+            { slug: 'bridesmaids-bouquets', labelKey: 'bridesmaids_bouquets', selectable: true },
+            { slug: 'bracelets-floral', labelKey: 'bracelets_floral', selectable: true },
+            { slug: 'chair-decor', labelKey: 'chair_decor', selectable: true },
+            { slug: 'flower-girl', labelKey: 'flower_girl', selectable: true },
+            { slug: 'wedding-photozone', labelKey: 'wedding_photozone', selectable: true },
+            { slug: 'wedding-arch', labelKey: 'wedding_arch', selectable: true },
+            { slug: 'guest-tables-decor', labelKey: 'guest_tables_decor', selectable: true },
+            { slug: 'car-decor', labelKey: 'car_decor', selectable: true },
         ],
     },
     {
@@ -71,13 +80,9 @@ export const CATEGORY_TREE: CategoryNode[] = [
         ],
     },
     {
-        slug: 'parties',
-        labelKey: 'parties',
-        children: [
-            { slug: 'party-portfolio', labelKey: 'party_portfolio', selectable: true },
-            { slug: 'party-packages', labelKey: 'party_packages', selectable: true },
-            { slug: 'party-decor', labelKey: 'party_decor', selectable: true },
-        ],
+        slug: 'decor-rental',
+        labelKey: 'decor_rental',
+        selectable: true,
     },
 ];
 

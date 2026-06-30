@@ -39,7 +39,7 @@ export default function Footer({ contact }: Props) {
                 alt="Alina Bloemen"
                 width={120}
                 height={60}
-                className="h-10 w-auto opacity-90 transition-opacity hover:opacity-100"
+                className="h-12 w-auto opacity-90 transition-opacity hover:opacity-100"
               />
             </Link>
             <p className="text-xs text-ink/60 font-display italic max-w-xs leading-relaxed">

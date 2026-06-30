@@ -21,11 +21,11 @@ export default function EventsSection() {
       href: "/category/weddings",
     },
     {
-      slug: "parties",
-      titleKey: "parties",
-      descKey: "events_parties_desc",
+      slug: "decor-rental",
+      titleKey: "decor_rental",
+      descKey: "events_parties_desc", // Can reuse this description for now or change it later
       image: "https://images.pexels.com/photos/18853305/pexels-photo-18853305.jpeg",
-      href: "/category/parties",
+      href: "/category/decor-rental",
     },
   ];
 

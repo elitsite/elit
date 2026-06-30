@@ -7,6 +7,8 @@ import { useCart } from "@/lib/cart";
 type Props = {
   productId: string;
   name: string;
+  name_uk?: string;
+  name_nl?: string;
   price: number;
   discount: number;
   imageUrl: string;
@@ -20,6 +22,8 @@ type Props = {
 export default function AddToCartButton({
   productId,
   name,
+  name_uk,
+  name_nl,
   price,
   discount,
   imageUrl,
@@ -37,6 +41,8 @@ export default function AddToCartButton({
     addItem({
       id: productId,
       name,
+      name_uk,
+      name_nl,
       price,
       discount,
       image_url: imageUrl,

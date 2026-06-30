@@ -68,6 +68,8 @@ export default function ProductCard({ product, locale }: Props) {
           <AddToCartButton
             productId={product.id}
             name={p.display.name}
+            name_uk={product.name_uk}
+            name_nl={product.name_nl}
             price={product.price}
             discount={product.discount}
             imageUrl={product.image_url || ""}
