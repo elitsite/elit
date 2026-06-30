@@ -13,6 +13,7 @@ import { CATEGORY_LEAF_SLUGS, CATEGORY_TREE, getLeafSlugsUnder } from "@/lib/cat
 
 
 // Slugs for the showcased categories
+const BOUQUET_SLUGS = getLeafSlugsUnder(CATEGORY_TREE.find((n) => n.slug === "bouquets")!);
 const MONO_BOUQUET_SLUGS = ["mono-bouquets"];
 const MEN_BOUQUET_SLUGS = ["men-bouquets"];
 const PLUK_BOUQUET_SLUGS = ["pluk-bouquets"];
@@ -37,6 +38,7 @@ export default async function Home({
   const [
     explorerProducts,
     rawSettings,
+    bouquetProducts,
     monoProducts,
     menProducts,
     plukProducts,
@@ -46,6 +48,7 @@ export default async function Home({
   ] = await Promise.all([
     getProductsByCategorySlugs(EXPLORER_SLUGS),
     getSettings(),
+    getProductsByCategorySlugs(BOUQUET_SLUGS),
     getProductsByCategorySlugs(MONO_BOUQUET_SLUGS),
     getProductsByCategorySlugs(MEN_BOUQUET_SLUGS),
     getProductsByCategorySlugs(PLUK_BOUQUET_SLUGS),
@@ -61,6 +64,7 @@ export default async function Home({
   const mocks = process.env.NODE_ENV !== 'production'
     ? await import('@/lib/mock-products')
     : null;
+  const resolvedBouquets = bouquetProducts.length > 0 ? bouquetProducts : (mocks?.MOCK_BOUQUETS ?? []);
   const resolvedMono = monoProducts.length > 0 ? monoProducts : (mocks?.MOCK_BOUQUETS ?? []);
   const resolvedMen = menProducts.length > 0 ? menProducts : (mocks?.MOCK_BOUQUETS ?? []);
   const resolvedPluk = plukProducts.length > 0 ? plukProducts : (mocks?.MOCK_BOUQUETS ?? []);
@@ -103,6 +107,18 @@ export default async function Home({
         </div>
       </section>
 
+      {/* Bouquets Showcase */}
+      <CategorySection
+        labelKey="bouquets"
+        products={resolvedBouquets}
+        locale={locale}
+        viewAllHref="/category/bouquets"
+        gridCols={5}
+        isScrollable
+        autoScroll
+        index={0}
+      />
+
       {/* Mono Bouquets Showcase */}
       <CategorySection
         labelKey="mono_bouquets"
@@ -112,7 +128,7 @@ export default async function Home({
         gridCols={5}
         isScrollable
         autoScroll
-        index={0}
+        index={1}
       />
 
       {/* Men's Bouquets Showcase */}
@@ -124,7 +140,7 @@ export default async function Home({
         gridCols={5}
         isScrollable
         autoScroll
-        index={1}
+        index={2}
       />
 
       {/* Natural Style Bouquets Showcase */}
@@ -136,7 +152,7 @@ export default async function Home({
         gridCols={5}
         isScrollable
         autoScroll
-        index={2}
+        index={3}
       />
 
       {/* Arrangements Showcase */}
@@ -148,7 +164,7 @@ export default async function Home({
         gridCols={5}
         isScrollable
         autoScroll
-        index={3}
+        index={4}
       />
 
       {/* Weddings & Parties Cards */}
@@ -163,7 +179,7 @@ export default async function Home({
         gridCols={5}
         isScrollable
         autoScroll
-        index={4}
+        index={5}
       />
 
       {/* Funeral Arrangements Showcase */}
@@ -175,7 +191,7 @@ export default async function Home({
         gridCols={5}
         isScrollable
         autoScroll
-        index={5}
+        index={6}
       />
 
       {/* About Section */}
