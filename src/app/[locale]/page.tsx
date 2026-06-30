@@ -14,9 +14,11 @@ import { CATEGORY_LEAF_SLUGS, CATEGORY_TREE, getLeafSlugsUnder } from "@/lib/cat
 
 
 // Slugs for the showcased categories
-const BOUQUET_SLUGS = getLeafSlugsUnder(CATEGORY_TREE.find((n) => n.slug === "bouquets")!);
+const MONO_BOUQUET_SLUGS = ["mono-bouquets"];
+const MEN_BOUQUET_SLUGS = ["men-bouquets"];
+const PLUK_BOUQUET_SLUGS = ["pluk-bouquets"];
 const ARRANGEMENT_SLUGS = getLeafSlugsUnder(CATEGORY_TREE.find((n) => n.slug === "arrangements")!);
-const DECOR_SLUGS = CATEGORY_LEAF_SLUGS.filter(s => s.endsWith('-decor'));
+const DECOR_RENTAL_SLUGS = ["decor-rental"];
 const FUNERAL_SLUGS = getLeafSlugsUnder(CATEGORY_TREE.find((n) => n.slug === "funeral")!);
 
 /** Leaf category slugs for the main explorer. */
@@ -36,16 +38,20 @@ export default async function Home({
   const [
     explorerProducts,
     rawSettings,
-    bouquetProducts,
-    basketProducts,
+    monoProducts,
+    menProducts,
+    plukProducts,
+    arrangementProducts,
     decorProducts,
     funeralProducts
   ] = await Promise.all([
     getProductsByCategorySlugs(EXPLORER_SLUGS),
     getSettings(),
-    getProductsByCategorySlugs(BOUQUET_SLUGS),
+    getProductsByCategorySlugs(MONO_BOUQUET_SLUGS),
+    getProductsByCategorySlugs(MEN_BOUQUET_SLUGS),
+    getProductsByCategorySlugs(PLUK_BOUQUET_SLUGS),
     getProductsByCategorySlugs(ARRANGEMENT_SLUGS),
-    getProductsByCategorySlugs(DECOR_SLUGS),
+    getProductsByCategorySlugs(DECOR_RENTAL_SLUGS),
     getProductsByCategorySlugs(FUNERAL_SLUGS),
   ]);
 
@@ -56,8 +62,10 @@ export default async function Home({
   const mocks = process.env.NODE_ENV !== 'production'
     ? await import('@/lib/mock-products')
     : null;
-  const resolvedBouquets = bouquetProducts.length > 0 ? bouquetProducts : (mocks?.MOCK_BOUQUETS ?? []);
-  const resolvedArrangements = basketProducts.length > 0 ? basketProducts : (mocks?.MOCK_BASKETS ?? []);
+  const resolvedMono = monoProducts.length > 0 ? monoProducts : (mocks?.MOCK_BOUQUETS ?? []);
+  const resolvedMen = menProducts.length > 0 ? menProducts : (mocks?.MOCK_BOUQUETS ?? []);
+  const resolvedPluk = plukProducts.length > 0 ? plukProducts : (mocks?.MOCK_BOUQUETS ?? []);
+  const resolvedArrangements = arrangementProducts.length > 0 ? arrangementProducts : (mocks?.MOCK_BASKETS ?? []);
   const resolvedDecor = decorProducts.length > 0 ? decorProducts : (mocks?.MOCK_DECOR ?? []);
   const resolvedFuneral = funeralProducts.length > 0 ? funeralProducts : (mocks?.MOCK_FUNERAL ?? []);
 
@@ -134,16 +142,40 @@ export default async function Home({
         </div>
       </section>
 
-      {/* Bouquets Showcase */}
+      {/* Mono Bouquets Showcase */}
       <CategorySection
-        labelKey="bouquets"
-        products={resolvedBouquets}
+        labelKey="mono_bouquets"
+        products={resolvedMono}
         locale={locale}
-        viewAllHref="/category/bouquets"
+        viewAllHref="/category/bouquets/mono-bouquets"
         gridCols={5}
         isScrollable
         autoScroll
         index={0}
+      />
+
+      {/* Men's Bouquets Showcase */}
+      <CategorySection
+        labelKey="men_bouquets"
+        products={resolvedMen}
+        locale={locale}
+        viewAllHref="/category/bouquets/men-bouquets"
+        gridCols={5}
+        isScrollable
+        autoScroll
+        index={1}
+      />
+
+      {/* Natural Style Bouquets Showcase */}
+      <CategorySection
+        labelKey="pluk_bouquets"
+        products={resolvedPluk}
+        locale={locale}
+        viewAllHref="/category/bouquets/pluk-bouquets"
+        gridCols={5}
+        isScrollable
+        autoScroll
+        index={2}
       />
 
       {/* Arrangements Showcase */}
@@ -155,22 +187,22 @@ export default async function Home({
         gridCols={5}
         isScrollable
         autoScroll
-        index={1}
+        index={3}
       />
 
       {/* Weddings & Parties Cards */}
       <EventsSection />
 
-      {/* Decor Showcase */}
+      {/* Decor Rental Showcase */}
       <CategorySection
-        labelKey="decor"
+        labelKey="decor_rental"
         products={resolvedDecor}
         locale={locale}
-        viewAllHref="/decor"
+        viewAllHref="/category/decor-rental"
         gridCols={5}
         isScrollable
         autoScroll
-        index={2}
+        index={4}
       />
 
       {/* Funeral Arrangements Showcase */}
@@ -182,7 +214,7 @@ export default async function Home({
         gridCols={5}
         isScrollable
         autoScroll
-        index={3}
+        index={5}
       />
 
       {/* About Section */}

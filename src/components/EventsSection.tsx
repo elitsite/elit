@@ -20,13 +20,6 @@ export default function EventsSection() {
       image: "https://images.pexels.com/photos/19024679/pexels-photo-19024679.jpeg",
       href: "/category/weddings",
     },
-    {
-      slug: "decor-rental",
-      titleKey: "decor_rental",
-      descKey: "events_parties_desc", // Can reuse this description for now or change it later
-      image: "https://images.pexels.com/photos/18853305/pexels-photo-18853305.jpeg",
-      href: "/category/decor-rental",
-    },
   ];
 
   return (
@@ -36,7 +29,7 @@ export default function EventsSection() {
           {t("events")}
         </h2>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
+      <div className="grid gap-4">
         {cards.map((card) => (
           <div
             key={card.slug}
