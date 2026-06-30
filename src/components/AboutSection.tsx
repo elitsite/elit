@@ -12,9 +12,7 @@ export default function AboutSection({
 }) {
   const t = useTranslations("Home");
 
-  if (!settings.about_enabled) {
-    return null;
-  }
+  // Always show About Us section
 
   return (
     <section id="about" className="border-y border-black/5 bg-white scroll-mt-24">
