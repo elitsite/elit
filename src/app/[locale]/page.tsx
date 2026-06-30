@@ -98,7 +98,7 @@ export default async function Home({
         {/* Content Overlay */}
         <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col justify-center items-start px-6 sm:px-6 lg:px-8">
           <div className="flex max-w-[80%] sm:w-full flex-col items-start text-left sm:max-w-lg lg:max-w-[50%] lg:-ml-2 p-4 sm:p-0">
-            <div className="relative w-72 h-48 sm:w-96 sm:h-64 mb-2 sm:mb-4 -translate-x-[15%] translate-y-[5%]">
+            <div className="relative w-[345px] h-[230px] sm:w-[460px] sm:h-[306px] mb-2 sm:mb-4 -translate-x-[15%] translate-y-[12%]">
               <Image 
                 src="/logo.png" 
                 alt="Alina Bloemen" 
