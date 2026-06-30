@@ -61,9 +61,9 @@
     "not_found": "Product niet gevonden",
     "size": "Maat",
     "size_details": "Maatdetails",
-    "description_tab": "Beschrijving",
     "details_tab": "Details",
-    "similar": "Vergelijkbare boeketten"
+    "similar": "Vergelijkbare boeketten",
+    "disclaimer": "De samenstelling van het boeket kan enigszins variëren afhankelijk van het seizoen en de beschikbaarheid van bloemen. Indien nodig vervangen we individuele bloemen door vergelijkbare bloemen, met behoud van de stijl, het palet en de algehele esthetiek van het arrangement."
   },
   "Cart": {
     "title": "Jouw winkelwagen",
@@ -179,9 +179,10 @@
     "events": "Bruiloften & Feesten",
     "weddings": "Bruiloften & Feesten",
     "wedding_portfolio": "Portfolio",
-    "wedding_packages": "Pakketten & prijzen",
-    "wedding_decor": "Bruiloftsdecoratie",
-    "decor_rental": "Verhuur decoratie"
+    "wedding_packages": "Pakketten & Prijzen",
+    "wedding_decor": "Bruiloft Decor",
+    "decor_rental": "Decor Verhuur",
+    "gifts": "Cadeaus"
   },
   "Payment": {
     "checking": "Betaling controleren…",

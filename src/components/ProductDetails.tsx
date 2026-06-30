@@ -23,7 +23,7 @@ export default function ProductDetails({ product }: { product: LocalizedProduct 
     const [activeTab, setActiveTab] = useState<'description' | 'details' | null>(null);
 
     const { composition, kit_info, important_note, description } = display;
-    const hasDescription = !!description;
+    const hasDescription = true; // Always true to show disclaimer
     const hasDetails = !!(composition || kit_info || important_note);
 
     return (
@@ -121,10 +121,15 @@ export default function ProductDetails({ product }: { product: LocalizedProduct 
                     </div>
 
                     {/* Tab content */}
-                    {activeTab === 'description' && description && (
+                    {activeTab === 'description' && (
                         <div className="mt-4 animate-fade-in">
-                            <p className="whitespace-pre-line leading-relaxed text-ink/70 text-sm">
-                                {description}
+                            {description && (
+                                <p className="whitespace-pre-line leading-relaxed text-ink/70 text-sm mb-4">
+                                    {description}
+                                </p>
+                            )}
+                            <p className="text-[11px] text-ink/40 leading-relaxed italic">
+                                {t('disclaimer')}
                             </p>
                         </div>
                     )}

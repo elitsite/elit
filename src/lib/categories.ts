@@ -84,6 +84,11 @@ export const CATEGORY_TREE: CategoryNode[] = [
         labelKey: 'decor_rental',
         selectable: true,
     },
+    {
+        slug: 'gifts',
+        labelKey: 'gifts',
+        selectable: true,
+    },
 ];
 
 /** Flatten the tree into the list of selectable leaf categories. */

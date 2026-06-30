@@ -61,9 +61,9 @@
     "not_found": "Product not found",
     "size": "Size",
     "size_details": "Size details",
-    "description_tab": "Description",
     "details_tab": "Details",
-    "similar": "Similar bouquets"
+    "similar": "Similar bouquets",
+    "disclaimer": "The composition of the bouquet may vary slightly depending on the season and the availability of flowers. If necessary, we will replace individual flowers with similar ones, preserving the style, palette, and overall aesthetics of the arrangement."
   },
   "Cart": {
     "title": "Your cart",
@@ -181,7 +181,8 @@
     "wedding_portfolio": "Portfolio",
     "wedding_packages": "Packages & Prices",
     "wedding_decor": "Wedding Decor",
-    "decor_rental": "Decor Rental"
+    "decor_rental": "Decor Rental",
+    "gifts": "Gifts"
   },
   "Payment": {
     "checking": "Checking payment…",

@@ -51,6 +51,7 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   weddings: <CalendarHeart size={20} strokeWidth={1.3} className="text-ink/40" />,
   parties: <CelebrationIcon className="text-ink/40" />,
   "decor-rental": <Sparkles size={20} strokeWidth={1.3} className="text-ink/40" />,
+  gifts: <Gift size={20} strokeWidth={1.3} className="text-ink/40" />,
 };
 
 /** A single tree row: leaf = link, branch = collapsible group. */
