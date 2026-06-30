@@ -322,7 +322,7 @@ export default function CollectionExplorer({
             ))}
           </div>
 
-          {totalPages > 1 && (
+          {totalPages > 1 && !isMobile && (
             <div className="mt-8 flex flex-wrap justify-center items-center gap-1.5 sm:gap-2 sm:mt-10">
               <button
                 onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
