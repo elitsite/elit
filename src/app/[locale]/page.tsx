@@ -103,7 +103,7 @@ export default async function Home({
         <div className="absolute inset-0 z-10 w-full h-full">
             <Link
               href="/category/bouquets"
-              className="absolute left-[7%] top-[66%] sm:left-[12%] sm:top-[70%] btn-primary !rounded-md !px-5 !py-2.5 !text-[10px] sm:!px-6 sm:!py-3.5 sm:!text-xs"
+              className="absolute left-[8%] top-[72%] sm:left-[12%] sm:top-[70%] btn-primary !rounded-md !px-5 !py-2.5 !text-[10px] sm:!px-6 sm:!py-3.5 sm:!text-xs"
             >
               {nav("catalog")}
             </Link>
