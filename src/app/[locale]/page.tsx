@@ -21,6 +21,7 @@ const PLUK_BOUQUET_SLUGS = ["pluk-bouquets"];
 const ARRANGEMENT_SLUGS = getLeafSlugsUnder(CATEGORY_TREE.find((n) => n.slug === "arrangements")!);
 const DECOR_RENTAL_SLUGS = ["decor-rental"];
 const FUNERAL_SLUGS = getLeafSlugsUnder(CATEGORY_TREE.find((n) => n.slug === "funeral")!);
+const WEDDINGS_SLUGS = getLeafSlugsUnder(CATEGORY_TREE.find((n) => n.slug === "weddings")!);
 
 /** Leaf category slugs for the main explorer. */
 const EXPLORER_SLUGS = CATEGORY_LEAF_SLUGS.filter(slug => !FUNERAL_SLUGS.includes(slug));
@@ -45,7 +46,8 @@ export default async function Home({
     plukProducts,
     arrangementProducts,
     decorProducts,
-    funeralProducts
+    funeralProducts,
+    weddingsProducts
   ] = await Promise.all([
     getProductsByCategorySlugs(EXPLORER_SLUGS),
     getSettings(),
@@ -56,6 +58,7 @@ export default async function Home({
     getProductsByCategorySlugs(ARRANGEMENT_SLUGS),
     getProductsByCategorySlugs(DECOR_RENTAL_SLUGS),
     getProductsByCategorySlugs(FUNERAL_SLUGS),
+    getProductsByCategorySlugs(WEDDINGS_SLUGS),
   ]);
 
   const settings = rawSettings ? localizeSettings(rawSettings, locale) : null;
@@ -207,7 +210,7 @@ export default async function Home({
       />
 
       {/* Weddings & Parties Cards */}
-      <EventsSection />
+      <EventsSection products={weddingsProducts} />
 
       {/* Decor Rental Showcase */}
       <CategorySection
