@@ -48,7 +48,13 @@ export function localizeProduct(
     const localized = locale === "uk" ? product.sizes_uk : product.sizes_nl;
     // Use localized details but keep same size/price structure
     if (localized && localized.length > 0) {
-      sizes = localized;
+      sizes = (product.sizes || []).map((baseSize, i) => {
+        const loc = localized[i];
+        return {
+          ...baseSize,
+          details: loc && loc.details ? loc.details : baseSize.details,
+        };
+      });
     } else {
       sizes = product.sizes || [];
     }
