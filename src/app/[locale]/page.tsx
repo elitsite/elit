@@ -73,20 +73,15 @@ export default async function Home({
     <main>
       {/* Hero — full-width background image */}
       <section className="relative flex h-[45vh] min-h-[300px] w-full flex-col overflow-hidden sm:h-[60vh] sm:min-h-[420px]">
-        <Image
-          src="/logo3.png"
-          alt="Alina Bloemen"
-          fill
-          className="block object-cover object-center sm:hidden"
-          priority
-        />
-        <Image
-          src="/logo2.png"
-          alt="Alina Bloemen"
-          fill
-          className="hidden object-cover object-center sm:block"
-          priority
-        />
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 h-full w-full object-cover object-center"
+        >
+          <source src="/hero.mp4" type="video/mp4" />
+        </video>
         <div className="absolute inset-0 bg-black/10" />
 
         {/* Content Overlay */}
