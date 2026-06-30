@@ -97,16 +97,16 @@ export default async function Home({
 
         {/* Content Overlay */}
         <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col justify-center items-start px-6 sm:px-6 lg:px-8">
-          <div className="flex max-w-[65%] sm:w-full flex-col items-start text-left sm:max-w-lg lg:max-w-[40%] lg:-ml-2 p-4 sm:p-0 rounded-2xl bg-white/30 backdrop-blur-md sm:bg-transparent sm:backdrop-blur-none">
-            <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-brand sm:text-xs sm:tracking-[0.35em]">
-              {t("tagline")}
-            </span>
-            <h1 className="mt-1 font-display text-[26px] font-medium leading-[1.1] text-ink sm:mt-4 sm:text-5xl lg:text-7xl">
-              {t("title")}
-            </h1>
-            <p className="mt-1 max-w-[280px] sm:max-w-lg text-[10px] text-ink/80 sm:mt-4 sm:text-base lg:text-xl">
-              {t("subtitle")}
-            </p>
+          <div className="flex max-w-[65%] sm:w-full flex-col items-start text-left sm:max-w-lg lg:max-w-[40%] lg:-ml-2 p-4 sm:p-0">
+            <div className="relative w-48 h-32 sm:w-64 sm:h-44 mb-2 sm:mb-4">
+              <Image 
+                src="/logo.png" 
+                alt="Alina Bloemen" 
+                fill 
+                className="object-contain object-left" 
+                priority
+              />
+            </div>
             <Link
               href="/category/bouquets"
               className="btn-primary mt-2.5 !px-5 !py-2.5 !text-[10px] sm:mt-6 sm:!px-6 sm:!py-3.5 sm:!text-xs"
