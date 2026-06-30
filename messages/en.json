@@ -185,7 +185,8 @@
     "wedding_packages": "Packages & Prices",
     "wedding_decor": "Wedding Decor",
     "decor_rental": "Decor Rental",
-    "gifts": "Gifts"
+    "gifts": "Gifts",
+    "parties": "Parties"
   },
   "Payment": {
     "checking": "Checking payment…",

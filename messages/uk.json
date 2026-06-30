@@ -185,7 +185,8 @@
     "wedding_packages": "Пакети послуг і ціни",
     "wedding_decor": "Весільний декор",
     "decor_rental": "Оренда декору",
-    "gifts": "Подарунки"
+    "gifts": "Подарунки",
+    "parties": "Вечірки"
   },
   "Payment": {
     "checking": "Перевірка оплати…",

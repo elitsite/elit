@@ -184,8 +184,9 @@
     "wedding_portfolio": "Portfolio",
     "wedding_packages": "Pakketten & Prijzen",
     "wedding_decor": "Bruiloft Decor",
-    "decor_rental": "Decor Verhuur",
-    "gifts": "Cadeaus"
+    "decor_rental": "Decorverhuur",
+    "gifts": "Geschenken",
+    "parties": "Feesten"
   },
   "Payment": {
     "checking": "Betaling controleren…",
