@@ -1,5 +1,4 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Link } from "@/i18n/navigation";
 import { type Locale } from "@/i18n/routing";
 import { getProductsByCategorySlugs, getSettings } from "@/lib/products";
 import { localizeSettings } from "@/lib/i18n-content";
@@ -32,7 +31,6 @@ export default async function Home({
   setRequestLocale(params.locale);
   const locale = params.locale as Locale;
   const t = await getTranslations("Home");
-  const nav = await getTranslations("Nav");
 
   // Fetch all showcased products in parallel for performance
   const [
