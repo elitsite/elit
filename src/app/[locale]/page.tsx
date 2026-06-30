@@ -97,7 +97,7 @@ export default async function Home({
 
         {/* Content Overlay */}
         <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col justify-center items-start px-6 sm:px-6 lg:px-8">
-          <div className="flex max-w-[55%] sm:w-full flex-col items-start text-left sm:max-w-lg lg:max-w-[40%] lg:-ml-2">
+          <div className="flex max-w-[65%] sm:w-full flex-col items-start text-left sm:max-w-lg lg:max-w-[40%] lg:-ml-2 p-4 sm:p-0 rounded-2xl bg-white/30 backdrop-blur-md sm:bg-transparent sm:backdrop-blur-none">
             <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-brand sm:text-xs sm:tracking-[0.35em]">
               {t("tagline")}
             </span>
