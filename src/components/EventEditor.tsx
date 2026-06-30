@@ -497,7 +497,7 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
             <SectionHeader title="Homepage Slider" />
             <div className={cardClass}>
                 <h3 className="text-lg font-bold mb-2">Слайдер на главной</h3>
-                <p className="text-xs text-zinc-400 mb-4">Эти фотографии будут листаться автоматически каждые 5 секунд в разделе "Свадьбы и вечеринки" на главной странице.</p>
+                <p className="text-xs text-zinc-400 mb-4">Эти фотографии будут листаться автоматически каждые 5 секунд в разделе &quot;Свадьбы и вечеринки&quot; на главной странице.</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
                     {(content.slider_images || []).map((img, i) => (
                         <div key={`slider-${i}`} className="relative">
