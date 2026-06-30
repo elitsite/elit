@@ -336,9 +336,7 @@ export default async function Home({
       />
 
       {/* About Section */}
-      {settings && <AboutSection settings={settings} />}
-
-
+      <AboutSection />
 
       {/* Detailed Info Sections (Delivery, Payment, Map) */}
       {settings && <HomeInfoSections settings={settings} />}

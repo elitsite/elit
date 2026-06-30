@@ -1,15 +1,10 @@
 import { useTranslations } from "next-intl";
-import type { LocalizedSettings } from "@/lib/i18n-content";
 
 /**
  * "About us" section for the homepage. Renders the admin-managed about text
  * (locale-aware) in the Alina Bloemen visual style. Hidden when disabled or empty.
  */
-export default function AboutSection({
-  settings,
-}: {
-  settings: LocalizedSettings;
-}) {
+export default function AboutSection() {
   const t = useTranslations("Home");
 
   // Always show About Us section
