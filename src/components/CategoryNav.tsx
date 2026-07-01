@@ -30,19 +30,6 @@ function DeceasedIcon({ className }: { className?: string }) {
   );
 }
 
-/** Material-style celebration icon for parties */
-function CelebrationIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" width={20} height={20} fill="none" stroke="currentColor" strokeWidth={1.3} strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M3 21L9 3l4.5 6L21 6l-6 15H3z" />
-      <path d="M9 3l1.5 4" />
-      <circle cx="18" cy="3" r="1" />
-      <circle cx="21" cy="10" r="0.8" />
-      <path d="M15 2l0.5 1.5" />
-    </svg>
-  );
-}
-
 /** Map top-level category slugs to clean icons */
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   bouquets: <Flower size={20} strokeWidth={1.3} className="text-ink/40" />,
@@ -50,7 +37,6 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   "wedding-floristry": <Gem size={20} strokeWidth={1.3} className="text-ink/40" />,
   funeral: <DeceasedIcon className="text-ink/40" />,
   weddings: <CalendarHeart size={20} strokeWidth={1.3} className="text-ink/40" />,
-  parties: <CelebrationIcon className="text-ink/40" />,
   "decor-rental": <Sparkles size={20} strokeWidth={1.3} className="text-ink/40" />,
   gifts: <Gift size={20} strokeWidth={1.3} className="text-ink/40" />,
 };

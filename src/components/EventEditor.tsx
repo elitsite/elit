@@ -320,19 +320,11 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
     const handleAutoTranslate = async () => {
         // Collect all localized text fields with their EN values
         const localizedKeys: (keyof EventContent)[] = [
-            'hero_title', 'hero_subtitle', 'hero_kicker', 'hero_button',
-            'intro_kicker', 'intro_title', 'intro_text', 'intro_button', 'intro_text_col2',
-            'full_service_title', 'full_service_text', 'full_service_included', 'full_service_included_label',
-            'other_services_kicker',
-            'service1_title', 'service1_text', 'service1_italic', 'service1_cta',
-            'service2_title', 'service2_text', 'service2_italic', 'service2_cta',
-            'final_choices_title', 'final_choices_text', 'final_choices_link',
-            'quote_kicker', 'quote_text', 'quote_author',
-            'portfolio_kicker', 'portfolio_title', 'portfolio_sidebar_text',
+            'hero_title', 'hero_subtitle',
+            'intro_kicker', 'intro_title', 'intro_text', 'intro_button',
+            'portfolio_kicker', 'portfolio_title',
             'packages_kicker', 'packages_title',
             'decor_kicker', 'decor_title',
-            'bloom_kicker', 'bloom_title', 'bloom_text', 'bloom_button',
-            'cta_title', 'cta_text', 'cta_button',
             'form_title',
         ];
 
@@ -474,9 +466,6 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
     };
 
     const cardClass = "bg-white rounded-xl p-3 sm:p-6 shadow-lg";
-    // Weddings and parties use different landing layouts, so each tab only
-    // shows the fields its own page actually renders (no cross-page clutter).
-    const isWedding = slug === 'weddings';
 
     return (
         <div className="space-y-6">
@@ -492,8 +481,7 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                 </button>
             </div>
 
-            {/* ── Homepage Slider (Weddings only) ── */}
-            {isWedding && (<>
+            {/* ── Homepage Slider ── */}
             <SectionHeader title="Homepage Slider" />
             <div className={cardClass}>
                 <h3 className="text-lg font-bold mb-2">Слайдер на главной</h3>
@@ -517,7 +505,6 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                     />
                 </div>
             </div>
-            </>)}
 
             {/* ── Hero Section ── */}
             <SectionHeader title="Hero Section" />
@@ -525,14 +512,8 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                 <h3 className="text-lg font-bold mb-4">{at.events_hero}</h3>
                 <div className="space-y-4">
                     <ImageUploadField url={content.hero_image || ''} onUpload={url => setField('hero_image', url)} label={at.events_hero_image} uploadImage={uploadImage} clickLabel={at.form_photo_click} sizeHint="1920×1080 px (16:9)" />
-                    {isWedding && (
-                        <LangInputs label={at.events_hero_kicker} value={getLocalized('hero_kicker')} onChange={(lang, val) => handleLocalizedChange('hero_kicker', lang, val)} at={at} />
-                    )}
                     <LangInputs label={at.events_hero_title} value={getLocalized('hero_title')} onChange={(lang, val) => handleLocalizedChange('hero_title', lang, val)} at={at} />
                     <LangInputs label={at.events_hero_subtitle} value={getLocalized('hero_subtitle')} onChange={(lang, val) => handleLocalizedChange('hero_subtitle', lang, val)} at={at} />
-                    {isWedding && (
-                        <LangInputs label={at.events_hero_button} value={getLocalized('hero_button')} onChange={(lang, val) => handleLocalizedChange('hero_button', lang, val)} at={at} />
-                    )}
                 </div>
             </div>
 
@@ -544,122 +525,55 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                     <LangInputs label={at.events_kicker} value={getLocalized('intro_kicker')} onChange={(lang, val) => handleLocalizedChange('intro_kicker', lang, val)} at={at} />
                     <LangInputs label={at.events_title_field} value={getLocalized('intro_title')} onChange={(lang, val) => handleLocalizedChange('intro_title', lang, val)} at={at} />
                     <LangInputs label={at.events_text_col1} value={getLocalized('intro_text')} onChange={(lang, val) => handleLocalizedChange('intro_text', lang, val)} at={at} multiline />
-                    {isWedding && (
-                        <LangInputs label={at.events_text_col2} value={getLocalized('intro_text_col2')} onChange={(lang, val) => handleLocalizedChange('intro_text_col2', lang, val)} at={at} multiline />
-                    )}
                     <LangInputs label={at.events_button} value={getLocalized('intro_button')} onChange={(lang, val) => handleLocalizedChange('intro_button', lang, val)} at={at} />
                 </div>
             </div>
 
-            {/* ── Media Section (Parties only) ── */}
-            {!isWedding && (<>
-                <SectionHeader title="Media Section" />
-                <div className={cardClass}>
-                    <h3 className="text-lg font-bold mb-4">{at.events_media}</h3>
-                    <ImageUploadField url={content.media_image || ''} onUpload={url => setField('media_image', url)} label={at.events_media_image} uploadImage={uploadImage} clickLabel={at.form_photo_click} sizeHint="1920×1080 px (16:9)" />
-                </div>
-            </>)}
-
-            {/* ── Full Service Section (Weddings only) ── */}
-            {isWedding && (<>
-                <SectionHeader title="Full Service Section" />
-                <div className={cardClass}>
-                    <h3 className="text-lg font-bold mb-4">{at.events_full_service_h}</h3>
-                    <div className="space-y-4">
-                        <ImageUploadField url={content.full_service_image || ''} onUpload={url => setField('full_service_image', url)} label={at.events_full_service_image} uploadImage={uploadImage} clickLabel={at.form_photo_click} sizeHint="800×1067 px (3:4)" />
-                        <LangInputs label={at.events_title_field} value={getLocalized('full_service_title')} onChange={(lang, val) => handleLocalizedChange('full_service_title', lang, val)} at={at} />
-                        <LangInputs label={at.events_text} value={getLocalized('full_service_text')} onChange={(lang, val) => handleLocalizedChange('full_service_text', lang, val)} at={at} multiline />
-                        <LangInputs label={at.events_included_label_field} value={getLocalized('full_service_included_label')} onChange={(lang, val) => handleLocalizedChange('full_service_included_label', lang, val)} at={at} />
-                        <LangInputs label={at.events_included_items} value={getLocalized('full_service_included')} onChange={(lang, val) => handleLocalizedChange('full_service_included', lang, val)} at={at} multiline />
-                    </div>
-                </div>
-            </>)}
-
-            {/* ── Other Services Section (Weddings only) ── */}
-            {isWedding && (<>
-                <SectionHeader title="Other Services Section" />
-                <div className={cardClass}>
-                    <h3 className="text-lg font-bold mb-4">{at.events_other_services_h}</h3>
-                    <div className="space-y-4">
-                        <LangInputs label={at.events_section_kicker} value={getLocalized('other_services_kicker')} onChange={(lang, val) => handleLocalizedChange('other_services_kicker', lang, val)} at={at} />
-                        <ImageUploadField url={content.other_services_image || ''} onUpload={url => setField('other_services_image', url)} label={at.events_other_services_image} uploadImage={uploadImage} clickLabel={at.form_photo_click} sizeHint="800×1200 px" />
-                        <p className="text-xs font-bold text-zinc-500 pt-2">{at.events_service1_label}</p>
-                        <LangInputs label={at.events_service1_title} value={getLocalized('service1_title')} onChange={(lang, val) => handleLocalizedChange('service1_title', lang, val)} at={at} />
-                        <LangInputs label={at.events_service1_text} value={getLocalized('service1_text')} onChange={(lang, val) => handleLocalizedChange('service1_text', lang, val)} at={at} multiline />
-                        <LangInputs label={at.events_service1_italic} value={getLocalized('service1_italic')} onChange={(lang, val) => handleLocalizedChange('service1_italic', lang, val)} at={at} />
-                        <LangInputs label={at.events_service1_button} value={getLocalized('service1_cta')} onChange={(lang, val) => handleLocalizedChange('service1_cta', lang, val)} at={at} />
-                        <p className="text-xs font-bold text-zinc-500 pt-2">{at.events_service2_label}</p>
-                        <LangInputs label={at.events_service2_title} value={getLocalized('service2_title')} onChange={(lang, val) => handleLocalizedChange('service2_title', lang, val)} at={at} />
-                        <LangInputs label={at.events_service2_text} value={getLocalized('service2_text')} onChange={(lang, val) => handleLocalizedChange('service2_text', lang, val)} at={at} multiline />
-                        <LangInputs label={at.events_service2_italic} value={getLocalized('service2_italic')} onChange={(lang, val) => handleLocalizedChange('service2_italic', lang, val)} at={at} />
-                        <LangInputs label={at.events_service2_button} value={getLocalized('service2_cta')} onChange={(lang, val) => handleLocalizedChange('service2_cta', lang, val)} at={at} />
-                    </div>
-                </div>
-            </>)}
-
-            {/* ── Final Choices Section (Weddings only) ── */}
-            {isWedding && (<>
-                <SectionHeader title="Final Choices Section" />
-                <div className={cardClass}>
-                    <h3 className="text-lg font-bold mb-4">{at.events_final_choices_h}</h3>
-                    <div className="space-y-4">
-                        <LangInputs label={at.events_title_field} value={getLocalized('final_choices_title')} onChange={(lang, val) => handleLocalizedChange('final_choices_title', lang, val)} at={at} />
-                        <LangInputs label={at.events_text} value={getLocalized('final_choices_text')} onChange={(lang, val) => handleLocalizedChange('final_choices_text', lang, val)} at={at} multiline />
-                        <LangInputs label={at.events_underline_link} value={getLocalized('final_choices_link')} onChange={(lang, val) => handleLocalizedChange('final_choices_link', lang, val)} at={at} />
-                    </div>
-                </div>
-            </>)}
-
-            {/* ── Framed Sections (Parties only) ── */}
-            {!isWedding && (<>
-                <SectionHeader title="Framed Sections" />
-                <div className={cardClass}>
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-bold">{at.events_sections}</h3>
-                        <button onClick={addSection} className="flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
-                            <Plus size={16} /> {at.events_add_section}
-                        </button>
-                    </div>
-                    <div className="space-y-6">
-                        {(content.sections || []).map((section, i) => (
-                            <div key={`section-${i}`} className="border border-zinc-200 rounded-lg p-4 space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm font-medium text-zinc-500">#{i + 1}</span>
-                                    <button onClick={() => removeSection(i)} className="text-red-500 hover:text-red-600">
-                                        <Trash2 size={16} />
-                                    </button>
-                                </div>
-                                <ImageUploadField url={section.image} onUpload={url => updateSectionImage(i, url)} label={at.events_section_image} uploadImage={uploadImage} clickLabel={at.form_photo_click} sizeHint="800×1067 px (3:4)" />
-                                <LangInputs
-                                    label={at.events_title_field}
-                                    value={section.title || {}}
-                                    onChange={(lang, val) => handleSectionLocalizedChange(i, 'title', lang, val)}
-                                    at={at}
-                                />
-                                <LangInputs
-                                    label={at.events_text}
-                                    value={section.text || {}}
-                                    onChange={(lang, val) => handleSectionLocalizedChange(i, 'text', lang, val)}
-                                    at={at}
-                                    multiline
-                                />
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </>)}
-
-            {/* ── Quote Section ── */}
-            <SectionHeader title="Quote Section" />
+            {/* ── Media Section ── */}
+            <SectionHeader title="Media Section" />
             <div className={cardClass}>
-                <h3 className="text-lg font-bold mb-4">{at.events_quote}</h3>
-                <div className="space-y-4">
-                    <ImageUploadField url={content.quote_image || ''} onUpload={url => setField('quote_image', url)} label={at.events_quote_image} uploadImage={uploadImage} clickLabel={at.form_photo_click} sizeHint="1920×1080 px (16:9)" />
-                    <LangInputs label={at.events_quote_kicker} value={getLocalized('quote_kicker')} onChange={(lang, val) => handleLocalizedChange('quote_kicker', lang, val)} at={at} />
-                    <LangInputs label={at.events_quote_text} value={getLocalized('quote_text')} onChange={(lang, val) => handleLocalizedChange('quote_text', lang, val)} at={at} multiline />
-                    <LangInputs label={at.events_quote_author} value={getLocalized('quote_author')} onChange={(lang, val) => handleLocalizedChange('quote_author', lang, val)} at={at} />
+                <h3 className="text-lg font-bold mb-4">{at.events_media}</h3>
+                <ImageUploadField url={content.media_image || ''} onUpload={url => setField('media_image', url)} label={at.events_media_image} uploadImage={uploadImage} clickLabel={at.form_photo_click} sizeHint="1920×1080 px (16:9)" />
+            </div>
+
+            {/* ── Framed Sections ── */}
+            <SectionHeader title="Framed Sections" />
+            <div className={cardClass}>
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-bold">{at.events_sections}</h3>
+                    <button onClick={addSection} className="flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                        <Plus size={16} /> {at.events_add_section}
+                    </button>
+                </div>
+                <div className="space-y-6">
+                    {(content.sections || []).map((section, i) => (
+                        <div key={`section-${i}`} className="border border-zinc-200 rounded-lg p-4 space-y-3">
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium text-zinc-500">#{i + 1}</span>
+                                <button onClick={() => removeSection(i)} className="text-red-500 hover:text-red-600">
+                                    <Trash2 size={16} />
+                                </button>
+                            </div>
+                            <ImageUploadField url={section.image} onUpload={url => updateSectionImage(i, url)} label={at.events_section_image} uploadImage={uploadImage} clickLabel={at.form_photo_click} sizeHint="800×1067 px (3:4)" />
+                            <LangInputs
+                                label={at.events_title_field}
+                                value={section.title || {}}
+                                onChange={(lang, val) => handleSectionLocalizedChange(i, 'title', lang, val)}
+                                at={at}
+                            />
+                            <LangInputs
+                                label={at.events_text}
+                                value={section.text || {}}
+                                onChange={(lang, val) => handleSectionLocalizedChange(i, 'text', lang, val)}
+                                at={at}
+                                multiline
+                            />
+                        </div>
+                    ))}
                 </div>
             </div>
+
+
 
             {/* ── Process Steps Section ── */}
             <SectionHeader title="Process Steps" />
@@ -702,13 +616,6 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
 
             {/* ── Portfolio Section ── */}
             <SectionHeader title="Portfolio Section" />
-            {isWedding && (
-                <div className={cardClass}>
-                    <div className="mb-4">
-                        <LangInputs label={at.events_portfolio_sidebar} value={getLocalized('portfolio_sidebar_text')} onChange={(lang, val) => handleLocalizedChange('portfolio_sidebar_text', lang, val)} at={at} multiline />
-                    </div>
-                </div>
-            )}
             <ItemsSection
                 content={content}
                 itemKey="portfolio"
@@ -732,87 +639,55 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                 onItemLocalizedChange={handleItemLocalizedChange}
             />
 
-            {/* ── Packages Section (Parties only) ── */}
-            {!isWedding && (<>
-                <SectionHeader title="Packages Section" />
-                <ItemsSection
-                    content={content}
-                    itemKey="packages"
-                    titleLabel={at.events_packages}
-                    kickerKey="packages_kicker"
-                    titleKey="packages_title"
-                    kickerLabel={at.events_packages_kicker}
-                    titleFieldLabel={at.events_packages_title}
-                    addLabel={at.events_add_package}
-                    imageLabel={at.events_packages_image}
-                    captionLabel={at.events_packages_caption}
-                    imageSizeHint="600×800 px (3:4)"
-                    at={at}
-                    cardClass={cardClass}
-                    uploadImage={uploadImage}
-                    getLocalized={getLocalized}
-                    onLocalizedChange={handleLocalizedChange}
-                    onAddItem={addItem}
-                    onRemoveItem={removeItem}
-                    onItemImageChange={handleItemImageChange}
-                    onItemLocalizedChange={handleItemLocalizedChange}
-                />
-            </>)}
+            {/* ── Packages Section ── */}
+            <SectionHeader title="Packages Section" />
+            <ItemsSection
+                content={content}
+                itemKey="packages"
+                titleLabel={at.events_packages}
+                kickerKey="packages_kicker"
+                titleKey="packages_title"
+                kickerLabel={at.events_packages_kicker}
+                titleFieldLabel={at.events_packages_title}
+                addLabel={at.events_add_package}
+                imageLabel={at.events_packages_image}
+                captionLabel={at.events_packages_caption}
+                imageSizeHint="600×800 px (3:4)"
+                at={at}
+                cardClass={cardClass}
+                uploadImage={uploadImage}
+                getLocalized={getLocalized}
+                onLocalizedChange={handleLocalizedChange}
+                onAddItem={addItem}
+                onRemoveItem={removeItem}
+                onItemImageChange={handleItemImageChange}
+                onItemLocalizedChange={handleItemLocalizedChange}
+            />
 
-            {/* ── Decor Section (Parties only) ── */}
-            {!isWedding && (<>
-                <SectionHeader title="Decor Section" />
-                <ItemsSection
-                    content={content}
-                    itemKey="decor"
-                    titleLabel={at.events_decor}
-                    kickerKey="decor_kicker"
-                    titleKey="decor_title"
-                    kickerLabel={at.events_decor_kicker}
-                    titleFieldLabel={at.events_decor_title}
-                    addLabel={at.events_add_decor}
-                    imageLabel={at.events_decor_image}
-                    captionLabel={at.events_decor_caption}
-                    imageSizeHint="600×800 px (3:4)"
-                    at={at}
-                    cardClass={cardClass}
-                    uploadImage={uploadImage}
-                    getLocalized={getLocalized}
-                    onLocalizedChange={handleLocalizedChange}
-                    onAddItem={addItem}
-                    onRemoveItem={removeItem}
-                    onItemImageChange={handleItemImageChange}
-                    onItemLocalizedChange={handleItemLocalizedChange}
-                />
-            </>)}
-
-            {/* ── Bloom With Us Section (Weddings only) ── */}
-            {isWedding && (<>
-                <SectionHeader title="Bloom With Us Section" />
-                <div className={cardClass}>
-                    <h3 className="text-lg font-bold mb-4">{at.events_bloom_h}</h3>
-                    <div className="space-y-4">
-                        <ImageUploadField url={content.bloom_image || ''} onUpload={url => setField('bloom_image', url)} label={at.events_bloom_image} uploadImage={uploadImage} clickLabel={at.form_photo_click} sizeHint="600×700 px (4:5)" />
-                        <LangInputs label={at.events_kicker} value={getLocalized('bloom_kicker')} onChange={(lang, val) => handleLocalizedChange('bloom_kicker', lang, val)} at={at} />
-                        <LangInputs label={at.events_title_field} value={getLocalized('bloom_title')} onChange={(lang, val) => handleLocalizedChange('bloom_title', lang, val)} at={at} />
-                        <LangInputs label={at.events_text} value={getLocalized('bloom_text')} onChange={(lang, val) => handleLocalizedChange('bloom_text', lang, val)} at={at} multiline />
-                        <LangInputs label={at.events_button} value={getLocalized('bloom_button')} onChange={(lang, val) => handleLocalizedChange('bloom_button', lang, val)} at={at} />
-                    </div>
-                </div>
-            </>)}
-
-            {/* ── CTA Banner Section (Weddings only) ── */}
-            {isWedding && (<>
-                <SectionHeader title="CTA Banner Section" />
-                <div className={cardClass}>
-                    <h3 className="text-lg font-bold mb-4">{at.events_cta_h}</h3>
-                    <div className="space-y-4">
-                        <LangInputs label={at.events_title_field} value={getLocalized('cta_title')} onChange={(lang, val) => handleLocalizedChange('cta_title', lang, val)} at={at} />
-                        <LangInputs label={at.events_text} value={getLocalized('cta_text')} onChange={(lang, val) => handleLocalizedChange('cta_text', lang, val)} at={at} multiline />
-                        <LangInputs label={at.events_button} value={getLocalized('cta_button')} onChange={(lang, val) => handleLocalizedChange('cta_button', lang, val)} at={at} />
-                    </div>
-                </div>
-            </>)}
+            {/* ── Decor Section ── */}
+            <SectionHeader title="Decor Section" />
+            <ItemsSection
+                content={content}
+                itemKey="decor"
+                titleLabel={at.events_decor}
+                kickerKey="decor_kicker"
+                titleKey="decor_title"
+                kickerLabel={at.events_decor_kicker}
+                titleFieldLabel={at.events_decor_title}
+                addLabel={at.events_add_decor}
+                imageLabel={at.events_decor_image}
+                captionLabel={at.events_decor_caption}
+                imageSizeHint="600×800 px (3:4)"
+                at={at}
+                cardClass={cardClass}
+                uploadImage={uploadImage}
+                getLocalized={getLocalized}
+                onLocalizedChange={handleLocalizedChange}
+                onAddItem={addItem}
+                onRemoveItem={removeItem}
+                onItemImageChange={handleItemImageChange}
+                onItemLocalizedChange={handleItemLocalizedChange}
+            />
 
             {/* ── Gallery Section ── */}
             <SectionHeader title="Gallery Section (Instagram strip)" />

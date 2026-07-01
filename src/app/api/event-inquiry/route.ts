@@ -10,7 +10,7 @@ const WINDOW_MS = 10 * 60 * 1000;
 const MAX_TRACKED_IPS = 5000;
 
 const inquirySchema = z.object({
-    slug: z.enum(['weddings', 'parties']),
+    slug: z.string(),
     name: z.string().trim().min(1).max(200),
     phone: z.string().trim().min(7).max(32),
     email: z.string().email().max(200).optional().or(z.literal('')),

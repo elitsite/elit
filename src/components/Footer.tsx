@@ -55,8 +55,7 @@ export default function Footer({ contact }: Props) {
             <ul className="space-y-2.5 text-[13px] text-ink/60">
               <li><Link href="/" className="transition-colors hover:text-brand">{tNav("home")}</Link></li>
               <li><Link href="/category/bouquets" className="transition-colors hover:text-brand">{tNav("catalog")}</Link></li>
-              <li><Link href="/category/weddings" className="transition-colors hover:text-brand">{tCat("weddings")}</Link></li>
-              <li><Link href="/category/parties" className="transition-colors hover:text-brand">{tCat("parties")}</Link></li>
+              <li><Link href="/category/events" className="transition-colors hover:text-brand">{tCat("events")}</Link></li>
               <li><Link href="/#about" className="transition-colors hover:text-brand">{tNav("about")}</Link></li>
             </ul>
           </div>

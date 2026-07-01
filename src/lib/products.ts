@@ -97,7 +97,7 @@ export async function getAllProductIds(): Promise<string[]> {
   return (data ?? []).map((r) => (r as { id: string }).id);
 }
 
-/** Fetch a single event landing page by slug ('weddings' | 'parties'). */
+/** Fetch a single event landing page by slug ('weddings' | 'events'). */
 export async function getEventPage(slug: string): Promise<EventPage | null> {
   const { data, error } = await supabase
     .from(DB_TABLES.EVENT_PAGES_PUBLIC)

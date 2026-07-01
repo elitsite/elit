@@ -119,7 +119,7 @@ export default function AdminPage() {
     const [eventPages, setEventPages] = useState<Record<string, EventContent>>({});
     const [eventsLoaded, setEventsLoaded] = useState(false);
     const [eventsError, setEventsError] = useState(false);
-    const [activeEventSlug, setActiveEventSlug] = useState<'weddings' | 'parties'>('weddings');
+    const [activeEventSlug, setActiveEventSlug] = useState<'weddings'>('weddings');
 
     // Initial data load
     useEffect(() => {
@@ -1351,18 +1351,7 @@ export default function AdminPage() {
                 {activeTab === 'events' && (
                     <div className="space-y-6">
                         <p className="text-sm text-zinc-500">{at.desc_tab_events}</p>
-                        {/* Sub-tabs: Weddings / Parties */}
-                        <div className="flex gap-2">
-                            {(['weddings', 'parties'] as const).map(es => (
-                                <button
-                                    key={es}
-                                    onClick={() => setActiveEventSlug(es)}
-                                    className={`px-4 sm:px-6 py-2.5 rounded-lg font-semibold transition-all ${activeEventSlug === es ? 'bg-amber-600 text-white' : 'bg-white text-zinc-700 hover:bg-amber-50'}`}
-                                >
-                                    {es === 'weddings' ? at.events_weddings : at.events_parties}
-                                </button>
-                            ))}
-                        </div>
+
 
                         {eventPages[activeEventSlug] ? (
                             <EventEditor

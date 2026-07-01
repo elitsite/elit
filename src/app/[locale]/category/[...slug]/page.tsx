@@ -15,7 +15,6 @@ import { BRAND_NAME, buildLanguageAlternates, canonicalUrl } from "@/lib/site";
 import { localizeSettings } from "@/lib/i18n-content";
 import CollectionExplorer from "@/components/CollectionExplorer";
 import EventLanding from "@/components/EventLanding";
-import WeddingLanding from "@/components/WeddingLanding";
 
 export const revalidate = 300;
 
@@ -66,17 +65,14 @@ export default async function CategoryPage({
   const match = findCategoryByPath(slug);
   if (!match) notFound();
 
-  // Special-case: weddings and parties render a full landing page.
+  // Special-case: weddings render a full landing page.
   const slugPath = slug.join("/");
-  const isEventLanding = slugPath === "weddings" || slugPath === "parties";
+  const isEventLanding = slugPath === "weddings";
 
   if (isEventLanding) {
-    const eventSlug = slug[slug.length - 1]; // 'weddings' | 'parties'
+    const eventSlug = "weddings";
     const eventPage = await getEventPage(eventSlug);
     const content = (eventPage?.content ?? {}) as EventContent;
-    if (eventSlug === "weddings") {
-      return <WeddingLanding content={content} locale={locale as Locale} slug={eventSlug} />;
-    }
     return (
       <EventLanding
         content={content}
@@ -86,10 +82,10 @@ export default async function CategoryPage({
     );
   }
 
-  // Sub-categories of weddings/parties (e.g. weddings/wedding-portfolio)
+  // Sub-categories of weddings (e.g. weddings/wedding-portfolio)
   // render the event landing page with anchor scroll to the relevant section.
-  if (slug.length === 2 && (slug[0] === "weddings" || slug[0] === "parties")) {
-    const eventSlug = slug[0]; // 'weddings' | 'parties'
+  if (slug.length === 2 && slug[0] === "weddings") {
+    const eventSlug = "weddings";
     const subSlug = slug[1]; // 'wedding-portfolio' etc.
     const eventPage = await getEventPage(eventSlug);
     const content = (eventPage?.content ?? {}) as EventContent;

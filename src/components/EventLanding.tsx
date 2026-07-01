@@ -171,44 +171,7 @@ function FramedSections({ sections, locale }: { sections: EventSection[]; locale
   );
 }
 
-function QuoteBlock({ content, locale }: { content: EventContent; locale: Locale }) {
-  const quoteText = t(content.quote_text, locale);
-  const hasQuote = quoteText || content.quote_image || hasContent(content.quote_kicker);
-  if (!hasQuote) return null;
 
-  return (
-    <section className="relative flex min-h-[60vh] items-center justify-center overflow-hidden">
-      {content.quote_image ? (
-        <Image
-          src={content.quote_image}
-          alt=""
-          fill
-          className="object-cover"
-        />
-      ) : (
-        <div className="absolute inset-0 bg-gradient-to-r from-ink/30 to-ink/50" />
-      )}
-      <div className="absolute inset-0 bg-black/50" />
-      <div className="relative z-10 mx-auto max-w-3xl px-6 py-24 text-center text-white">
-        {hasContent(content.quote_kicker) && (
-          <span className="mb-5 block text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
-            {t(content.quote_kicker, locale)}
-          </span>
-        )}
-        {quoteText && (
-          <blockquote className="font-display text-2xl font-medium italic leading-relaxed sm:text-3xl lg:text-4xl">
-            &ldquo;{quoteText}&rdquo;
-          </blockquote>
-        )}
-        {hasContent(content.quote_author) && (
-          <cite className="mt-8 block text-sm uppercase tracking-[0.25em] text-white/50 not-italic">
-            {t(content.quote_author, locale)}
-          </cite>
-        )}
-      </div>
-    </section>
-  );
-}
 
 function ProcessBlock({ steps, locale }: { steps: ProcessStep[]; locale: Locale }) {
   if (!steps || steps.length === 0) return null;
@@ -383,7 +346,6 @@ export default function EventLanding({ content, locale, slug, anchor }: EventLan
       <IntroBlock content={content} locale={locale} />
       <MediaBlock content={content} locale={locale} />
       <FramedSections sections={content.sections} locale={locale} />
-      <QuoteBlock content={content} locale={locale} />
       <ProcessBlock steps={content.process_steps} locale={locale} />
       <div id="portfolio">
         <GridBlock

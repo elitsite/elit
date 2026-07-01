@@ -5,7 +5,7 @@ import { supabaseAdmin } from '@/lib/supabaseServer';
 import { NO_CACHE_HEADERS, assertSameOrigin } from '@/lib/apiUtils';
 import { DB_TABLES } from '@/lib/constants';
 
-const VALID_SLUGS = new Set(['weddings', 'parties']);
+const VALID_SLUGS = new Set(['weddings', 'events']);
 
 // ── GET: fetch all event pages ──
 export async function GET(request: Request) {
@@ -77,7 +77,6 @@ export async function PUT(request: Request) {
         if (error) throw error;
 
         revalidatePath('/category/events/weddings');
-        revalidatePath('/category/events/parties');
         return NextResponse.json(data, { headers: NO_CACHE_HEADERS });
     } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
