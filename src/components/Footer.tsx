@@ -43,7 +43,7 @@ export default function Footer({ contact }: Props) {
               />
             </Link>
             <p className="text-xs text-ink/60 font-display italic max-w-xs leading-relaxed">
-              Boutique floral arrangements & custom floral design in Amsterdam.
+              {t("description")}
             </p>
           </div>
 
