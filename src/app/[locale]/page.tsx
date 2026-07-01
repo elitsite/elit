@@ -117,7 +117,7 @@ export default async function Home({
           src="/logo2.png"
           alt="Alina Bloemen"
           fill
-          className="hidden object-cover object-bottom sm:block"
+          className="hidden object-cover object-top sm:block"
           priority
         />
         <div className="absolute inset-0 bg-black/10" />
@@ -127,27 +127,27 @@ export default async function Home({
             <Link
               href="/category/bouquets"
               className="absolute
-                left-[14%] top-[83%]
-                sm:left-[10%] sm:top-[82%]
+                left-1/2 top-[80%] -translate-x-1/2
+                sm:left-[21.5%] sm:top-[72%] sm:-translate-x-1/2
                 btn-primary
                 !rounded-md
-                !px-14 !py-4 !text-[13px] !tracking-[0.25em]
-                sm:!px-20 sm:!py-5.5 sm:!text-base sm:!tracking-[0.3em]
+                !px-10 !py-4.5 !text-[13px] !tracking-[0.25em]
+                sm:!px-12 sm:!py-6 sm:!text-sm sm:!tracking-[0.3em]
                 !font-semibold"
             >
-              {nav("catalog")}
-            </Link>
+            {nav("catalog")}
+          </Link>
         </div>
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center text-ink/60 animate-gentle-bounce sm:bottom-5">
-            <svg
-              className="h-5 w-5 sm:h-6 sm:w-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center text-ink/60 animate-gentle-bounce sm:bottom-5">
+          <svg
+            className="h-5 w-5 sm:h-6 sm:w-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
       </section>
 
 
