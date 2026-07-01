@@ -16,11 +16,21 @@ function hasContent(field: LocalizedText | undefined): boolean {
   return !!(field.en || field.uk || field.nl);
 }
 
-// ── Sub-blocks ──
+// ── Shared blocks ──
 
-function HeroBlock({ content, locale }: { content: EventContent; locale: Locale }) {
+function HeroBlock({
+  content,
+  locale,
+  isWedding,
+}: {
+  content: EventContent;
+  locale: Locale;
+  isWedding?: boolean;
+}) {
+  const kicker = t(content.hero_kicker, locale);
   const title = t(content.hero_title, locale);
   const subtitle = t(content.hero_subtitle, locale);
+  const button = t(content.hero_button, locale);
 
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
@@ -37,6 +47,11 @@ function HeroBlock({ content, locale }: { content: EventContent; locale: Locale 
       )}
       <div className="absolute inset-0 bg-black/45" />
       <div className="relative z-10 px-6 text-center text-white">
+        {isWedding && kicker && (
+          <span className="mb-4 block text-xs font-semibold uppercase tracking-[0.35em] text-white/60">
+            {kicker}
+          </span>
+        )}
         {title && (
           <h1 className="font-display text-5xl font-medium leading-tight tracking-wide sm:text-6xl lg:text-7xl xl:text-8xl">
             {title}
@@ -46,6 +61,14 @@ function HeroBlock({ content, locale }: { content: EventContent; locale: Locale 
           <p className="mx-auto mt-6 max-w-2xl text-lg tracking-wide text-white/75 sm:text-xl">
             {subtitle}
           </p>
+        )}
+        {isWedding && button && (
+          <a
+            href="#portfolio"
+            className="mt-10 inline-flex items-center border border-white/40 px-10 py-4 text-xs font-medium uppercase tracking-[0.25em] text-white transition-all duration-300 hover:border-white hover:bg-white/10"
+          >
+            {button}
+          </a>
         )}
       </div>
       <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2">
@@ -63,12 +86,58 @@ function HeroBlock({ content, locale }: { content: EventContent; locale: Locale 
   );
 }
 
-function IntroBlock({ content, locale }: { content: EventContent; locale: Locale }) {
+function IntroBlock({
+  content,
+  locale,
+  isWedding,
+}: {
+  content: EventContent;
+  locale: Locale;
+  isWedding?: boolean;
+}) {
   const kicker = t(content.intro_kicker, locale);
   const title = t(content.intro_title, locale);
   const text = t(content.intro_text, locale);
+  const text2 = t(content.intro_text_col2, locale);
   const button = t(content.intro_button, locale);
 
+  if (isWedding) {
+    // Two-column layout for weddings
+    return (
+      <section className="mx-auto max-w-content px-6 py-24 sm:px-8 sm:py-32 lg:px-12">
+        {kicker && (
+          <span className="mb-5 block text-xs font-semibold uppercase tracking-[0.3em] text-brand">
+            {kicker}
+          </span>
+        )}
+        {title && (
+          <h2 className="mb-12 font-display text-4xl font-medium leading-snug text-ink sm:text-5xl lg:text-[3.5rem]">
+            {title}
+          </h2>
+        )}
+        <div className={`grid gap-10 ${text2 ? "lg:grid-cols-2" : ""}`}>
+          {text && (
+            <p className="whitespace-pre-line leading-relaxed text-ink/60">{text}</p>
+          )}
+          {text2 && (
+            <p className="whitespace-pre-line leading-relaxed text-ink/60">{text2}</p>
+          )}
+        </div>
+        {button && (
+          <div className="mt-12">
+            <a
+              href="#portfolio"
+              className="inline-flex items-center border border-ink/25 px-10 py-4 text-xs font-medium uppercase tracking-[0.25em] text-ink transition-all duration-300 hover:border-brand hover:bg-brand hover:text-cream"
+            >
+              {button}
+            </a>
+          </div>
+        )}
+      </section>
+    );
+  }
+
+  // Centered layout for events
   return (
     <section className="mx-auto max-w-3xl px-6 py-24 text-center sm:py-32">
       {kicker && (
@@ -97,6 +166,284 @@ function IntroBlock({ content, locale }: { content: EventContent; locale: Locale
     </section>
   );
 }
+
+// ── Wedding-only blocks ──
+
+function FullServiceBlock({ content, locale }: { content: EventContent; locale: Locale }) {
+  const title = t(content.full_service_title, locale);
+  const text = t(content.full_service_text, locale);
+  const includedLabel = t(content.full_service_included_label, locale);
+  const included = t(content.full_service_included, locale);
+  if (!title && !text) return null;
+
+  return (
+    <section className="mx-auto max-w-content px-6 py-24 sm:px-8 lg:px-12">
+      <div className="grid gap-16 lg:grid-cols-2 lg:gap-24 lg:items-start">
+        {/* Image */}
+        <div className="relative border border-taupe/20 bg-white p-3 shadow-sm sm:p-4">
+          {content.full_service_image ? (
+            <div className="relative aspect-[3/4] overflow-hidden">
+              <Image
+                src={content.full_service_image}
+                alt={title}
+                fill
+                className="object-cover"
+              />
+            </div>
+          ) : (
+            <div className="aspect-[3/4] bg-taupe/10 flex items-center justify-center text-ink/15 text-xs">
+              800 × 1067 px
+            </div>
+          )}
+        </div>
+        {/* Text */}
+        <div className="flex flex-col justify-center">
+          {title && (
+            <h2 className="font-display text-4xl font-medium leading-snug text-ink sm:text-5xl">
+              {title}
+            </h2>
+          )}
+          {text && (
+            <p className="mt-8 whitespace-pre-line leading-relaxed text-ink/60">{text}</p>
+          )}
+          {(includedLabel || included) && (
+            <div className="mt-10">
+              {includedLabel && (
+                <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-ink">
+                  {includedLabel}
+                </p>
+              )}
+              {included && (
+                <p className="whitespace-pre-line leading-loose text-ink/70 text-sm">
+                  {included}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function OtherServicesBlock({ content, locale }: { content: EventContent; locale: Locale }) {
+  const kicker = t(content.other_services_kicker, locale);
+  const s1title = t(content.service1_title, locale);
+  const s1text = t(content.service1_text, locale);
+  const s1italic = t(content.service1_italic, locale);
+  const s1cta = t(content.service1_cta, locale);
+  const s2title = t(content.service2_title, locale);
+  const s2text = t(content.service2_text, locale);
+  const s2italic = t(content.service2_italic, locale);
+  const s2cta = t(content.service2_cta, locale);
+
+  if (!s1title && !s2title) return null;
+
+  return (
+    <section className="mx-auto max-w-content px-6 py-24 sm:px-8 lg:px-12">
+      {kicker && (
+        <span className="mb-10 block text-xs font-semibold uppercase tracking-[0.3em] text-brand">
+          {kicker}
+        </span>
+      )}
+      <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
+        {/* Image */}
+        {content.other_services_image && (
+          <div className="hidden lg:block relative border border-taupe/20 bg-white p-3 shadow-sm sm:p-4">
+            <div className="relative aspect-[2/3] overflow-hidden">
+              <Image
+                src={content.other_services_image}
+                alt={kicker || ""}
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+        )}
+        {/* Services */}
+        <div className="flex flex-col gap-16">
+          {/* Service 1 */}
+          {s1title && (
+            <div>
+              <h3 className="font-display text-3xl font-medium text-ink sm:text-4xl">{s1title}</h3>
+              {s1text && <p className="mt-5 leading-relaxed text-ink/60">{s1text}</p>}
+              {s1italic && <p className="mt-4 font-display italic text-ink/50">{s1italic}</p>}
+              {s1cta && (
+                <a
+                  href="#inquiry-form"
+                  className="mt-6 inline-flex items-center border border-ink/25 px-8 py-3 text-xs font-medium uppercase tracking-[0.25em] text-ink transition-all duration-300 hover:border-brand hover:bg-brand hover:text-cream"
+                >
+                  {s1cta}
+                </a>
+              )}
+            </div>
+          )}
+          {/* Service 2 */}
+          {s2title && (
+            <div>
+              <h3 className="font-display text-3xl font-medium text-ink sm:text-4xl">{s2title}</h3>
+              {s2text && <p className="mt-5 leading-relaxed text-ink/60">{s2text}</p>}
+              {s2italic && <p className="mt-4 font-display italic text-ink/50">{s2italic}</p>}
+              {s2cta && (
+                <a
+                  href="#inquiry-form"
+                  className="mt-6 inline-flex items-center border border-ink/25 px-8 py-3 text-xs font-medium uppercase tracking-[0.25em] text-ink transition-all duration-300 hover:border-brand hover:bg-brand hover:text-cream"
+                >
+                  {s2cta}
+                </a>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FinalChoicesBlock({ content, locale }: { content: EventContent; locale: Locale }) {
+  const title = t(content.final_choices_title, locale);
+  const text = t(content.final_choices_text, locale);
+  const link = t(content.final_choices_link, locale);
+  if (!title && !text) return null;
+
+  return (
+    <section className="bg-taupe/10 py-24 sm:py-32">
+      <div className="mx-auto max-w-3xl px-6 text-center">
+        {title && (
+          <h2 className="font-display text-4xl font-medium text-ink sm:text-5xl">{title}</h2>
+        )}
+        {text && (
+          <p className="mx-auto mt-8 max-w-2xl whitespace-pre-line leading-relaxed text-ink/60">
+            {text}
+          </p>
+        )}
+        {link && (
+          <a
+            href="#process"
+            className="mt-10 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-[0.2em] text-ink underline decoration-brand/40 underline-offset-4 transition-colors hover:text-brand"
+          >
+            {link}
+          </a>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function QuoteBlock({ content, locale }: { content: EventContent; locale: Locale }) {
+  const quoteText = t(content.quote_text, locale);
+  const hasQuote = quoteText || content.quote_image || hasContent(content.quote_kicker);
+  if (!hasQuote) return null;
+
+  return (
+    <section className="relative flex min-h-[60vh] items-center justify-center overflow-hidden">
+      {content.quote_image ? (
+        <Image src={content.quote_image} alt="" fill className="object-cover" />
+      ) : (
+        <div className="absolute inset-0 bg-ink/5" />
+      )}
+      {content.quote_image && <div className="absolute inset-0 bg-black/50" />}
+      <div className={`relative z-10 mx-auto max-w-3xl px-6 py-24 text-center ${content.quote_image ? "text-white" : "text-ink"}`}>
+        {hasContent(content.quote_kicker) && (
+          <span className={`mb-5 block text-xs font-semibold uppercase tracking-[0.3em] ${content.quote_image ? "text-white/60" : "text-brand"}`}>
+            {t(content.quote_kicker, locale)}
+          </span>
+        )}
+        {quoteText && (
+          <blockquote className="font-display text-2xl font-medium italic leading-relaxed sm:text-3xl lg:text-4xl">
+            &ldquo;{quoteText}&rdquo;
+          </blockquote>
+        )}
+        {hasContent(content.quote_author) && (
+          <cite className={`mt-8 block text-sm uppercase tracking-[0.25em] not-italic ${content.quote_image ? "text-white/50" : "text-ink/40"}`}>
+            {t(content.quote_author, locale)}
+          </cite>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function BloomBlock({ content, locale }: { content: EventContent; locale: Locale }) {
+  const kicker = t(content.bloom_kicker, locale);
+  const title = t(content.bloom_title, locale);
+  const text = t(content.bloom_text, locale);
+  const button = t(content.bloom_button, locale);
+  if (!title && !text) return null;
+
+  return (
+    <section className="mx-auto max-w-content px-6 py-24 sm:px-8 lg:px-12">
+      <div className="grid gap-16 lg:grid-cols-2 lg:gap-24 lg:items-center">
+        {/* Image */}
+        <div className="relative border border-taupe/20 bg-white p-3 shadow-sm sm:p-4">
+          {content.bloom_image ? (
+            <div className="relative aspect-[4/5] overflow-hidden">
+              <Image src={content.bloom_image} alt={title} fill className="object-cover" />
+            </div>
+          ) : (
+            <div className="aspect-[4/5] bg-taupe/10 flex items-center justify-center text-ink/15 text-xs">
+              600 × 700 px
+            </div>
+          )}
+        </div>
+        {/* Text */}
+        <div>
+          {kicker && (
+            <span className="mb-5 block text-xs font-semibold uppercase tracking-[0.3em] text-brand">
+              {kicker}
+            </span>
+          )}
+          {title && (
+            <h2 className="font-display text-4xl font-medium leading-tight text-ink sm:text-5xl lg:text-6xl">
+              {title}
+            </h2>
+          )}
+          {text && (
+            <p className="mt-8 whitespace-pre-line leading-relaxed text-ink/60">{text}</p>
+          )}
+          {button && (
+            <a
+              href="#inquiry-form"
+              className="mt-10 inline-flex items-center border border-ink/25 px-10 py-4 text-xs font-medium uppercase tracking-[0.25em] text-ink transition-all duration-300 hover:border-brand hover:bg-brand hover:text-cream"
+            >
+              {button}
+            </a>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CTABlock({ content, locale }: { content: EventContent; locale: Locale }) {
+  const title = t(content.cta_title, locale);
+  const text = t(content.cta_text, locale);
+  const button = t(content.cta_button, locale);
+  if (!title && !text) return null;
+
+  return (
+    <section className="bg-ink py-24 sm:py-32">
+      <div className="mx-auto max-w-3xl px-6 text-center">
+        {title && (
+          <h2 className="font-display text-4xl font-medium text-cream sm:text-5xl">{title}</h2>
+        )}
+        {text && (
+          <p className="mx-auto mt-8 max-w-2xl leading-relaxed text-cream/60">{text}</p>
+        )}
+        {button && (
+          <a
+            href="#inquiry-form"
+            className="mt-12 inline-flex items-center border border-cream/30 px-10 py-4 text-xs font-medium uppercase tracking-[0.25em] text-cream transition-all duration-300 hover:border-cream hover:bg-cream hover:text-ink"
+          >
+            {button}
+          </a>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ── Events-only blocks ──
 
 function MediaBlock({ content, locale }: { content: EventContent; locale: Locale }) {
   return (
@@ -138,12 +485,7 @@ function FramedSections({ sections, locale }: { sections: EventSection[]; locale
               <div className="relative border border-taupe/20 bg-white p-3 shadow-sm sm:p-4">
                 {section.image ? (
                   <div className="relative aspect-[3/4] overflow-hidden">
-                    <Image
-                      src={section.image}
-                      alt={title}
-                      fill
-                      className="object-cover"
-                    />
+                    <Image src={section.image} alt={title} fill className="object-cover" />
                   </div>
                 ) : (
                   <div className="aspect-[3/4] bg-taupe/10 flex items-center justify-center text-ink/15 text-xs">
@@ -159,9 +501,7 @@ function FramedSections({ sections, locale }: { sections: EventSection[]; locale
                 </h3>
               )}
               {text && (
-                <p className="mt-6 whitespace-pre-line leading-relaxed text-ink/60">
-                  {text}
-                </p>
+                <p className="mt-6 whitespace-pre-line leading-relaxed text-ink/60">{text}</p>
               )}
             </div>
           </div>
@@ -171,18 +511,16 @@ function FramedSections({ sections, locale }: { sections: EventSection[]; locale
   );
 }
 
-
+// ── Shared blocks ──
 
 function ProcessBlock({ steps, locale }: { steps: ProcessStep[]; locale: Locale }) {
   if (!steps || steps.length === 0) return null;
-  const romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+  const romanNumerals = ["I", "II", "III", "IV", "V", "VI"];
 
   return (
-    <section className="mx-auto max-w-5xl px-6 py-24 sm:py-32">
+    <section id="process" className="mx-auto max-w-5xl px-6 py-24 sm:py-32">
       <div className="mb-16 text-center">
-        <h2 className="font-display text-4xl font-medium text-ink sm:text-5xl">
-          Process
-        </h2>
+        <h2 className="font-display text-4xl font-medium text-ink sm:text-5xl">Process</h2>
         <div className="mx-auto mt-4 h-px w-12 bg-brand" />
       </div>
       <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3">
@@ -201,9 +539,7 @@ function ProcessBlock({ steps, locale }: { steps: ProcessStep[]; locale: Locale 
                 </h3>
               )}
               {text && (
-                <p className="mx-auto mt-4 max-w-xs text-sm leading-relaxed text-ink/55">
-                  {text}
-                </p>
+                <p className="mx-auto mt-4 max-w-xs text-sm leading-relaxed text-ink/55">{text}</p>
               )}
             </div>
           );
@@ -230,7 +566,6 @@ function GridBlock({
 
   return (
     <section className="mx-auto max-w-content px-6 py-20 sm:px-8 sm:py-28">
-      {/* Header — always show */}
       <div className="mb-14 text-center">
         {hasKicker && (
           <span className="mb-4 block text-[11px] font-semibold uppercase tracking-[0.3em] text-brand">
@@ -244,16 +579,12 @@ function GridBlock({
         )}
       </div>
 
-      {/* Items grid — staggered layout */}
       {hasItems ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
           {items.map((item: PortfolioItem, i: number) => {
             const isCenter = i % 3 === 1;
             return (
-              <div
-                key={i}
-                className={`${isCenter ? "lg:-mt-8" : "lg:mt-8"}`}
-              >
+              <div key={i} className={`${isCenter ? "lg:-mt-8" : "lg:mt-8"}`}>
                 {item.image ? (
                   <div className={`relative overflow-hidden ${isCenter ? "aspect-[3/4]" : "aspect-[4/5]"}`}>
                     <Image
@@ -298,9 +629,7 @@ function GalleryStrip({ images }: { images: string[] }) {
   return (
     <section className="py-16 sm:py-20">
       <div className="mb-14 text-center">
-        <h2 className="font-display text-4xl font-medium text-ink sm:text-5xl">
-          Gallery
-        </h2>
+        <h2 className="font-display text-4xl font-medium text-ink sm:text-5xl">Gallery</h2>
         <div className="mx-auto mt-4 h-px w-12 bg-brand" />
       </div>
       {hasImages ? (
@@ -339,6 +668,48 @@ interface EventLandingProps {
 }
 
 export default function EventLanding({ content, locale, slug, anchor }: EventLandingProps) {
+  const isWedding = slug === "weddings";
+
+  if (isWedding) {
+    return (
+      <main className="min-h-screen bg-cream">
+        <AnchorScroller anchor={anchor} />
+        {/* Hero with kicker + button */}
+        <HeroBlock content={content} locale={locale} isWedding />
+        {/* Two-column intro */}
+        <IntroBlock content={content} locale={locale} isWedding />
+        {/* Full service */}
+        <FullServiceBlock content={content} locale={locale} />
+        {/* Other services: Destination Weddings + Private Events */}
+        <OtherServicesBlock content={content} locale={locale} />
+        {/* Final choices */}
+        <FinalChoicesBlock content={content} locale={locale} />
+        {/* Quote / Love letters */}
+        <QuoteBlock content={content} locale={locale} />
+        {/* Portfolio */}
+        <div id="portfolio">
+          <GridBlock
+            items={content.portfolio}
+            locale={locale}
+            kicker={content.portfolio_kicker}
+            title={content.portfolio_title}
+          />
+        </div>
+        {/* Process */}
+        <ProcessBlock steps={content.process_steps} locale={locale} />
+        {/* Bloom With Us */}
+        <BloomBlock content={content} locale={locale} />
+        {/* CTA */}
+        <CTABlock content={content} locale={locale} />
+        {/* Gallery */}
+        <GalleryStrip images={content.gallery} />
+        {/* Inquiry form */}
+        <InquiryForm content={content} locale={locale} slug={slug} />
+      </main>
+    );
+  }
+
+  // ── Events / General layout ──
   return (
     <main className="min-h-screen bg-cream">
       <AnchorScroller anchor={anchor} />
