@@ -119,7 +119,7 @@ export default function AdminPage() {
     const [eventPages, setEventPages] = useState<Record<string, EventContent>>({});
     const [eventsLoaded, setEventsLoaded] = useState(false);
     const [eventsError, setEventsError] = useState(false);
-    const [activeEventSlug, setActiveEventSlug] = useState<'weddings'>('weddings');
+    const activeEventSlug = 'weddings' as const;
 
     // Initial data load
     useEffect(() => {
