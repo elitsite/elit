@@ -102,22 +102,24 @@ export default async function Home({
 
   return (
     <main>
-      {/* Hero — full viewport height, image cropped to fill exactly one screen */}
-      <section className="relative w-full overflow-hidden" style={{ height: 'calc(100dvh - 80px)' }}>
+      {/* Hero — full-width background image */}
+      <section className="relative w-full flex flex-col">
         {/* Mobile Image */}
         <Image
           src="/logo3.png"
           alt="Alina Bloemen"
-          fill
-          className="block object-cover object-bottom sm:hidden"
+          width={1080}
+          height={1080}
+          className="block w-full h-auto sm:hidden"
           priority
         />
         {/* Desktop Image */}
         <Image
           src="/logo2.png"
           alt="Alina Bloemen"
-          fill
-          className="hidden object-cover object-top sm:block"
+          width={1920}
+          height={1080}
+          className="hidden w-full h-auto sm:block"
           priority
         />
         <div className="absolute inset-0 bg-black/10" />
@@ -127,8 +129,8 @@ export default async function Home({
             <Link
               href="/category/bouquets"
               className="absolute
-                left-1/2 top-[80%] -translate-x-1/2
-                sm:left-[21.5%] sm:top-[72%] sm:-translate-x-1/2
+                left-1/2 top-[86%] -translate-x-1/2
+                sm:left-[21.5%] sm:top-[76%] sm:-translate-x-1/2
                 btn-primary
                 !rounded-md
                 !px-10 !py-4.5 !text-[13px] !tracking-[0.25em]
