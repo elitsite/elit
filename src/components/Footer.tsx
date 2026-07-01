@@ -78,6 +78,7 @@ export default function Footer({ contact }: Props) {
               {t("contacts")}
             </h4>
             <ul className="space-y-2.5 text-[13px] text-ink/60">
+              <li><a href="mailto:info@alyabloemen.com" className="transition-colors hover:text-brand">info@alyabloemen.com</a></li>
               <li><a href={`tel:${phone}`} className="transition-colors hover:text-brand">{phone}</a></li>
               <li><p>Limburg, Nederland</p></li>
             </ul>
