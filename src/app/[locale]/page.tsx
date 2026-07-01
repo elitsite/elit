@@ -102,24 +102,22 @@ export default async function Home({
 
   return (
     <main>
-      {/* Hero — full-width background image */}
-      <section className="relative w-full flex flex-col">
+      {/* Hero — full viewport height, image cropped from the top, bottom is preserved */}
+      <section className="relative w-full overflow-hidden" style={{ height: 'calc(100dvh - 80px)' }}>
         {/* Mobile Image */}
         <Image
           src="/logo3.png"
           alt="Alina Bloemen"
-          width={1080}
-          height={1080}
-          className="block w-full h-auto sm:hidden"
+          fill
+          className="block object-cover object-bottom sm:hidden"
           priority
         />
         {/* Desktop Image */}
         <Image
           src="/logo2.png"
           alt="Alina Bloemen"
-          width={1920}
-          height={1080}
-          className="hidden w-full h-auto sm:block"
+          fill
+          className="hidden object-cover object-bottom sm:block"
           priority
         />
         <div className="absolute inset-0 bg-black/10" />
@@ -129,30 +127,28 @@ export default async function Home({
             <Link
               href="/category/bouquets"
               className="absolute
-                left-1/2 top-[86%] -translate-x-1/2
-                sm:left-[21.5%] sm:top-[76%] sm:-translate-x-1/2
+                left-1/2 top-[80%] -translate-x-1/2
+                sm:left-[21.5%] sm:top-[70%] sm:-translate-x-1/2
                 btn-primary
                 !rounded-md
                 !px-10 !py-4.5 !text-[13px] !tracking-[0.25em]
                 sm:!px-12 sm:!py-6 sm:!text-sm sm:!tracking-[0.3em]
                 !font-semibold"
             >
-            {nav("catalog")}
-          </Link>
+              {nav("catalog")}
+            </Link>
         </div>
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center text-ink/60 animate-gentle-bounce sm:bottom-5">
-          <svg
-            className="h-5 w-5 sm:h-6 sm:w-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center text-ink/60 animate-gentle-bounce sm:bottom-5">
+            <svg
+              className="h-5 w-5 sm:h-6 sm:w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
       </section>
-
-
 
       <section className="mx-auto max-w-6xl px-4 my-12 sm:px-6 sm:my-20 lg:px-8">
         <div className="text-center">
