@@ -127,14 +127,14 @@ export default function CategorySection({
       className="mx-auto my-12 max-w-6xl px-4 sm:my-20 sm:px-6 lg:px-8"
     >
       {/* Section Header */}
-      <div className="mb-6 flex flex-col items-center gap-2 sm:mb-10 sm:gap-3">
+      <div className="relative mb-6 flex flex-col gap-2 sm:mb-10 sm:block">
         <h2 className="text-center font-display text-xl font-medium tracking-tight text-ink sm:text-2xl lg:text-3xl">
           {t(labelKey)}
         </h2>
         {viewAllHref && (
           <Link
             href={viewAllHref}
-            className="group flex items-center gap-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-ink/60 transition-colors hover:text-brand sm:gap-1.5 sm:text-[10px]"
+            className="self-end sm:absolute sm:top-1/2 sm:-translate-y-1/2 sm:right-0 group flex items-center gap-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-ink/60 transition-colors hover:text-brand sm:gap-1.5 sm:text-[10px]"
           >
             {tHome("view_all")}
             <ChevronRight className="h-3 w-3 sm:h-3.5 sm:w-3.5 transition-transform group-hover:translate-x-0.5" />
