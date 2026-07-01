@@ -13,12 +13,16 @@ import EventEditor from '@/components/EventEditor';
 type LeafOption = { slug: string; labelKey: string; prefixKey?: string };
 const CATEGORY_GROUPS: { groupKey: string; options: LeafOption[] }[] = CATEGORY_TREE.map(top => {
     const options: LeafOption[] = [];
-    for (const child of top.children ?? []) {
-        if (child.children?.length) {
-            for (const leaf of child.children) options.push({ slug: leaf.slug, labelKey: leaf.labelKey, prefixKey: child.labelKey });
-        } else {
-            options.push({ slug: child.slug, labelKey: child.labelKey });
+    if (top.children?.length) {
+        for (const child of top.children) {
+            if (child.children?.length) {
+                for (const leaf of child.children) options.push({ slug: leaf.slug, labelKey: leaf.labelKey, prefixKey: child.labelKey });
+            } else {
+                options.push({ slug: child.slug, labelKey: child.labelKey });
+            }
         }
+    } else if (top.selectable) {
+        options.push({ slug: top.slug, labelKey: top.labelKey });
     }
     return { groupKey: top.labelKey, options };
 });
