@@ -128,16 +128,16 @@ export default function CategorySection({
     >
       {/* Section Header */}
       <div className="relative mb-6 flex items-center justify-between sm:mb-10">
-        <h2 className="flex-1 text-center font-display text-2xl font-medium tracking-tight text-ink sm:text-3xl lg:text-4xl">
+        <h2 className="flex-1 text-center font-display text-xl px-16 sm:px-0 font-medium tracking-tight text-ink sm:text-2xl lg:text-3xl">
           {t(labelKey)}
         </h2>
         {viewAllHref && (
           <Link
             href={viewAllHref}
-            className="absolute right-0 group flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-ink/60 transition-colors hover:text-brand sm:gap-1.5 sm:text-xs"
+            className="absolute right-0 group flex items-center gap-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-ink/60 transition-colors hover:text-brand sm:gap-1.5 sm:text-[10px]"
           >
             {tHome("view_all")}
-            <ChevronRight size={14} className="transition-transform group-hover:translate-x-0.5" />
+            <ChevronRight className="h-3 w-3 sm:h-3.5 sm:w-3.5 transition-transform group-hover:translate-x-0.5" />
           </Link>
         )}
       </div>

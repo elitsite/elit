@@ -88,7 +88,8 @@ VALUES (
         'nl','Onze designs kwamen tot leven bij tientallen intieme bruiloften.',
         'en','Our designs came to life at dozens of intimate weddings.',
         'uk','Наші дизайни ожили на десятках інтимних весіль.'),
-    'portfolio', '[]'::jsonb,
+    'portfolio', '[]'::jsonb
+  ) || jsonb_build_object(
 
     -- Bloom with us
     'bloom_image',  '',
