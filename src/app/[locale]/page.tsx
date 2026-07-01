@@ -102,24 +102,22 @@ export default async function Home({
 
   return (
     <main>
-      {/* Hero — full-width background image */}
-      <section className="relative w-full flex flex-col">
+      {/* Hero — full viewport height, image cropped to fill exactly one screen */}
+      <section className="relative w-full overflow-hidden" style={{ height: 'calc(100dvh - 80px)' }}>
         {/* Mobile Image */}
         <Image
           src="/logo3.png"
           alt="Alina Bloemen"
-          width={1080}
-          height={1080}
-          className="block w-full h-auto sm:hidden"
+          fill
+          className="block object-cover object-top sm:hidden"
           priority
         />
         {/* Desktop Image */}
         <Image
           src="/logo2.png"
           alt="Alina Bloemen"
-          width={1920}
-          height={1080}
-          className="hidden w-full h-auto sm:block"
+          fill
+          className="hidden object-cover object-top sm:block"
           priority
         />
         <div className="absolute inset-0 bg-black/10" />
@@ -151,6 +149,7 @@ export default async function Home({
             </svg>
           </div>
       </section>
+
 
 
       <section className="mx-auto max-w-6xl px-4 my-12 sm:px-6 sm:my-20 lg:px-8">
