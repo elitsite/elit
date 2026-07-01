@@ -129,12 +129,12 @@ export default async function Home({
             <Link
               href="/category/bouquets"
               className="absolute
-                left-[9%] top-[82%]
-                sm:left-[9%] sm:top-[80%]
+                left-[14%] top-[83%]
+                sm:left-[10%] sm:top-[82%]
                 btn-primary
-                !rounded-none
-                !px-10 !py-3.5 !text-[10px] !tracking-[0.2em]
-                sm:!px-16 sm:!py-5 sm:!text-[13px] sm:!tracking-[0.28em]
+                !rounded-md
+                !px-14 !py-4 !text-[13px] !tracking-[0.25em]
+                sm:!px-20 sm:!py-5.5 sm:!text-base sm:!tracking-[0.3em]
                 !font-semibold"
             >
               {nav("catalog")}
