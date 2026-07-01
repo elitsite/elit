@@ -30,6 +30,9 @@ const CHAIR_DECOR_SLUGS = ["chair-decor"];
 const WEDDING_ARCH_SLUGS = ["wedding-arch"];
 const GUEST_TABLES_DECOR_SLUGS = ["guest-tables-decor"];
 const CAR_DECOR_SLUGS = ["car-decor"];
+const BOUTONNIERES_SLUGS = ["boutonnieres"];
+const FLOWER_GIRL_SLUGS = ["flower-girl"];
+const WEDDING_PHOTOZONE_SLUGS = ["wedding-photozone"];
 
 /** Leaf category slugs for the main explorer. */
 const EXPLORER_SLUGS = CATEGORY_LEAF_SLUGS.filter(slug => !FUNERAL_SLUGS.includes(slug));
@@ -63,7 +66,10 @@ export default async function Home({
     chairDecorProducts,
     weddingArchProducts,
     guestTablesDecorProducts,
-    carDecorProducts
+    carDecorProducts,
+    boutonnieresProducts,
+    flowerGirlProducts,
+    weddingPhotozoneProducts
   ] = await Promise.all([
     getProductsByCategorySlugs(EXPLORER_SLUGS),
     getSettings(),
@@ -82,7 +88,10 @@ export default async function Home({
     getProductsByCategorySlugs(CHAIR_DECOR_SLUGS),
     getProductsByCategorySlugs(WEDDING_ARCH_SLUGS),
     getProductsByCategorySlugs(GUEST_TABLES_DECOR_SLUGS),
-    getProductsByCategorySlugs(CAR_DECOR_SLUGS)
+    getProductsByCategorySlugs(CAR_DECOR_SLUGS),
+    getProductsByCategorySlugs(BOUTONNIERES_SLUGS),
+    getProductsByCategorySlugs(FLOWER_GIRL_SLUGS),
+    getProductsByCategorySlugs(WEDDING_PHOTOZONE_SLUGS)
   ]);
 
   const settings = rawSettings ? localizeSettings(rawSettings, locale) : null;
@@ -314,6 +323,42 @@ export default async function Home({
         isScrollable
         autoScroll
         index={11}
+      />
+
+      {/* Wedding Category: Boutonnieres */}
+      <CategorySection
+        labelKey="boutonnieres"
+        products={boutonnieresProducts}
+        locale={locale}
+        viewAllHref="/category/wedding-floristry/boutonnieres"
+        gridCols={5}
+        isScrollable
+        autoScroll
+        index={12}
+      />
+
+      {/* Wedding Category: Flower Girl */}
+      <CategorySection
+        labelKey="flower_girl"
+        products={flowerGirlProducts}
+        locale={locale}
+        viewAllHref="/category/wedding-floristry/flower-girl"
+        gridCols={5}
+        isScrollable
+        autoScroll
+        index={13}
+      />
+
+      {/* Wedding Category: Wedding Photozone */}
+      <CategorySection
+        labelKey="wedding_photozone"
+        products={weddingPhotozoneProducts}
+        locale={locale}
+        viewAllHref="/category/wedding-floristry/wedding-photozone"
+        gridCols={5}
+        isScrollable
+        autoScroll
+        index={14}
       />
 
       {/* Funeral Arrangements Showcase */}
