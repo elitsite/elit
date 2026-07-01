@@ -124,11 +124,18 @@ export default async function Home({
         />
         <div className="absolute inset-0 bg-black/10" />
 
-        {/* Content Overlay for Button */}
+        {/* Content Overlay for Button — sits exactly on top of the CATALOG button baked into logo2.png */}
         <div className="absolute inset-0 z-10 w-full h-full">
             <Link
               href="/category/bouquets"
-              className="absolute left-[8%] top-[72%] sm:left-[12%] sm:top-[70%] btn-primary !rounded-md !px-5 !py-2.5 !text-[10px] sm:!px-6 sm:!py-3.5 sm:!text-xs"
+              className="absolute
+                left-[9%] top-[82%]
+                sm:left-[9%] sm:top-[80%]
+                btn-primary
+                !rounded-none
+                !px-10 !py-3.5 !text-[10px] !tracking-[0.2em]
+                sm:!px-16 sm:!py-5 sm:!text-[13px] sm:!tracking-[0.28em]
+                !font-semibold"
             >
               {nav("catalog")}
             </Link>
