@@ -109,7 +109,7 @@ export default async function Home({
           src="/logo3.png"
           alt="Alina Bloemen"
           fill
-          className="block object-cover object-top sm:hidden"
+          className="block object-cover object-bottom sm:hidden"
           priority
         />
         {/* Desktop Image */}
@@ -117,7 +117,7 @@ export default async function Home({
           src="/logo2.png"
           alt="Alina Bloemen"
           fill
-          className="hidden object-cover object-top sm:block"
+          className="hidden object-cover object-bottom sm:block"
           priority
         />
         <div className="absolute inset-0 bg-black/10" />
