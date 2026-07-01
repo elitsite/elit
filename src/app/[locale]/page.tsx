@@ -30,6 +30,7 @@ const CHAIR_DECOR_SLUGS = ["chair-decor"];
 const WEDDING_ARCH_SLUGS = ["wedding-arch"];
 const GUEST_TABLES_DECOR_SLUGS = ["guest-tables-decor"];
 const CAR_DECOR_SLUGS = ["car-decor"];
+const GIFTS_SLUGS = ["gifts"];
 
 /** Leaf category slugs for the main explorer. */
 const EXPLORER_SLUGS = CATEGORY_LEAF_SLUGS.filter(slug => !FUNERAL_SLUGS.includes(slug));
@@ -63,7 +64,8 @@ export default async function Home({
     chairDecorProducts,
     weddingArchProducts,
     guestTablesDecorProducts,
-    carDecorProducts
+    carDecorProducts,
+    giftsProducts
   ] = await Promise.all([
     getProductsByCategorySlugs(EXPLORER_SLUGS),
     getSettings(),
@@ -82,7 +84,8 @@ export default async function Home({
     getProductsByCategorySlugs(CHAIR_DECOR_SLUGS),
     getProductsByCategorySlugs(WEDDING_ARCH_SLUGS),
     getProductsByCategorySlugs(GUEST_TABLES_DECOR_SLUGS),
-    getProductsByCategorySlugs(CAR_DECOR_SLUGS)
+    getProductsByCategorySlugs(CAR_DECOR_SLUGS),
+    getProductsByCategorySlugs(GIFTS_SLUGS)
   ]);
 
   const settings = rawSettings ? localizeSettings(rawSettings, locale) : null;
@@ -99,6 +102,7 @@ export default async function Home({
   const resolvedArrangements = arrangementProducts.length > 0 ? arrangementProducts : (mocks?.MOCK_BASKETS ?? []);
   const resolvedDecor = decorProducts.length > 0 ? decorProducts : (mocks?.MOCK_DECOR ?? []);
   const resolvedFuneral = funeralProducts.length > 0 ? funeralProducts : (mocks?.MOCK_FUNERAL ?? []);
+  const resolvedGifts = giftsProducts.length > 0 ? giftsProducts : (mocks?.MOCK_DECOR ?? []);
 
   return (
     <main>
@@ -338,6 +342,18 @@ export default async function Home({
         isScrollable
         autoScroll
         index={13}
+      />
+
+      {/* Gifts Showcase */}
+      <CategorySection
+        labelKey="gifts"
+        products={resolvedGifts}
+        locale={locale}
+        viewAllHref="/category/gifts"
+        gridCols={5}
+        isScrollable
+        autoScroll
+        index={14}
       />
 
       {/* About Section */}
