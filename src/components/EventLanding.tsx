@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { EventContent, LocalizedText, EventSection, PortfolioItem, ProcessStep } from "@/lib/supabase";
+import type { EventContent, LocalizedText, EventSection, PortfolioItem } from "@/lib/supabase";
 import type { Locale } from "@/i18n/routing";
 import InquiryForm from "@/components/event/InquiryForm";
 import AnchorScroller from "@/components/event/AnchorScroller";

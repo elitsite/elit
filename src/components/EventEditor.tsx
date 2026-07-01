@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { Save, Loader2, Plus, Trash2, Upload, X, Languages } from 'lucide-react';
-import type { EventContent, LocalizedText, EventSection, PortfolioItem, ProcessStep } from '@/lib/supabase';
+import type { EventContent, LocalizedText, EventSection, PortfolioItem } from '@/lib/supabase';
 
 /* ================================================================
  *  Sub-components defined OUTSIDE of EventEditor to avoid
@@ -297,24 +297,6 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
     const removeGalleryImage = (i: number) => {
         setField('gallery', (content.gallery || []).filter((_, idx) => idx !== i));
     };
-
-    // ── Process steps helpers ──
-    const addProcessStep = () => {
-        const step: ProcessStep = { title: {}, text: {} };
-        setField('process_steps', [...(content.process_steps || []), step]);
-    };
-
-    const removeProcessStep = (i: number) => {
-        setField('process_steps', (content.process_steps || []).filter((_, idx) => idx !== i));
-    };
-
-    const handleProcessStepChange = useCallback((i: number, field: 'title' | 'text', lang: 'en' | 'uk' | 'nl', value: string) => {
-        setContent(prev => {
-            const steps = [...(prev.process_steps || [])];
-            steps[i] = { ...steps[i], [field]: { ...steps[i][field], [lang]: value } };
-            return { ...prev, process_steps: steps };
-        });
-    }, []);
 
     // ── Auto-translate: collect all EN texts, send to API, fill empty UK/NL ──
     const handleAutoTranslate = async () => {
