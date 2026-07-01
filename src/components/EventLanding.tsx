@@ -259,33 +259,7 @@ function FinalChoicesBlock({ content, locale }: { content: EventContent; locale:
 
 // BloomBlock removed
 
-function CTABlock({ content, locale }: { content: EventContent; locale: Locale }) {
-  const title = t(content.cta_title, locale);
-  const text = t(content.cta_text, locale);
-  const button = t(content.cta_button, locale);
-  if (!title && !text) return null;
-
-  return (
-    <section className="bg-ink py-24 sm:py-32">
-      <div className="mx-auto max-w-3xl px-6 text-center">
-        {title && (
-          <h2 className="font-display text-4xl font-medium text-cream sm:text-5xl">{title}</h2>
-        )}
-        {text && (
-          <p className="mx-auto mt-8 max-w-2xl leading-relaxed text-cream/60">{text}</p>
-        )}
-        {button && (
-          <a
-            href="#inquiry-form"
-            className="mt-12 inline-flex items-center border border-cream/30 px-10 py-4 text-xs font-medium uppercase tracking-[0.25em] text-cream transition-all duration-300 hover:border-cream hover:bg-cream hover:text-ink"
-          >
-            {button}
-          </a>
-        )}
-      </div>
-    </section>
-  );
-}
+// CTABlock removed
 
 // ── Events-only blocks ──
 
@@ -499,8 +473,7 @@ export default function EventLanding({ content, locale, slug, anchor }: EventLan
             title={content.portfolio_title}
           />
         </div>
-        {/* CTA */}
-        <CTABlock content={content} locale={locale} />
+        {/* CTA block removed */}
         {/* Gallery */}
         <GalleryStrip images={content.gallery} />
         {/* Inquiry form */}
