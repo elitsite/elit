@@ -262,7 +262,7 @@ export default async function Home({
 
       {/* Wedding Category: Bridesmaids & Bracelets */}
       <CategorySection
-        labelKey="bridesmaids_bouquets"
+        labelKey="bridesmaids_bracelets_combined"
         products={bridesmaidsProducts}
         locale={locale}
         viewAllHref="/category/wedding-floristry/bridesmaids-bouquets"
