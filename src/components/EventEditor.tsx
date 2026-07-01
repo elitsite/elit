@@ -556,21 +556,7 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                 </div>
             </>)}
 
-            {/* ── Full Service (Weddings only) ── */}
-            {isWedding && (<>
-                <SectionHeader title="Full Service Section" />
-                <div className={cardClass}>
-                    <h3 className="text-lg font-bold mb-4">{at.events_full_service_h}</h3>
-                    <div className="space-y-4">
-                        <ImageUploadField url={content.full_service_image || ''} onUpload={url => setField('full_service_image', url)} label={at.events_full_service_image} uploadImage={uploadImage} clickLabel={at.form_photo_click} sizeHint="800×1067 px (3:4)" />
-                        <LangInputs label={at.events_title_field} value={getLocalized('full_service_title')} onChange={(lang, val) => handleLocalizedChange('full_service_title', lang, val)} at={at} />
-                        <LangInputs label={at.events_text} value={getLocalized('full_service_text')} onChange={(lang, val) => handleLocalizedChange('full_service_text', lang, val)} at={at} multiline />
-                        <LangInputs label={at.events_included_label_field} value={getLocalized('full_service_included_label')} onChange={(lang, val) => handleLocalizedChange('full_service_included_label', lang, val)} at={at} />
-                        <LangInputs label={at.events_included_items} value={getLocalized('full_service_included')} onChange={(lang, val) => handleLocalizedChange('full_service_included', lang, val)} at={at} multiline />
-                    </div>
-                </div>
-            </>)}
-
+            {/* Full Service removed */}
             {/* ── Other Services (Weddings only) ── */}
             {isWedding && (<>
                 <SectionHeader title="Other Services Section" />
@@ -584,11 +570,6 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                         <LangInputs label={at.events_service1_text} value={getLocalized('service1_text')} onChange={(lang, val) => handleLocalizedChange('service1_text', lang, val)} at={at} multiline />
                         <LangInputs label={at.events_service1_italic} value={getLocalized('service1_italic')} onChange={(lang, val) => handleLocalizedChange('service1_italic', lang, val)} at={at} />
                         <LangInputs label={at.events_service1_button} value={getLocalized('service1_cta')} onChange={(lang, val) => handleLocalizedChange('service1_cta', lang, val)} at={at} />
-                        <p className="text-xs font-bold text-zinc-500 pt-2">{at.events_service2_label}</p>
-                        <LangInputs label={at.events_service2_title} value={getLocalized('service2_title')} onChange={(lang, val) => handleLocalizedChange('service2_title', lang, val)} at={at} />
-                        <LangInputs label={at.events_service2_text} value={getLocalized('service2_text')} onChange={(lang, val) => handleLocalizedChange('service2_text', lang, val)} at={at} multiline />
-                        <LangInputs label={at.events_service2_italic} value={getLocalized('service2_italic')} onChange={(lang, val) => handleLocalizedChange('service2_italic', lang, val)} at={at} />
-                        <LangInputs label={at.events_service2_button} value={getLocalized('service2_cta')} onChange={(lang, val) => handleLocalizedChange('service2_cta', lang, val)} at={at} />
                     </div>
                 </div>
             </>)}
@@ -606,20 +587,7 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                 </div>
             </>)}
 
-            {/* ── Quote / Love Letters (Weddings only) ── */}
-            {isWedding && (<>
-                <SectionHeader title="Quote / Love Letters" />
-                <div className={cardClass}>
-                    <h3 className="text-lg font-bold mb-4">{at.events_quote}</h3>
-                    <div className="space-y-4">
-                        <ImageUploadField url={content.quote_image || ''} onUpload={url => setField('quote_image', url)} label={at.events_quote_image} uploadImage={uploadImage} clickLabel={at.form_photo_click} sizeHint="1920×1080 px (16:9)" />
-                        <LangInputs label={at.events_quote_kicker} value={getLocalized('quote_kicker')} onChange={(lang, val) => handleLocalizedChange('quote_kicker', lang, val)} at={at} />
-                        <LangInputs label={at.events_quote_text} value={getLocalized('quote_text')} onChange={(lang, val) => handleLocalizedChange('quote_text', lang, val)} at={at} multiline />
-                        <LangInputs label={at.events_quote_author} value={getLocalized('quote_author')} onChange={(lang, val) => handleLocalizedChange('quote_author', lang, val)} at={at} />
-                    </div>
-                </div>
-            </>)}
-
+            {/* Quote / Love Letters removed */}
             {/* ── Framed Sections (Events only) ── */}
             {!isWedding && (<>
                 <SectionHeader title="Framed Sections" />
@@ -650,45 +618,7 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
 
 
 
-            {/* ── Process Steps Section ── */}
-            <SectionHeader title="Process Steps" />
-            <div className={cardClass}>
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold">🔢 {at.events_process}</h3>
-                    <button onClick={addProcessStep} className="flex items-center gap-1 bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
-                        <Plus size={16} /> {at.events_add_step}
-                    </button>
-                </div>
-                <div className="space-y-4">
-                    {(content.process_steps || []).map((step, i) => (
-                        <div key={`process-${i}`} className="border border-zinc-200 rounded-lg p-4 space-y-3">
-                            <div className="flex items-center justify-between">
-                                <span className="text-lg font-display font-light text-zinc-400">{['I', 'II', 'III', 'IV', 'V', 'VI'][i] || `#${i + 1}`}</span>
-                                <button onClick={() => removeProcessStep(i)} className="text-red-500 hover:text-red-600">
-                                    <Trash2 size={16} />
-                                </button>
-                            </div>
-                            <LangInputs
-                                label={at.events_step_title}
-                                value={step.title || {}}
-                                onChange={(lang, val) => handleProcessStepChange(i, 'title', lang, val)}
-                                at={at}
-                            />
-                            <LangInputs
-                                label={at.events_step_text}
-                                value={step.text || {}}
-                                onChange={(lang, val) => handleProcessStepChange(i, 'text', lang, val)}
-                                at={at}
-                                multiline
-                            />
-                        </div>
-                    ))}
-                    {(content.process_steps || []).length === 0 && (
-                        <p className="text-sm text-zinc-400 text-center py-4">{at.events_process_empty}</p>
-                    )}
-                </div>
-            </div>
-
+            {/* Process Steps removed */}
             {/* ── Portfolio Section ── */}
             <SectionHeader title="Portfolio Section" />
             {isWedding && (
@@ -721,21 +651,7 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                 onItemLocalizedChange={handleItemLocalizedChange}
             />
 
-            {/* ── Bloom With Us (Weddings only) ── */}
-            {isWedding && (<>
-                <SectionHeader title="Bloom With Us Section" />
-                <div className={cardClass}>
-                    <h3 className="text-lg font-bold mb-4">{at.events_bloom_h}</h3>
-                    <div className="space-y-4">
-                        <ImageUploadField url={content.bloom_image || ''} onUpload={url => setField('bloom_image', url)} label={at.events_bloom_image} uploadImage={uploadImage} clickLabel={at.form_photo_click} sizeHint="600×700 px (4:5)" />
-                        <LangInputs label={at.events_kicker} value={getLocalized('bloom_kicker')} onChange={(lang, val) => handleLocalizedChange('bloom_kicker', lang, val)} at={at} />
-                        <LangInputs label={at.events_title_field} value={getLocalized('bloom_title')} onChange={(lang, val) => handleLocalizedChange('bloom_title', lang, val)} at={at} />
-                        <LangInputs label={at.events_text} value={getLocalized('bloom_text')} onChange={(lang, val) => handleLocalizedChange('bloom_text', lang, val)} at={at} multiline />
-                        <LangInputs label={at.events_button} value={getLocalized('bloom_button')} onChange={(lang, val) => handleLocalizedChange('bloom_button', lang, val)} at={at} />
-                    </div>
-                </div>
-            </>)}
-
+            {/* Bloom With Us removed */}
             {/* ── CTA Banner (Weddings only) ── */}
             {isWedding && (<>
                 <SectionHeader title="CTA Banner Section" />
