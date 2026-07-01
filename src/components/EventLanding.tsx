@@ -225,35 +225,7 @@ function OtherServicesBlock({ content, locale }: { content: EventContent; locale
   );
 }
 
-function FinalChoicesBlock({ content, locale }: { content: EventContent; locale: Locale }) {
-  const title = t(content.final_choices_title, locale);
-  const text = t(content.final_choices_text, locale);
-  const link = t(content.final_choices_link, locale);
-  if (!title && !text) return null;
-
-  return (
-    <section className="bg-taupe/10 py-24 sm:py-32">
-      <div className="mx-auto max-w-3xl px-6 text-center">
-        {title && (
-          <h2 className="font-display text-4xl font-medium text-ink sm:text-5xl">{title}</h2>
-        )}
-        {text && (
-          <p className="mx-auto mt-8 max-w-2xl whitespace-pre-line leading-relaxed text-ink/60">
-            {text}
-          </p>
-        )}
-        {link && (
-          <a
-            href="#process"
-            className="mt-10 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-[0.2em] text-ink underline decoration-brand/40 underline-offset-4 transition-colors hover:text-brand"
-          >
-            {link}
-          </a>
-        )}
-      </div>
-    </section>
-  );
-}
+// FinalChoicesBlock removed
 
 // QuoteBlock removed
 
@@ -462,8 +434,7 @@ export default function EventLanding({ content, locale, slug, anchor }: EventLan
         <IntroBlock content={content} locale={locale} isWedding />
         {/* Other services: Destination Weddings */}
         <OtherServicesBlock content={content} locale={locale} />
-        {/* Final choices */}
-        <FinalChoicesBlock content={content} locale={locale} />
+        {/* Final choices removed */}
         {/* Portfolio */}
         <div id="portfolio">
           <GridBlock

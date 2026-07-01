@@ -22,7 +22,7 @@ export default function Footer({ contact }: Props) {
   const tNav = useTranslations("Nav");
   const tCat = useTranslations("Categories");
 
-  const phone = contact?.phone || "+31 6 12345678";
+  const phone = contact?.phone || "+31 6 16474150";
   const whatsappUrl = contact?.whatsapp_link || "https://wa.me";
   const instagramUrl = contact?.instagram_link || "https://instagram.com";
   const facebookUrl = contact?.facebook_link || "https://facebook.com";
@@ -78,9 +78,8 @@ export default function Footer({ contact }: Props) {
               {t("contacts")}
             </h4>
             <ul className="space-y-2.5 text-[13px] text-ink/60">
-              <li><a href="mailto:info@alyabloemen.com" className="transition-colors hover:text-brand">info@alyabloemen.com</a></li>
               <li><a href={`tel:${phone}`} className="transition-colors hover:text-brand">{phone}</a></li>
-              <li><p>Amsterdam, Netherlands</p></li>
+              <li><p>Limburg, Nederland</p></li>
             </ul>
             
             {/* Social Icons */}

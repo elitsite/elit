@@ -304,17 +304,11 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
         const localizedKeys: (keyof EventContent)[] = [
             'hero_title', 'hero_subtitle', 'hero_kicker', 'hero_button',
             'intro_kicker', 'intro_title', 'intro_text', 'intro_button', 'intro_text_col2',
-            'full_service_title', 'full_service_text', 'full_service_included', 'full_service_included_label',
             'other_services_kicker',
             'service1_title', 'service1_text', 'service1_italic', 'service1_cta',
-            'service2_title', 'service2_text', 'service2_italic', 'service2_cta',
-            'final_choices_title', 'final_choices_text', 'final_choices_link',
-            'quote_kicker', 'quote_text', 'quote_author',
             'portfolio_kicker', 'portfolio_title', 'portfolio_sidebar_text',
             'packages_kicker', 'packages_title',
             'decor_kicker', 'decor_title',
-            'bloom_kicker', 'bloom_title', 'bloom_text', 'bloom_button',
-            'cta_title', 'cta_text', 'cta_button',
             'form_title',
         ];
 
@@ -334,11 +328,7 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
             if (s.text?.en?.trim()) texts.push({ key: `section_${i}_text`, value: s.text.en });
         });
 
-        // Process steps
-        (content.process_steps || []).forEach((s, i) => {
-            if (s.title?.en?.trim()) texts.push({ key: `process_${i}_title`, value: s.title.en });
-            if (s.text?.en?.trim()) texts.push({ key: `process_${i}_text`, value: s.text.en });
-        });
+        // Process steps removed
 
         // Portfolio / packages / decor captions
         (['portfolio', 'packages', 'decor'] as const).forEach(key => {
@@ -556,18 +546,7 @@ export default function EventEditor({ slug, content: initialContent, at, uploadI
                 </div>
             </>)}
 
-            {/* ── Final Choices (Weddings only) ── */}
-            {isWedding && (<>
-                <SectionHeader title="Final Choices Section" />
-                <div className={cardClass}>
-                    <h3 className="text-lg font-bold mb-4">{at.events_final_choices_h}</h3>
-                    <div className="space-y-4">
-                        <LangInputs label={at.events_title_field} value={getLocalized('final_choices_title')} onChange={(lang, val) => handleLocalizedChange('final_choices_title', lang, val)} at={at} />
-                        <LangInputs label={at.events_text} value={getLocalized('final_choices_text')} onChange={(lang, val) => handleLocalizedChange('final_choices_text', lang, val)} at={at} multiline />
-                        <LangInputs label={at.events_underline_link} value={getLocalized('final_choices_link')} onChange={(lang, val) => handleLocalizedChange('final_choices_link', lang, val)} at={at} />
-                    </div>
-                </div>
-            </>)}
+            {/* Final Choices removed */}
 
             {/* Quote / Love Letters removed */}
             {/* ── Framed Sections (Events only) ── */}
