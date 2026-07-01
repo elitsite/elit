@@ -102,17 +102,18 @@ export default async function Home({
 
   return (
     <main>
-      {/* Hero — full viewport height, image cropped from the top, bottom is preserved */}
-      <section className="relative w-full overflow-hidden" style={{ height: 'calc(100dvh - 80px)' }}>
-        {/* Mobile Image */}
+      {/* Hero — original auto-height for mobile, full viewport height for desktop */}
+      <section className="relative w-full overflow-hidden flex flex-col sm:block sm:h-[calc(100dvh-80px)]">
+        {/* Mobile Image (Original) */}
         <Image
           src="/logo3.png"
           alt="Alina Bloemen"
-          fill
-          className="block object-cover object-bottom sm:hidden"
+          width={1080}
+          height={1080}
+          className="block w-full h-auto sm:hidden"
           priority
         />
-        {/* Desktop Image */}
+        {/* Desktop Image (Cropped) */}
         <Image
           src="/logo2.png"
           alt="Alina Bloemen"
@@ -122,18 +123,18 @@ export default async function Home({
         />
         <div className="absolute inset-0 bg-black/10" />
 
-        {/* Content Overlay for Button — sits exactly on top of the CATALOG button baked into logo2.png */}
+        {/* Content Overlay for Button */}
         <div className="absolute inset-0 z-10 w-full h-full">
             <Link
               href="/category/bouquets"
               className="absolute
-                left-1/2 top-[80%] -translate-x-1/2
+                left-[8%] top-[72%]
                 sm:left-[21.5%] sm:top-[70%] sm:-translate-x-1/2
                 btn-primary
                 !rounded-md
-                !px-10 !py-4.5 !text-[13px] !tracking-[0.25em]
+                !px-5 !py-2.5 !text-[10px]
                 sm:!px-12 sm:!py-6 sm:!text-sm sm:!tracking-[0.3em]
-                !font-semibold"
+                sm:!font-semibold"
             >
               {nav("catalog")}
             </Link>
